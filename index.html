@@ -3271,6 +3271,8 @@
             item_note: i.itemNote || '',
             ea_per_b: i.ea_per_b || null,
             box_per_p: i.box_per_p || null,
+            custom_pallet: (i.customPallet !== null && i.customPallet !== undefined) ? i.customPallet : null,
+            custom_box: (i.customBox !== null && i.customBox !== undefined) ? i.customBox : null,
           }));
 
           if (itemRows.length) {
