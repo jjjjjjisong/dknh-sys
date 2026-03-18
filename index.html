@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 
 <head>
@@ -2757,7 +2757,7 @@
           const supply = item.customSupply !== null && item.customSupply !== undefined
             ? item.customSupply : (unitPrice && item.qty ? Math.round(unitPrice * item.qty) : 0);
           const gubunClass = !p ? 'b-other' : p.gubun === '컵' ? 'b-cup' : p.gubun === '뚜껑' ? 'b-lid' : p.gubun === '스트로우' ? 'b-straw' : 'b-other';
-          const iStyle = 'text-align:right;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:4px 6px;width:100%;background:var(--surface);font-family:'Pretendard Variable', sans-serif;';
+          const iStyle = 'text-align:right;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:4px 6px;width:100%;background:var(--surface);font-family:\\\'Pretendard Variable\\\', sans-serif;';
           const dateStyle = 'font-size:12px;border:1px solid var(--border);border-radius:4px;padding:4px 5px;width:100%;background:var(--surface);';
 
           return `<tr>
@@ -3391,7 +3391,7 @@
         const h = history.find(x => String(x.id) === String(id));
         if (!h) return;
 
-        const iStyle = 'text-align:right;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:4px 6px;width:100%;background:var(--surface);font-family:'Pretendard Variable', sans-serif;';
+        const iStyle = 'text-align:right;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:4px 6px;width:100%;background:var(--surface);font-family:\\\'Pretendard Variable\\\', sans-serif;';
         const fStyle = 'font-size:13px;border:1px solid var(--border);border-radius:var(--r);padding:6px 9px;width:100%;';
         const dStyle = 'font-size:12px;border:1px solid var(--border);border-radius:4px;padding:4px 5px;width:100%;background:var(--surface);';
 
