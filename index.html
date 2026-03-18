@@ -2670,7 +2670,7 @@
           return;
         }
         el.innerHTML = history.slice(0, 8).map(h => `
-    <div class="hist-item${h.cancelled ? ' cancelled' : ''}" ondblclick="openHistDetail('${h.id}')" title="더블클릭: 상세/수정" style="cursor:pointer;">
+    <div class="hist-item${h.cancelled ? ' cancelled' : ''}" ondblclick="window.location.hash='doc-detail-${h.id}'" title="더블클릭: 상세/수정" style="cursor:pointer;">
       <div class="hist-no">${h.issueNo}</div>
       <div class="hist-info" style="flex:1;">
         <div class="hist-name" style="display:flex;align-items:center;">${h.client}${h.cancelled ? '<span class="hist-status-cancel">거래취소</span>' : ''}</div>
