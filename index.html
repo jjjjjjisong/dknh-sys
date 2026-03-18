@@ -3848,7 +3848,6 @@
       }
 
       function exportOrderBookExcel() {
-        orderBook = loadOrderBook();
         if (!orderBook.length) { alert('수주 내역이 없습니다.'); return; }
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(orderBook.map((e, i) => ({
