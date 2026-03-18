@@ -3906,14 +3906,13 @@
         openModal('product-modal');
       }
 
-      function saveProduct() {
+      async function saveProduct() {
         const name1 = document.getElementById('pf-name1').value.trim();
         const sell = parseFloat(document.getElementById('pf-sell').value);
         if (!name1) { alert('품목명(출고의뢰서)을 입력하세요.'); return; }
         const eaB = parseInt(document.getElementById('pf-ea-b').value) || null;
         const boxP = parseInt(document.getElementById('pf-box-p').value) || null;
         const obj = {
-          _id: Date.now().toString(),
           gubun: document.getElementById('pf-gubun').value,
           client: document.getElementById('pf-client').value,
           supplier: document.getElementById('pf-supplier').value.trim(),
@@ -3926,14 +3925,27 @@
           ea_per_p: (eaB && boxP) ? eaB * boxP : null,
           pallets_per_truck: parseInt(document.getElementById('pf-p-truck').value) || null,
         };
-        const idx = document.getElementById('product-edit-idx').value;
-        if (idx === '') { obj.no = products.length + 1; products.push(obj); }
-        else { obj.no = products[parseInt(idx)].no; products[parseInt(idx)] = obj; }
-        save('products', products);
-        populateClientSelect();
-        populateProductClientFilter();
-        renderProducts();
-        closeModal('product-modal');
+        const idxStr = document.getElementById('product-edit-idx').value;
+        try {
+          if (idxStr === '') {
+            obj.no = products.length > 0 ? Math.max(...products.map(p => p.no || 0)) + 1 : 1;
+            const { data, error } = await db.from('products').insert(obj).select().single();
+            if (error) throw error;
+            products.push({ ...data, _id: String(data.id) });
+          } else {
+            const p = products[parseInt(idxStr)];
+            obj.no = p.no;
+            const { error } = await db.from('products').update(obj).eq('id', p.id);
+            if (error) throw error;
+            products[parseInt(idxStr)] = { ...p, ...obj };
+          }
+          populateClientSelect();
+          populateProductClientFilter();
+          renderProducts();
+          closeModal('product-modal');
+        } catch (e) {
+          alert('저장 실패: ' + (e.message || e));
+        }
       }
 
       async function deleteProduct(idx) {
