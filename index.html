@@ -1804,14 +1804,14 @@
                   <thead>
                     <tr>
                       <th style="width:24px">#</th>
-                      <th style="width:200px">품목명 (출고의뢰서)</th>
+                      <th style="width:160px">품목명 (출고의뢰서)</th>
                       <th style="width:44px">구분</th>
                       <th style="width:72px">발주일자</th>
                       <th style="width:72px">입고일자</th>
                       <th style="width:72px">수량 (ea)</th>
                       <th style="width:46px">파렛트</th>
                       <th style="width:46px">BOX</th>
-                      <th style="width:70px">단가</th>
+                      <th style="width:110px">단가</th>
                       <th style="width:108px">공급가액</th>
                       <th style="width:36px">VAT</th>
                       <th style="width:100px">비고</th>
@@ -3357,11 +3357,12 @@
         el.innerHTML = '<div class="tbl-wrap"><table class="tbl"><thead><tr>' +
           '<th style="width:80px;text-align:center;">발급번호</th>' +
           '<th style="width:100px;text-align:center;">발주일자</th>' +
-          '<th style="width:160px;">납품처</th>' +
+          '<th style="width:200px;">납품처</th>' +
           '<th>품목정보</th>' +
           '<th style="width:80px;text-align:center;">작성자</th>' +
-          '<th style="width:140px;text-align:center;">수정/저장일시</th>' +
+          '<th style="width:180px;text-align:center;">수정/저장일시</th>' +
           '<th style="width:60px;text-align:center;">상태</th>' +
+          '<th style="width:50px;text-align:center;">관리</th>' +
           '</tr></thead><tbody>' +
           pagedList.map(h => {
             const tdStyle = h.cancelled ? 'text-decoration:line-through;color:var(--text-3);' : '';
@@ -3372,6 +3373,9 @@
               <td style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;${tdStyle}">${h.items.map(i => i.name1).join(', ')}</td>
               <td style="text-align:center;font-size:12px;${tdStyle}">${h.author || '-'}</td>
               <td style="text-align:center;font-size:12px;color:var(--text-3);font-family:'Pretendard Variable', sans-serif;">${h.updatedAt || h.savedAt || ''}</td>
+              <td style="text-align:center;">${h.cancelled ? '<span class="badge b-other">취소</span>' : '<span class="badge b-active">완료</span>'}</td>
+              <td style="text-align:center;">
+                <button class="btn btn-danger btn-sm" style="padding: 2px 6px; font-size: 11px;" onclick="event.stopPropagation(); deleteHistRow('${h.id}')">삭제</button>
               </td>
             </tr>`;
           }).join('') +
@@ -3379,6 +3383,20 @@
           getPaginationHtml(list.length, histPage, 'renderHistory');
       }
 
+      async function deleteHistRow(id) {
+        if (!confirm('이 문서 발행 이력을 완전히 삭제하시겠습니까?')) return;
+        try {
+          await db.from('documents').delete().eq('id', id);
+          await db.from('document_items').delete().eq('document_id', id);
+          history = history.filter(h => String(h.id) !== String(id));
+          localStorage.setItem('dkh_history', JSON.stringify(history));
+          renderHistory();
+          alert('삭제되었습니다.');
+        } catch (err) {
+          console.error(err);
+          alert('삭제 중 오류가 발생했습니다.');
+        }
+      }
 
       // ═══════════════════════════════════════════════════
       //  HISTORY DETAIL
@@ -3502,7 +3520,7 @@
             <th style="width:28px">#</th><th>품목명</th><th style="width:50px">구분</th>
             <th style="width:90px">발주일자</th><th style="width:90px">입고일자</th>
             <th style="width:72px">수량(ea)</th><th style="width:52px">파렛트</th>
-            <th style="width:52px">BOX</th><th style="width:76px">단가</th>
+            <th style="width:52px">BOX</th><th style="width:105px">단가</th>
             <th style="width:88px">공급가액</th><th style="width:40px">VAT</th>
             <th style="width:100px">비고</th>
           </tr></thead>
