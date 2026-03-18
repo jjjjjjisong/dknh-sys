@@ -2328,6 +2328,26 @@
       let history = [];
       let issueNo = parseInt(localStorage.getItem('dkh_issueno') || '26000') + 1;
 
+      // ═══════════════════════════════════════════════════
+      //  PAGINATION HELPER
+      // ═══════════════════════════════════════════════════
+      const PAGE_SIZE = 30;
+      let histPage = 1, obPage = 1, clientPage = 1, productPage = 1;
+
+      function getPaginationHtml(total, page, fnName) {
+        const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+        let pStart = Math.max(1, page - 2);
+        let pEnd = Math.min(totalPages, pStart + 4);
+        if (pEnd - pStart < 4) pStart = Math.max(1, pEnd - 4);
+        let html = '<div style="display:flex;justify-content:center;align-items:center;gap:4px;padding:16px 0;">';
+        let p1 = Math.max(1, page - 1);
+        html += `<button class="btn btn-sm ${page === 1 ? 'btn-ghost' : 'btn-secondary'}" ${page === 1 ? 'disabled' : ''} onclick="${fnName}(${p1})">이전</button>`;
+        for (let p = pStart; p <= pEnd; p++) html += `<button class="btn btn-sm ${page === p ? 'btn-primary' : 'btn-ghost'}" onclick="${fnName}(${p})">${p}</button>`;
+        let p2 = Math.min(totalPages, page + 1);
+        html += `<button class="btn btn-sm ${page === totalPages ? 'btn-ghost' : 'btn-secondary'}" ${page === totalPages ? 'disabled' : ''} onclick="${fnName}(${p2})">다음</button>`;
+        return html + '</div>';
+      }
+
       // Supabase에서 전체 마스터 데이터 로드
       async function loadAllData() {
         try {
@@ -3282,7 +3302,10 @@
       // ═══════════════════════════════════════════════════
       //  HISTORY
       // ═══════════════════════════════════════════════════
-      function renderHistory() {
+      function renderHistory(p) {
+        if (typeof p === 'number') histPage = p;
+        else histPage = 1;
+
         const el = document.getElementById('history-list');
         if (history.length === 0) {
           el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>저장된 이력이 없습니다</div>';
@@ -3320,6 +3343,11 @@
           el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>검색 결과가 없습니다</div>';
           return;
         }
+
+        const totalPages = Math.ceil(list.length / PAGE_SIZE) || 1;
+        if (histPage > totalPages) histPage = totalPages;
+        const pagedList = list.slice((histPage - 1) * PAGE_SIZE, histPage * PAGE_SIZE);
+
         el.innerHTML = '<div class="tbl-wrap"><table class="tbl"><thead><tr>' +
           '<th style="width:80px;text-align:center;">발급번호</th>' +
           '<th style="width:100px;text-align:center;">발주일자</th>' +
@@ -3329,7 +3357,7 @@
           '<th style="width:140px;text-align:center;">수정/저장일시</th>' +
           '<th style="width:60px;text-align:center;">상태</th>' +
           '</tr></thead><tbody>' +
-          list.map(h => {
+          pagedList.map(h => {
             const tdStyle = h.cancelled ? 'text-decoration:line-through;color:var(--text-3);' : '';
             return `<tr ondblclick="window.location.hash='doc-detail-${h.id}'" title="더블클릭: 상세/수정" style="cursor:pointer; transition:background-color 0.1s;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor=''">
               <td style="text-align:center;font-size:12px;color:var(--text-muted);font-family:Geist Mono,monospace;${tdStyle}">${h.issueNo}</td>
@@ -3338,12 +3366,11 @@
               <td style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;${tdStyle}">${h.items.map(i => i.name1).join(', ')}</td>
               <td style="text-align:center;font-size:12px;${tdStyle}">${h.author || '-'}</td>
               <td style="text-align:center;font-size:12px;color:var(--text-3);font-family:Geist Mono,monospace;">${h.updatedAt || h.savedAt || ''}</td>
-              <td style="text-align:center;">
-                <span class="badge ${h.cancelled ? 'b-inactive' : 'b-active'}">${h.cancelled ? '취소' : '정상'}</span>
               </td>
             </tr>`;
           }).join('') +
-          '</tbody></table></div>';
+          '</tbody></table></div>' +
+          getPaginationHtml(list.length, histPage, 'renderHistory');
       }
 
 
@@ -3598,7 +3625,10 @@
         renderOrderBook();
       }
 
-      function renderOrderBook() {
+      function renderOrderBook(p) {
+        if (typeof p === 'number') obPage = p;
+        else obPage = 1;
+
         const from = (document.getElementById('ob-date-from') || {}).value || '';
         const to = (document.getElementById('ob-date-to') || {}).value || '';
         const keyword = ((document.getElementById('ob-keyword') || {}).value || '').toLowerCase();
@@ -3614,9 +3644,17 @@
         const tbody = document.getElementById('ob-body');
         if (!tbody) return;
         if (!list.length) {
-          tbody.innerHTML = '<tr><td colspan="11" class="empty">수주 내역이 없습니다</td></tr>'; return;
+          tbody.innerHTML = '<tr><td colspan="11" class="empty">수주 내역이 없습니다</td></tr>';
+          document.getElementById('ob-pagination')?.remove();
+          return;
         }
-        tbody.innerHTML = list.map((e, i) => {
+
+        const totalPages = Math.ceil(list.length / PAGE_SIZE) || 1;
+        if (obPage > totalPages) obPage = totalPages;
+        const pagedList = list.slice((obPage - 1) * PAGE_SIZE, obPage * PAGE_SIZE);
+
+        tbody.innerHTML = pagedList.map((e, idx) => {
+          const i = (obPage - 1) * PAGE_SIZE + idx;
           const td = e.cancelled ? 'style="text-decoration:line-through;color:var(--text-3);"' : '';
           const dateStyle = `text-align:center;font-family:'Geist Mono',monospace;font-size:12px;${e.cancelled ? 'text-decoration:line-through;color:var(--text-3);' : ''}`;
           return `<tr>
@@ -3638,6 +3676,15 @@
       </td>
     </tr>`;
         }).join('');
+
+        const tblWrap = tbody.closest('.tbl-wrap');
+        let pageEl = document.getElementById('ob-pagination');
+        if (!pageEl) {
+          pageEl = document.createElement('div');
+          pageEl.id = 'ob-pagination';
+          tblWrap.parentNode.insertBefore(pageEl, tblWrap.nextSibling);
+        }
+        pageEl.innerHTML = getPaginationHtml(list.length, obPage, 'renderOrderBook');
       }
 
       function openOrderModal(id) {
@@ -3742,15 +3789,25 @@
       }
 
       // ═══════════════════════════════════════════════════
-      function renderClients() {
+      function renderClients(p) {
+        if (typeof p === 'number') clientPage = p;
+        else clientPage = 1;
+
         const q = document.getElementById('client-search').value.toLowerCase();
         const list = clients.filter(c => !q || c.name.toLowerCase().includes(q) || (c.addr || '').toLowerCase().includes(q));
         document.getElementById('client-count').textContent = `${list.length}개`;
         const tbody = document.getElementById('clients-body');
         if (list.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" class="empty">납품처가 없습니다</td></tr>'; return;
+          tbody.innerHTML = '<tr><td colspan="8" class="empty">납품처가 없습니다</td></tr>';
+          document.getElementById('client-pagination')?.remove();
+          return;
         }
-        tbody.innerHTML = list.map((c, i) => `
+
+        const totalPages = Math.ceil(list.length / PAGE_SIZE) || 1;
+        if (clientPage > totalPages) clientPage = totalPages;
+        const pagedList = list.slice((clientPage - 1) * PAGE_SIZE, clientPage * PAGE_SIZE);
+
+        tbody.innerHTML = pagedList.map((c, i) => `
     <tr>
       <td style="text-align:center;color:var(--text-muted);font-size:12px;">${clients.indexOf(c) + 1}</td>
       <td><strong>${c.name}</strong></td>
@@ -3766,6 +3823,15 @@
         </div>
       </td>
     </tr>`).join('');
+
+        const tblWrap = tbody.closest('.tbl-wrap');
+        let pageEl = document.getElementById('client-pagination');
+        if (!pageEl) {
+          pageEl = document.createElement('div');
+          pageEl.id = 'client-pagination';
+          tblWrap.parentNode.insertBefore(pageEl, tblWrap.nextSibling);
+        }
+        pageEl.innerHTML = getPaginationHtml(list.length, clientPage, 'renderClients');
       }
 
       function openClientModal(idx) {
@@ -3843,7 +3909,10 @@
         });
       }
 
-      function renderProducts() {
+      function renderProducts(p) {
+        if (typeof p === 'number') productPage = p;
+        else productPage = 1;
+
         const q = (document.getElementById('product-search').value || '').toLowerCase();
         const fc = document.getElementById('product-filter-client').value;
         const fg = document.getElementById('product-filter-gubun').value;
@@ -3856,9 +3925,16 @@
         document.getElementById('product-count').textContent = `${list.length}건`;
         const tbody = document.getElementById('products-body');
         if (list.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="11" class="empty">품목이 없습니다</td></tr>'; return;
+          tbody.innerHTML = '<tr><td colspan="11" class="empty">품목이 없습니다</td></tr>';
+          document.getElementById('product-pagination')?.remove();
+          return;
         }
-        tbody.innerHTML = list.map(p => {
+
+        const totalPages = Math.ceil(list.length / PAGE_SIZE) || 1;
+        if (productPage > totalPages) productPage = totalPages;
+        const pagedList = list.slice((productPage - 1) * PAGE_SIZE, productPage * PAGE_SIZE);
+
+        tbody.innerHTML = pagedList.map(p => {
           const idx = products.indexOf(p);
           const gc = p.gubun === '컵' ? 'b-cup' : p.gubun === '뚜껑' ? 'b-lid' : p.gubun === '스트로우' ? 'b-straw' : 'b-other';
           return `<tr>
@@ -3880,6 +3956,15 @@
       </td>
     </tr>`;
         }).join('');
+
+        const tblWrap = tbody.closest('.tbl-wrap');
+        let pageEl = document.getElementById('product-pagination');
+        if (!pageEl) {
+          pageEl = document.createElement('div');
+          pageEl.id = 'product-pagination';
+          tblWrap.parentNode.insertBefore(pageEl, tblWrap.nextSibling);
+        }
+        pageEl.innerHTML = getPaginationHtml(list.length, productPage, 'renderProducts');
       }
 
       function openProductModal(idx) {
