@@ -37,6 +37,7 @@ type DocumentRow = {
 
 type OrderBookRow = {
   id: string;
+  doc_id: string | null;
   issue_no: string | null;
   product: string | null;
   receipt: string | null;
@@ -59,7 +60,7 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
       .limit(300),
     supabase
       .from('order_book')
-      .select('id, issue_no, product, receipt, status, shipped_status, del_yn')
+      .select('id, doc_id, issue_no, product, receipt, status, shipped_status, del_yn')
       .eq('del_yn', 'N')
       .order('created_at', { ascending: false }),
   ]);
@@ -71,7 +72,7 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
   const orderBookMap = new Map<string, OrderBookRow>();
 
   for (const row of orderBookRows) {
-    const key = getOrderBookKey(row.issue_no, row.product);
+    const key = getOrderBookKey(row.doc_id, row.issue_no, row.product);
     if (key) {
       orderBookMap.set(key, row);
     }
@@ -85,7 +86,9 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
     .filter((document) => mapStatus(document.status) === 'ST00' && (document.del_yn ?? 'N') === 'N')
     .map((document) => {
       const items = (document.document_items ?? []).filter((item) => (item.del_yn ?? 'N') === 'N');
-      const firstOrderBook = orderBookMap.get(getOrderBookKey(document.issue_no, items[0]?.name1 ?? ''));
+      const firstOrderBook = orderBookMap.get(
+        getOrderBookKey(document.id, document.issue_no, items[0]?.name1 ?? ''),
+      );
 
       return {
         id: String(document.id ?? ''),
@@ -151,7 +154,7 @@ export async function fetchDashboardWeeklyArrivals(
       .limit(300),
     supabase
       .from('order_book')
-      .select('id, issue_no, product, receipt, status, shipped_status, del_yn')
+      .select('id, doc_id, issue_no, product, receipt, status, shipped_status, del_yn')
       .eq('del_yn', 'N')
       .order('created_at', { ascending: false }),
   ]);
@@ -163,7 +166,7 @@ export async function fetchDashboardWeeklyArrivals(
   const orderBookMap = new Map<string, OrderBookRow>();
 
   for (const row of orderBookRows) {
-    const key = getOrderBookKey(row.issue_no, row.product);
+    const key = getOrderBookKey(row.doc_id, row.issue_no, row.product);
     if (key) {
       orderBookMap.set(key, row);
     }
@@ -199,7 +202,7 @@ function mapIncomingItem(
   const qty = item.qty ?? 0;
   const arriveDate = item.arrive_date ?? document.arrive_date ?? '';
   const productName = item.name2?.trim() || item.name1?.trim() || '';
-  const orderBook = orderBookMap.get(getOrderBookKey(document.issue_no, item.name1 ?? ''));
+  const orderBook = orderBookMap.get(getOrderBookKey(document.id, document.issue_no, item.name1 ?? ''));
 
   return {
     id: String(item.id ?? `${document.id}-${productName}-${qty}`),
@@ -256,14 +259,21 @@ function compareIncomingDocuments(a: DashboardIncomingDocument, b: DashboardInco
   return (a.issueNo || '').localeCompare(b.issueNo || '');
 }
 
-function getOrderBookKey(issueNo: string | null | undefined, product: string | null | undefined) {
+function getOrderBookKey(
+  docId: string | number | null | undefined,
+  issueNo: string | null | undefined,
+  product: string | null | undefined,
+) {
+  const normalizedDocId = String(docId ?? '').trim();
   const normalizedIssueNo = String(issueNo ?? '').trim();
   const normalizedProduct = String(product ?? '')
     .trim()
     .replace(/\s+/g, ' ')
     .toLowerCase();
 
-  return normalizedIssueNo && normalizedProduct ? `${normalizedIssueNo}::${normalizedProduct}` : '';
+  if (!normalizedProduct) return '';
+  if (normalizedDocId) return `doc:${normalizedDocId}::${normalizedProduct}`;
+  return normalizedIssueNo ? `issue:${normalizedIssueNo}::${normalizedProduct}` : '';
 }
 
 function toDateKey(date: Date) {
