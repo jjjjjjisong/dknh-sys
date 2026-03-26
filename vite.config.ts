@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  // Use relative asset paths so the built app can be deployed from either
+  // the domain root or a subdirectory without rewriting asset URLs.
+  base: './',
   plugins: [react()],
   server: {
     host: '127.0.0.1',
