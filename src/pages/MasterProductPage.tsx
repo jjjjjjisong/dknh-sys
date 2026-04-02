@@ -306,9 +306,9 @@ export default function MasterProductPage() {
                 <tr>
                   <th style={{ width: 56 }}>No</th>
                   <th style={{ width: 90 }}>구분</th>
-                  <th style={{ width: 150 }}>거래처</th>
-                  <th style={{ width: 340 }}>품목명</th>
-                  <th style={{ width: 340 }}>품목명(거래명세서)</th>
+                  <th style={{ width: 180 }}>거래처</th>
+                  <th style={{ width: 320 }}>품목명</th>
+                  <th style={{ width: 320 }}>품목명(거래명세서)</th>
                   <th style={{ width: 110 }}>출고처</th>
                   <th style={{ width: 110 }}>입고 단가</th>
                   <th style={{ width: 110 }}>판매 단가</th>
@@ -442,11 +442,11 @@ export default function MasterProductPage() {
             </div>
           </FormField>
 
-          <FormField label="출고처">
+          <FormField label="수신처">
             <input
               value={form.supplier}
               onChange={(event) => updateForm('supplier', event.target.value)}
-              placeholder="출고처 입력"
+              placeholder="수신처 입력"
             />
           </FormField>
 
