@@ -13,6 +13,7 @@ import type { SharedItemRow } from '../components/ui/DocumentItemTable';
 import { useDocumentItems } from '../hooks/useDocumentItems';
 import type { DocumentHistory, DocumentHistoryItem } from '../types/document';
 import type { SharedPreviewData as PreviewData } from '../types/documentPreview';
+import { RECEIVER_OPTIONS } from '../constants/receivers';
 import type { Product } from '../types/product';
 import type { Supplier } from '../types/supplier';
 import { emptyToNull, formatNumber, getErrorMessage } from '../utils/formatters';
@@ -43,6 +44,7 @@ export default function DocHistoryPage() {
   const [supplierModalOpen, setSupplierModalOpen] = useState(false);
   const [supplierLoading, setSupplierLoading] = useState(false);
   const [supplierKeyword, setSupplierKeyword] = useState('');
+  const [receiverDropdownOpen, setReceiverDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const saveLockRef = useRef(false);
 
@@ -188,6 +190,12 @@ export default function DocHistoryPage() {
         .includes(search),
     );
   }, [supplierKeyword, suppliers]);
+
+  const filteredReceivers = useMemo(() => {
+    const keyword = draft?.receiver.trim().toLowerCase() ?? '';
+    if (!keyword) return RECEIVER_OPTIONS;
+    return RECEIVER_OPTIONS.filter((receiver) => receiver.toLowerCase().includes(keyword));
+  }, [draft?.receiver]);
 
   const previewData = useMemo<PreviewData | null>(() => {
     if (!draft) return null;
@@ -499,7 +507,41 @@ export default function DocHistoryPage() {
                 <label className="field"><span>거래처</span><input value={draft.client} onChange={(event) => updateDraft('client', event.target.value)} /></label>
                 <label className="field"><span>담당자</span><input value={draft.manager} onChange={(event) => updateDraft('manager', event.target.value)} /></label>
                 <label className="field"><span>담당자 연락처</span><input value={draft.managerTel} onChange={(event) => updateDraft('managerTel', event.target.value)} /></label>
-                <label className="field"><span>수신처</span><input value={draft.receiver} onChange={(event) => updateDraft('receiver', event.target.value)} /></label>
+                <label className="field">
+                  <span>수신처</span>
+                  <div className="client-search-box">
+                    <input
+                      className="search-input"
+                      value={draft.receiver}
+                      onChange={(event) => {
+                        updateDraft('receiver', event.target.value);
+                        setReceiverDropdownOpen(true);
+                      }}
+                      onFocus={() => setReceiverDropdownOpen(true)}
+                      onBlur={() => window.setTimeout(() => setReceiverDropdownOpen(false), 120)}
+                      placeholder="수신처 검색 또는 선택"
+                    />
+                    <span className="client-search-caret" aria-hidden="true" />
+                    {receiverDropdownOpen && filteredReceivers.length > 0 ? (
+                      <div className="client-search-dropdown">
+                        {filteredReceivers.map((receiver) => (
+                          <button
+                            key={receiver}
+                            type="button"
+                            className="client-search-option"
+                            onMouseDown={(event) => {
+                              event.preventDefault();
+                              updateDraft('receiver', receiver);
+                              setReceiverDropdownOpen(false);
+                            }}
+                          >
+                            {receiver}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                </label>
                 <label className="field field-span-2-cols"><span>납품주소</span><input value={draft.deliveryAddr} onChange={(event) => updateDraft('deliveryAddr', event.target.value)} /></label>
                 <label className="field field-span-2"><span>유의사항</span><textarea rows={2} value={draft.remark} onChange={(event) => updateDraft('remark', event.target.value)} /></label>
                 <label className="field field-span-2"><span>요청사항</span><textarea rows={2} value={draft.requestNote} onChange={(event) => updateDraft('requestNote', event.target.value)} /></label>

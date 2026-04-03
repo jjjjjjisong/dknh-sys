@@ -17,6 +17,7 @@ import type { DocumentHistory, DocumentPayload } from '../types/document';
 import type { Product } from '../types/product';
 import type { Supplier } from '../types/supplier';
 import type { SharedPreviewData as PreviewData, SharedPreviewItem as PreviewItem } from '../types/documentPreview';
+import { RECEIVER_OPTIONS } from '../constants/receivers';
 import { emptyToNull, formatIntegerInput, parseNullableInteger, stripNonNumeric, formatNumber } from '../utils/formatters';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -100,6 +101,7 @@ export default function DocCreatePage() {
   const [error, setError] = useState<string | null>(null);
   const [supplierSectionOpen, setSupplierSectionOpen] = useState(false);
   const [clientDropdownOpen, setClientDropdownOpen] = useState(false);
+  const [receiverDropdownOpen, setReceiverDropdownOpen] = useState(false);
   const [supplierModalOpen, setSupplierModalOpen] = useState(false);
   const [supplierLoading, setSupplierLoading] = useState(false);
   const [supplierKeyword, setSupplierKeyword] = useState('');
@@ -220,6 +222,12 @@ export default function DocCreatePage() {
     if (!keyword) return clients;
     return clients.filter((client) => client.name.toLowerCase().includes(keyword));
   }, [clients, form.client]);
+
+  const filteredReceivers = useMemo(() => {
+    const keyword = form.receiver.trim().toLowerCase();
+    if (!keyword) return RECEIVER_OPTIONS;
+    return RECEIVER_OPTIONS.filter((receiver) => receiver.toLowerCase().includes(keyword));
+  }, [form.receiver]);
 
   const previewData = useMemo<PreviewData | null>(() => {
     const validItems: PreviewItem[] = itemSummaries
@@ -617,7 +625,42 @@ export default function DocCreatePage() {
               </label>
               <label className="field"><span>담당자</span><input value={form.manager} onChange={(event) => updateForm('manager', event.target.value)} placeholder="납품처 선택 시 자동 입력" /></label>
               <label className="field"><span>담당자 연락처</span><input value={form.managerTel} onChange={(event) => updateForm('managerTel', event.target.value)} placeholder="납품처 선택 시 자동 입력" /></label>
-              <label className="field"><span>수신처</span><input required value={form.receiver} onChange={(event) => updateForm('receiver', event.target.value)} /></label>
+              <label className="field">
+                <span>수신처</span>
+                <div className="client-search-box">
+                  <input
+                    className="search-input"
+                    required
+                    value={form.receiver}
+                    onChange={(event) => {
+                      updateForm('receiver', event.target.value);
+                      setReceiverDropdownOpen(true);
+                    }}
+                    onFocus={() => setReceiverDropdownOpen(true)}
+                    onBlur={() => window.setTimeout(() => setReceiverDropdownOpen(false), 120)}
+                    placeholder="수신처 검색 또는 선택"
+                  />
+                  <span className="client-search-caret" aria-hidden="true" />
+                  {receiverDropdownOpen && filteredReceivers.length > 0 ? (
+                    <div className="client-search-dropdown">
+                      {filteredReceivers.map((receiver) => (
+                        <button
+                          key={receiver}
+                          type="button"
+                          className="client-search-option"
+                          onMouseDown={(event) => {
+                            event.preventDefault();
+                            updateForm('receiver', receiver);
+                            setReceiverDropdownOpen(false);
+                          }}
+                        >
+                          {receiver}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </label>
               <label className="field field-span-2-cols"><span>납품주소</span><input required value={form.deliveryAddr} onChange={(event) => updateForm('deliveryAddr', event.target.value)} /></label>
               <label className="field field-span-2"><span>유의사항</span><textarea value={form.remark} onChange={(event) => updateForm('remark', event.target.value)} /></label>
               <label className="field field-span-2"><span>요청사항</span><textarea value={form.requestNote} onChange={(event) => updateForm('requestNote', event.target.value)} /></label>

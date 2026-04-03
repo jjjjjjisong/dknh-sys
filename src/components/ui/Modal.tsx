@@ -5,6 +5,7 @@ type ModalProps = PropsWithChildren<{
   title: ReactNode;
   description?: ReactNode;
   onClose: () => void;
+  headerAction?: ReactNode;
   footer?: ReactNode;
   cardClassName?: string;
   closeOnOverlayClick?: boolean;
@@ -15,6 +16,7 @@ export default function Modal({
   title,
   description,
   onClose,
+  headerAction,
   footer,
   cardClassName = '',
   closeOnOverlayClick = false,
@@ -29,10 +31,11 @@ export default function Modal({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="modal-head">
-          <div>
+          <div className="modal-head-copy">
             <h2>{title}</h2>
             {description ? <p>{description}</p> : null}
           </div>
+          {headerAction ? <div className="modal-head-actions">{headerAction}</div> : null}
         </div>
         <div className="modal-form">
           {children}

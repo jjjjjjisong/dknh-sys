@@ -306,15 +306,15 @@ export default function MasterProductPage() {
                 <tr>
                   <th style={{ width: 56 }}>No</th>
                   <th style={{ width: 90 }}>구분</th>
-                  <th style={{ width: 150 }}>거래처</th>
-                  <th style={{ width: 340 }}>품목명</th>
-                  <th style={{ width: 340 }}>품목명(거래명세서)</th>
-                  <th style={{ width: 110 }}>출고처</th>
+                  <th style={{ width: 180 }}>거래처</th>
+                  <th style={{ width: 270 }}>품목명</th>
+                  <th style={{ width: 270 }}>품목명(거래명세서)</th>
+                  <th style={{ width: 140 }}>출고처</th>
                   <th style={{ width: 110 }}>입고 단가</th>
                   <th style={{ width: 110 }}>판매 단가</th>
                   <th style={{ width: 90 }}>1B=ea</th>
                   <th style={{ width: 90 }}>1P=BOX</th>
-                  <th style={{ width: 80 }}>상태</th>
+                  <th style={{ width: 96 }}>상태</th>
                   <th style={{ width: 72 }}>관리</th>
                 </tr>
               </thead>
@@ -336,7 +336,7 @@ export default function MasterProductPage() {
                       <td><div className="table-clamp-2" title={product.gubun || '-'}>{product.gubun || '-'}</div></td>
                       <td><div className="table-clamp-2" title={product.client || '-'}>{product.client || '-'}</div></td>
                       <td>
-                        <div className="table-primary table-clamp-2" title={product.name1 || '-'}>
+                        <div className="table-clamp-2" title={product.name1 || '-'}>
                           {product.name1 || '-'}
                         </div>
                       </td>
@@ -442,11 +442,11 @@ export default function MasterProductPage() {
             </div>
           </FormField>
 
-          <FormField label="출고처">
+          <FormField label="수신처">
             <input
               value={form.supplier}
               onChange={(event) => updateForm('supplier', event.target.value)}
-              placeholder="출고처 입력"
+              placeholder="수신처 입력"
             />
           </FormField>
 
