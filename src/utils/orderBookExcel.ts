@@ -35,20 +35,6 @@ function formatDateRange(dateFrom?: string, dateTo?: string) {
   return '전체';
 }
 
-function formatFilterSummary(options: OrderBookExportOptions) {
-  const pieces = [
-    `입고일: ${formatDateRange(options.dateFrom, options.dateTo)}`,
-    `출고상태: ${options.shippingFilter && options.shippingFilter !== 'all' ? options.shippingFilter : '전체'}`,
-  ];
-
-  if (options.keyword?.trim()) {
-    const label = options.filterTypeLabel?.trim() || '검색';
-    pieces.push(`${label}: ${options.keyword.trim()}`);
-  }
-
-  return pieces.join('  |  ');
-}
-
 function getStatusLabel(status: OrderBookEntry['status']) {
   return status === 'ST01' ? '거래취소' : '진행중';
 }
@@ -59,7 +45,7 @@ export async function exportOrderBookToExcel(
 ) {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('수주대장', {
-    views: [{ state: 'frozen', ySplit: 5 }],
+    views: [{ state: 'frozen', ySplit: 3 }],
   });
 
   worksheet.pageSetup = {
@@ -96,18 +82,7 @@ export async function exportOrderBookToExcel(
   worksheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
   worksheet.getRow(1).height = 28;
 
-  worksheet.mergeCells('A2:J2');
-  worksheet.getCell('A2').value = `내보낸 시각: ${new Date().toLocaleString('ko-KR')}`;
-  worksheet.getCell('A2').font = { name: 'Malgun Gothic', size: 10, color: { argb: 'FF5B6472' } };
-  worksheet.getCell('A2').alignment = { horizontal: 'right', vertical: 'middle' };
-
-  worksheet.mergeCells('A3:J3');
-  worksheet.getCell('A3').value = formatFilterSummary(options);
-  worksheet.getCell('A3').font = { name: 'Malgun Gothic', size: 10, color: { argb: 'FF405063' } };
-  worksheet.getCell('A3').alignment = { horizontal: 'left', vertical: 'middle' };
-  worksheet.getRow(3).height = 22;
-
-  const headerRow = worksheet.getRow(5);
+  const headerRow = worksheet.getRow(3);
   headerRow.values = worksheet.columns.map((column) => column.header as string);
   headerRow.height = 24;
 
@@ -170,8 +145,8 @@ export async function exportOrderBookToExcel(
   });
 
   worksheet.autoFilter = {
-    from: { row: 5, column: 1 },
-    to: { row: 5, column: 10 },
+    from: { row: 3, column: 1 },
+    to: { row: 3, column: 10 },
   };
 
   const buffer = await workbook.xlsx.writeBuffer();
