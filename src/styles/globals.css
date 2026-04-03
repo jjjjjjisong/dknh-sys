@@ -440,8 +440,12 @@ a {
   letter-spacing: -0.02em;
 }
 
+.dashboard-summary-label-compact {
+  font-size: 15px;
+}
+
 .dashboard-summary-number {
-  font-size: 44px;
+  font-size: 34px;
   font-weight: 700;
   letter-spacing: -0.04em;
   color: var(--text-1);
@@ -2253,8 +2257,8 @@ a {
   position: fixed;
   inset: 0;
   background: rgba(13, 20, 36, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   display: flex;
   justify-content: flex-end;
   padding: 0;
@@ -2268,7 +2272,13 @@ a {
   border-left: 1px solid var(--border);
   box-shadow: -24px 0 60px rgba(37, 99, 235, 0.12), -8px 0 24px rgba(13, 20, 36, 0.08);
   padding: 24px;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  contain: layout paint;
   animation: slide-panel-enter 0.22s ease;
 }
 
@@ -2289,7 +2299,9 @@ a {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: calc(100vh - 120px);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .slide-panel-footer {

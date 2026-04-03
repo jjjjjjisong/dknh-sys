@@ -47,13 +47,10 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
   );
   const incomingItems = buildIncomingItems(orderBookEntries);
 
-  const todayIncomingDocuments = incomingItems.filter((item) => item.arriveDate === todayKey);
-  const todayCancelledDocuments = todayIncomingDocuments.filter((item) => item.status === 'ST01');
-  const todayIncompleteDocuments = todayIncomingDocuments.filter(
+  const todayAllDocuments = incomingItems.filter((item) => item.arriveDate === todayKey);
+  const todayCancelledDocuments = todayAllDocuments.filter((item) => item.status === 'ST01');
+  const todayIncompleteDocuments = todayAllDocuments.filter(
     (item) => item.shippedStatus === UNSHIPPED_STATUS && item.status !== 'ST01',
-  );
-  const todayTodoDocuments = [...todayIncompleteDocuments, ...todayCancelledDocuments].sort(
-    compareIncomingDocuments,
   );
   const todayCancelledCount = todayCancelledDocuments.length;
   const delayedDocuments = incomingItems.filter(
@@ -64,13 +61,13 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
   );
 
   return {
-    todayIncomingCount: todayTodoDocuments.length,
+    todayIncomingCount: todayAllDocuments.length,
     todayIncompleteCount: todayIncompleteDocuments.length,
     todayCancelledCount,
     delayedCount: delayedDocuments.length,
     weekLabel: `${formatShortDate(weekRange.start)} - ${formatShortDate(weekRange.end)}`,
     todayLabel: formatShortDate(todayKey),
-    todayIncomingDocuments: todayTodoDocuments,
+    todayIncomingDocuments: todayAllDocuments.sort(compareIncomingDocuments),
     todayIncompleteDocuments,
     delayedDocuments,
     recentDocuments,

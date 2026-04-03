@@ -243,6 +243,7 @@ export default function DashboardPage() {
             value={loading ? '...' : data.delayedCount.toLocaleString('ko-KR')}
             description="어제까지 미입고 건수"
             danger
+            compactLabel
             onClick={() => setPanelType('delayed')}
           />
         </div>
@@ -426,17 +427,29 @@ function SummaryCard({
   value,
   description,
   danger = false,
+  compactLabel = false,
   onClick,
 }: {
   label: string;
   value: string;
   description?: string;
   danger?: boolean;
+  compactLabel?: boolean;
   onClick: () => void;
 }) {
   return (
     <button type="button" className="dashboard-summary-card-button" onClick={onClick}>
-      <span className="dashboard-summary-label dashboard-summary-label-strong">{label}</span>
+      <span
+        className={[
+          'dashboard-summary-label',
+          'dashboard-summary-label-strong',
+          compactLabel ? 'dashboard-summary-label-compact' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {label}
+      </span>
       <strong className={`dashboard-summary-number ${danger ? 'danger' : ''}`}>{value}</strong>
       {description ? <span className="dashboard-summary-meta">{description}</span> : null}
     </button>
