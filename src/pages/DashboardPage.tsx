@@ -22,6 +22,7 @@ const SHIPPED_STATUS_UNSHIPPED = '미출고' as OrderBookShippingStatus;
 const emptySummary: DashboardSummary = {
   todayIncomingCount: 0,
   todayIncompleteCount: 0,
+  todayCancelledCount: 0,
   delayedCount: 0,
   weekLabel: '',
   todayLabel: '',
@@ -234,6 +235,7 @@ export default function DashboardPage() {
             label={`오늘의 할일${data.todayLabel ? ` (${data.todayLabel})` : ''}`}
             total={loading ? '...' : data.todayIncomingCount.toLocaleString('ko-KR')}
             incomplete={loading ? '...' : data.todayIncompleteCount.toLocaleString('ko-KR')}
+            cancelled={loading ? '...' : data.todayCancelledCount.toLocaleString('ko-KR')}
             onClick={() => setPanelType('today')}
           />
           <SummaryCard
@@ -445,11 +447,13 @@ function TodaySummaryCard({
   label,
   total,
   incomplete,
+  cancelled,
   onClick,
 }: {
   label: string;
   total: string;
   incomplete: string;
+  cancelled: string;
   onClick: () => void;
 }) {
   return (
@@ -462,8 +466,13 @@ function TodaySummaryCard({
         </div>
         <div className="dashboard-summary-split-divider" />
         <div className="dashboard-summary-split-item">
-          <span className="dashboard-summary-split-label">미입고</span>
+          <span className="dashboard-summary-split-label">미출고</span>
           <strong className="dashboard-summary-split-value danger">{incomplete}</strong>
+        </div>
+        <div className="dashboard-summary-split-divider" />
+        <div className="dashboard-summary-split-item">
+          <span className="dashboard-summary-split-label">거래취소</span>
+          <strong className="dashboard-summary-split-value muted">{cancelled}</strong>
         </div>
       </div>
     </button>

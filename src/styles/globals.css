@@ -441,7 +441,7 @@ a {
 
 .dashboard-summary-split {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
   align-items: center;
   gap: 14px;
   margin-top: 14px;
@@ -469,6 +469,10 @@ a {
 
 .dashboard-summary-split-value.danger {
   color: #dc2626;
+}
+
+.dashboard-summary-split-value.muted {
+  color: #6b7280;
 }
 
 .dashboard-summary-split-divider {

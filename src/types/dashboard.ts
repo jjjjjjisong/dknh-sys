@@ -40,6 +40,7 @@ export type DashboardArrivalTrend = {
 export type DashboardSummary = {
   todayIncomingCount: number;
   todayIncompleteCount: number;
+  todayCancelledCount: number;
   delayedCount: number;
   weekLabel: string;
   todayLabel: string;
