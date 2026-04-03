@@ -1,5 +1,6 @@
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import type { OrderBookEntry } from '../types/order-book';
 
 export interface InvoiceItem {
   name1: string;

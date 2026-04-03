@@ -14,6 +14,7 @@ import Button from '../components/ui/Button';
 import FormField from '../components/ui/FormField';
 import Modal from '../components/ui/Modal';
 import type { OrderBookEntry, OrderBookInput, OrderBookShippingStatus } from '../types/order-book';
+import { exportOrderBookToExcel } from '../utils/orderBookExcel';
 
 const today = new Date();
 
@@ -182,9 +183,24 @@ export default function OrderBookPage() {
     }
   }
 
-  function handleDownloadExcel() {
+  async function handleDownloadExcel() {
     if (filteredEntries.length === 0) {
       window.alert('다운로드할 데이터가 없습니다.');
+      return;
+    }
+
+    try {
+      await exportOrderBookToExcel(filteredEntries, {
+        fileStamp: formatFileStamp(new Date()),
+        dateFrom,
+        dateTo,
+        shippingFilter,
+        keyword,
+        filterTypeLabel: getFilterTypeLabel(filterType),
+      });
+      return;
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : '엑셀 다운로드 중 오류가 발생했습니다.');
       return;
     }
 
@@ -576,4 +592,12 @@ function formatFileStamp(date: Date) {
   const hour = String(date.getHours()).padStart(2, '0');
   const minute = String(date.getMinutes()).padStart(2, '0');
   return `${year}${month}${day}_${hour}${minute}`;
+}
+
+function getFilterTypeLabel(filterType: FilterType) {
+  if (filterType === 'client') return '납품처';
+  if (filterType === 'product') return '품목명';
+  if (filterType === 'issueNo') return '발행번호';
+  if (filterType === 'receipt') return '상태';
+  return '통합검색';
 }
