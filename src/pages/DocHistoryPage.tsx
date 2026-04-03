@@ -473,7 +473,7 @@ export default function DocHistoryPage() {
                           <td style={{ textAlign: 'right' }}>{formatNumber(sumItemBox(doc.items))}</td>
                           <td style={{ textAlign: 'center' }}>{doc.author || '-'}</td>
                           <td style={{ textAlign: 'center' }}>{formatCompactDateTime(doc.updatedAt || doc.createdAt)}</td>
-                          <td style={{ textAlign: 'center' }}>{doc.status === 'ST01' ? '거래취소' : ''}</td>
+                          <td style={{ textAlign: 'center' }}>{doc.status === 'ST01' ? '거래취소' : '진행중'}</td>
                         </tr>
                       ))
                     )}

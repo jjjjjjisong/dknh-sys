@@ -198,7 +198,7 @@ export default function OrderBookPage() {
       수량: entry.qty ?? '',
       파레트: entry.pallet ?? '',
       박스: entry.box ?? '',
-      상태: entry.status === 'ST01' ? '거래취소' : '',
+      상태: entry.status === 'ST01' ? '거래취소' : '진행중',
       출고상태: entry.shippedStatus,
     }));
 
@@ -429,7 +429,7 @@ export default function OrderBookPage() {
                     <td style={{ textAlign: 'right' }}>{formatNumber(entry.qty)}</td>
                     <td style={{ textAlign: 'right' }}>{formatNullableNumber(entry.pallet)}</td>
                     <td style={{ textAlign: 'right' }}>{formatNullableNumber(entry.box)}</td>
-                    <td style={{ textAlign: 'center' }}>{entry.status === 'ST01' ? '거래취소' : ''}</td>
+                    <td style={{ textAlign: 'center' }}>{entry.status === 'ST01' ? '거래취소' : '진행중'}</td>
                     <td style={{ textAlign: 'center' }} onClick={(event) => event.stopPropagation()}>
                       <select
                         className="history-filter-select"
@@ -521,7 +521,7 @@ export default function OrderBookPage() {
 
             <FormField label="상태">
               <select value={form.status} onChange={(event) => updateForm('status', event.target.value as OrderBookInput['status'])}>
-                <option value="ST00">정상</option>
+                <option value="ST00">진행중</option>
                 <option value="ST01">거래취소</option>
               </select>
             </FormField>

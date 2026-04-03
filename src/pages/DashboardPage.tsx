@@ -594,7 +594,7 @@ function DashboardIncomingRow({
           ) : document.status === 'ST01' ? (
             <Badge variant="cancel">{'\uAC70\uB798\uCDE8\uC18C'}</Badge>
           ) : (
-            <span>-</span>
+            <Badge>진행중</Badge>
           )}
         </td>
       ) : null}
@@ -627,7 +627,7 @@ function DashboardRecentDocumentRow({
         ) : document.status === 'ST01' ? (
           <Badge variant="cancel">거래취소</Badge>
         ) : (
-          <Badge>정상</Badge>
+          <Badge>진행중</Badge>
         )}
       </td>
     </tr>
