@@ -507,6 +507,10 @@ a {
   color: #94a3b8;
 }
 
+.dashboard-summary-split-value.muted {
+  color: #6b7280;
+}
+
 .dashboard-summary-split-divider {
   width: 1px;
   height: 62px;
