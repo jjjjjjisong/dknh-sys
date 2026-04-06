@@ -219,6 +219,7 @@ function mapOrderBookRow(
   const matchedItem = row.doc_id
     ? findMatchingItem(itemsByDocId.get(row.doc_id) ?? [], row.document_item_id, row.product ?? '')
     : undefined;
+  const resolvedQty = row.qty ?? matchedItem?.qty ?? 0;
 
   return {
     id: String(row.id),
@@ -230,9 +231,9 @@ function mapOrderBookRow(
     client: row.client ?? '',
     receiver: document?.receiver ?? '',
     product: matchedItem?.name2 || matchedItem?.name1 || row.product || '',
-    qty: row.qty ?? matchedItem?.qty ?? 0,
-    pallet: getPalletValue(matchedItem),
-    box: getBoxValue(matchedItem),
+    qty: resolvedQty,
+    pallet: getPalletValue(matchedItem, resolvedQty),
+    box: getBoxValue(matchedItem, resolvedQty),
     note: row.note ?? '',
     receipt: row.receipt ?? '',
     status: mapOrderBookStatus(row.status),
@@ -269,18 +270,25 @@ function normalizeValue(value: string | null | undefined) {
   return (value ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
-function getBoxValue(item?: DocumentItemLookupRow) {
+function getBoxValue(item: DocumentItemLookupRow | undefined, qty: number) {
   if (!item) return null;
   if (typeof item.custom_box === 'number') return item.custom_box;
-  if (typeof item.ea_per_b === 'number') return item.ea_per_b;
+  if (typeof item.ea_per_b === 'number' && item.ea_per_b > 0) {
+    return Math.ceil(qty / item.ea_per_b);
+  }
   return null;
 }
 
-function getPalletValue(item?: DocumentItemLookupRow) {
+function getPalletValue(item: DocumentItemLookupRow | undefined, qty: number) {
   if (!item) return null;
   if (typeof item.custom_pallet === 'number') return item.custom_pallet;
-  if (typeof item.ea_per_b === 'number' && typeof item.box_per_p === 'number') {
-    return item.ea_per_b * item.box_per_p;
+  if (
+    typeof item.ea_per_b === 'number' &&
+    item.ea_per_b > 0 &&
+    typeof item.box_per_p === 'number' &&
+    item.box_per_p > 0
+  ) {
+    return Math.ceil(qty / (item.ea_per_b * item.box_per_p));
   }
   return null;
 }
