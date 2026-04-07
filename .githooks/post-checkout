@@ -1,0 +1,3 @@
+#!/bin/sh
+
+powershell -ExecutionPolicy Bypass -File "scripts/switch-env.ps1" >/dev/null 2>&1

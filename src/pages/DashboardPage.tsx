@@ -315,7 +315,6 @@ export default function DashboardPage() {
                   <th style={{ textAlign: 'left' }}>수신처</th>
                   <th style={{ width: 90, textAlign: 'center' }}>작성자</th>
                   <th style={{ width: 160, textAlign: 'center' }}>최근 수정일시</th>
-                  <th style={{ width: 100, textAlign: 'center' }}>상태</th>
                 </tr>
               </thead>
               <tbody>
@@ -634,15 +633,6 @@ function DashboardRecentDocumentRow({
       </td>
       <td style={{ textAlign: 'center' }}>{document.author || '-'}</td>
       <td style={{ textAlign: 'center' }}>{formatDateTime(document.updatedAt || document.createdAt)}</td>
-      <td style={{ textAlign: 'center' }}>
-        {document.receipt ? (
-          <Badge variant="muted-blue">{document.receipt}</Badge>
-        ) : document.status === 'ST01' ? (
-          <Badge variant="cancel">거래취소</Badge>
-        ) : (
-          <Badge>진행중</Badge>
-        )}
-      </td>
     </tr>
   );
 }

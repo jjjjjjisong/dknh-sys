@@ -8,6 +8,8 @@ vite.config.d.ts
 .env
 .env.*
 !.env.example
+!.env.dev.local.example
+!.env.main.local.example
 
 # GitHub Pages custom domains are managed in repository settings.
 CNAME

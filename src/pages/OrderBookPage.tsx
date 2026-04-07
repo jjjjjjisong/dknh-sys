@@ -403,20 +403,19 @@ export default function OrderBookPage() {
                 <th style={{ width: 90, textAlign: 'right' }}>수량</th>
                 <th style={{ width: 90, textAlign: 'right' }}>파레트</th>
                 <th style={{ width: 80, textAlign: 'right' }}>박스</th>
-                <th style={{ width: 80, textAlign: 'center' }}>상태</th>
                 <th style={{ width: 110, textAlign: 'center' }}>출고상태</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={12} className="history-empty-cell">
+                  <td colSpan={11} className="history-empty-cell">
                     수주대장 목록을 불러오는 중입니다...
                   </td>
                 </tr>
               ) : filteredEntries.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className="history-empty-cell">
+                  <td colSpan={11} className="history-empty-cell">
                     검색 결과가 없습니다.
                   </td>
                 </tr>
@@ -445,7 +444,6 @@ export default function OrderBookPage() {
                     <td style={{ textAlign: 'right' }}>{formatNumber(entry.qty)}</td>
                     <td style={{ textAlign: 'right' }}>{formatNullableNumber(entry.pallet)}</td>
                     <td style={{ textAlign: 'right' }}>{formatNullableNumber(entry.box)}</td>
-                    <td style={{ textAlign: 'center' }}>{entry.status === 'ST01' ? '거래취소' : '진행중'}</td>
                     <td style={{ textAlign: 'center' }} onClick={(event) => event.stopPropagation()}>
                       <select
                         className="history-filter-select"

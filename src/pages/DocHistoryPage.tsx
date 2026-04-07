@@ -445,13 +445,12 @@ export default function DocHistoryPage() {
                       <th style={{ width: 80, textAlign: 'right' }}>박스</th>
                       <th style={{ width: 90, textAlign: 'center' }}>작성자</th>
                       <th style={{ width: 180, textAlign: 'center' }}>수정/등록일시</th>
-                      <th style={{ width: 90, textAlign: 'center' }}>상태</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredDocuments.length === 0 ? (
                       <tr>
-                        <td colSpan={12} className="table-empty" style={{ textAlign: 'center' }}>
+                        <td colSpan={11} className="table-empty" style={{ textAlign: 'center' }}>
                           검색 결과가 없습니다.
                         </td>
                       </tr>
@@ -473,7 +472,6 @@ export default function DocHistoryPage() {
                           <td style={{ textAlign: 'right' }}>{formatNumber(sumItemBox(doc.items))}</td>
                           <td style={{ textAlign: 'center' }}>{doc.author || '-'}</td>
                           <td style={{ textAlign: 'center' }}>{formatCompactDateTime(doc.updatedAt || doc.createdAt)}</td>
-                          <td style={{ textAlign: 'center' }}>{doc.status === 'ST01' ? '거래취소' : '진행중'}</td>
                         </tr>
                       ))
                     )}
