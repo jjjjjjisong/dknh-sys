@@ -25,6 +25,9 @@ export default function DocumentPreviewModal({ type, data, onClose, description 
   const styles = type === 'release' ? getReleasePreviewStyles(true) : getInvoicePreviewStyles(false);
 
   function handlePrint(showPrice: boolean = true) {
+    const printDate = (data.arriveDate || data.orderDate || '').trim();
+    const fallbackDate = new Date().toISOString().slice(0, 10);
+    const printTitle = `${type === 'release' ? '출고의뢰서' : '거래명세서'}_${printDate || fallbackDate}`;
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
@@ -50,7 +53,7 @@ export default function DocumentPreviewModal({ type, data, onClose, description 
 
     doc.open();
     doc.write(
-      `<!doctype html><html lang="ko"><head><meta charset="UTF-8" /><title>${title}</title><style>${printStyles}</style></head><body>${printHtml}</body></html>`,
+      `<!doctype html><html lang="ko"><head><meta charset="UTF-8" /><title>${printTitle}</title><style>${printStyles}</style></head><body>${printHtml}</body></html>`,
     );
     doc.close();
 
