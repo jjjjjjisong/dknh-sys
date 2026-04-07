@@ -27,7 +27,7 @@ export default function DocumentPreviewModal({ type, data, onClose, description 
   function handlePrint(showPrice: boolean = true) {
     const printDate = (data.arriveDate || data.orderDate || '').trim();
     const fallbackDate = new Date().toISOString().slice(0, 10);
-    const safeDate = printDate || fallbackDate;
+    const safeDate = formatFileDate(printDate || fallbackDate);
     const safeClient = (data.client || '납품처')
       .trim()
       .replace(/[\\/:*?"<>|]/g, ' ')
@@ -121,4 +121,12 @@ export default function DocumentPreviewModal({ type, data, onClose, description 
       </div>
     </div>
   );
+}
+
+function formatFileDate(value: string) {
+  const digits = value.replace(/[^0-9]/g, '');
+  if (digits.length === 8) {
+    return digits.slice(2);
+  }
+  return digits || value;
 }
