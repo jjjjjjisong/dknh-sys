@@ -1,6 +1,8 @@
 import { SharedPreviewData } from '../types/documentPreview';
 
-const today = new Date().toISOString().slice(0, 10);
+import { getLocalDateInputValue } from './formatters';
+
+const today = getLocalDateInputValue();
 
 type InvoicePreviewOptions = {
   showPrice?: boolean;

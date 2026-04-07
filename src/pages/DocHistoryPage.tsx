@@ -16,11 +16,11 @@ import type { SharedPreviewData as PreviewData } from '../types/documentPreview'
 import { RECEIVER_OPTIONS } from '../constants/receivers';
 import type { Product } from '../types/product';
 import type { Supplier } from '../types/supplier';
-import { emptyToNull, formatNumber, getErrorMessage } from '../utils/formatters';
+import { emptyToNull, formatNumber, getErrorMessage, getLocalDateInputValue } from '../utils/formatters';
 
 const PAGE_SIZE = 20;
 
-const today = new Date().toISOString().slice(0, 10);
+const today = getLocalDateInputValue();
 const oneYearAgo = getDateOneYearAgo(today);
 const oneYearLater = getDateOneYearLater(today);
 

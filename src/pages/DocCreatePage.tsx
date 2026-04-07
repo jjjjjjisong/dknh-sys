@@ -18,9 +18,9 @@ import type { Product } from '../types/product';
 import type { Supplier } from '../types/supplier';
 import type { SharedPreviewData as PreviewData, SharedPreviewItem as PreviewItem } from '../types/documentPreview';
 import { RECEIVER_OPTIONS } from '../constants/receivers';
-import { emptyToNull, formatIntegerInput, parseNullableInteger, stripNonNumeric, formatNumber } from '../utils/formatters';
+import { emptyToNull, formatIntegerInput, parseNullableInteger, stripNonNumeric, formatNumber, getLocalDateInputValue } from '../utils/formatters';
 
-const today = new Date().toISOString().slice(0, 10);
+const today = getLocalDateInputValue();
 
 type DocForm = {
   issueNo: string;
