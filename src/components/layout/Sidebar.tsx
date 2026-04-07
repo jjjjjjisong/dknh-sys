@@ -27,7 +27,12 @@ const groupedItems = navItems.reduce<Record<string, NavItem[]>>((acc, item) => {
   return acc;
 }, {});
 
-export default function Sidebar() {
+type SidebarProps = {
+  mobileNavOpen: boolean;
+  onCloseMobileNav: () => void;
+};
+
+export default function Sidebar({ mobileNavOpen, onCloseMobileNav }: SidebarProps) {
   const [user, setUser] = useState(() => getStoredUser());
 
   useEffect(() => subscribeSessionChange(() => setUser(getStoredUser())), []);
@@ -40,7 +45,13 @@ export default function Sidebar() {
     .filter(([, items]) => items.length > 0);
 
   return (
-    <aside className="sidebar">
+    <aside className={mobileNavOpen ? 'sidebar mobile-open' : 'sidebar'}>
+      <div className="sidebar-mobile-header">
+        <strong>메뉴</strong>
+        <button type="button" className="sidebar-mobile-close" onClick={onCloseMobileNav}>
+          닫기
+        </button>
+      </div>
       <div className="sidebar-nav">
         {visibleGroups.map(([group, items]) => (
           <section key={group} className="sidebar-section">
@@ -51,6 +62,7 @@ export default function Sidebar() {
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) => (isActive ? 'sidebar-link active' : 'sidebar-link')}
+                  onClick={onCloseMobileNav}
                 >
                   <span className="sidebar-link-icon" aria-hidden="true">
                     {item.icon}

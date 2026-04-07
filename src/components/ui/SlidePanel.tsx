@@ -24,6 +24,9 @@ export default function SlidePanel({
           <div>
             <h2>{title}</h2>
           </div>
+          <button type="button" className="slide-panel-close-button" onClick={onClose} aria-label="닫기">
+            ×
+          </button>
         </div>
         <div className="slide-panel-body">
           {children}

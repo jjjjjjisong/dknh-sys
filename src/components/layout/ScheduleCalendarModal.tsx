@@ -168,9 +168,7 @@ export default function ScheduleCalendarModal({ open, onClose }: Props) {
                       <span className="schedule-calendar-day-number">{day.date.getDate()}</span>
                     </div>
                     <div className="schedule-calendar-day-body schedule-calendar-day-body-centered">
-                      {items.length > 0 ? (
-                        <span className="schedule-calendar-day-pill">{items.length}건</span>
-                      ) : null}
+                      {items.length > 0 ? <span className="schedule-calendar-day-pill">{items.length}건</span> : null}
                     </div>
                   </button>
                 );
@@ -204,14 +202,8 @@ export default function ScheduleCalendarModal({ open, onClose }: Props) {
                     </span>
                   </div>
                   <div className="schedule-calendar-detail-meta">
-                    <span>발급번호: {item.issueNo || '-'}</span>
                     <span>수신처: {item.receiver || '-'}</span>
                     <span>품목명: {item.product || '-'}</span>
-                  </div>
-                  <div className="schedule-calendar-detail-stats">
-                    <span>수량: {formatCount(item.qty)}</span>
-                    <span>파레트: {formatNullableCount(item.pallet)}</span>
-                    <span>박스: {formatNullableCount(item.box)}</span>
                   </div>
                 </div>
               ))}
@@ -258,12 +250,4 @@ function formatDetailDate(value: string) {
   const date = new Date(year, month - 1, day);
   const weekday = date.toLocaleDateString('ko-KR', { weekday: 'short' });
   return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')} (${weekday})`;
-}
-
-function formatCount(value: number) {
-  return value.toLocaleString('ko-KR');
-}
-
-function formatNullableCount(value: number | null) {
-  return value === null || value === undefined ? '-' : value.toLocaleString('ko-KR');
 }

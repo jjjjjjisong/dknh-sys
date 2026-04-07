@@ -4,7 +4,12 @@ import { clearStoredUser, getStoredUser, subscribeSessionChange } from '../../li
 import ScheduleCalendarModal from './ScheduleCalendarModal';
 import logoImage from '../../../logo.png';
 
-export default function TopBar() {
+type TopBarProps = {
+  mobileNavOpen: boolean;
+  onToggleMobileNav: () => void;
+};
+
+export default function TopBar({ mobileNavOpen, onToggleMobileNav }: TopBarProps) {
   const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
   const [user, setUser] = useState(() => getStoredUser());
@@ -26,6 +31,17 @@ export default function TopBar() {
     <>
       <header className="topbar">
         <div className="topbar-brand">
+          <button
+            type="button"
+            className="topbar-menu-button"
+            aria-label={mobileNavOpen ? '메뉴 닫기' : '메뉴 열기'}
+            aria-expanded={mobileNavOpen}
+            onClick={onToggleMobileNav}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
           <img className="topbar-logo-image" src={logoImage} alt="DK&H 시스템" />
         </div>
         <div className="topbar-actions">
