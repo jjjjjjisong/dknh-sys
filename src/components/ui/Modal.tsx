@@ -42,9 +42,16 @@ export default function Modal({
           </div>
           <div className="modal-head-actions">
             {headerAction}
-            <button type="button" className="modal-close-button" onClick={onClose} aria-label="닫기">
-              ×
-            </button>
+            {!headerAction ? (
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={onClose}
+                aria-label="닫기"
+              >
+                ×
+              </button>
+            ) : null}
           </div>
         </div>
         <div className="modal-form">

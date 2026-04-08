@@ -1336,6 +1336,10 @@ a {
   gap: 8px;
 }
 
+.doc-supplier-header {
+  align-items: center;
+}
+
 .doc-form-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1966,12 +1970,15 @@ a {
 }
 
 .doc-import-select-column {
-  width: 112px;
+  width: 88px;
   text-align: center;
 }
 
 .doc-import-select-button {
-  min-width: 76px;
+  min-width: 56px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.1;
 }
 
 .password-modal-card {
@@ -2516,6 +2523,17 @@ a {
   box-shadow: 0 3px 12px rgba(37, 99, 235, 0.08);
 }
 
+.dashboard-panel-card-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
 .dashboard-panel-card-head {
   display: flex;
   align-items: flex-start;
@@ -2971,6 +2989,20 @@ a {
     min-width: 0;
   }
 
+  .doc-form-grid > .doc-basic-date-field {
+    grid-column: span 1;
+  }
+
+  .doc-basic-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .doc-basic-form-grid > .field:not(.doc-basic-date-field),
+  .doc-basic-form-grid > .field-span-2,
+  .doc-basic-form-grid > .field-span-2-cols {
+    grid-column: 1 / -1;
+  }
+
   .doc-section-card,
   .doc-items-card {
     border-radius: 18px;
@@ -3005,6 +3037,13 @@ a {
     min-width: 0;
   }
 
+  .doc-supplier-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
   .doc-basic-import-button {
     width: auto;
     min-width: 88px;
@@ -3018,16 +3057,16 @@ a {
   }
 
   .doc-card-header-actions {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    width: auto;
+    display: inline-grid;
+    grid-template-columns: auto auto;
     gap: 8px;
+    flex-shrink: 0;
   }
 
   .doc-import-trigger-button,
   .doc-add-item-button,
   .doc-card-header-actions .btn {
-    width: 100%;
     min-width: 0;
   }
 
@@ -3225,7 +3264,8 @@ a {
     }
 
     .doc-card-header-actions {
-      grid-template-columns: 1fr;
+      grid-template-columns: auto auto;
+      width: auto;
     }
 
     .doc-action-stack-sticky {
@@ -3280,6 +3320,11 @@ a {
 
   .history-filter-grid .history-date-field {
     grid-column: auto;
+    min-width: 0;
+  }
+
+  .history-date-input {
+    width: 100%;
     min-width: 0;
   }
 

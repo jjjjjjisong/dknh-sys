@@ -583,9 +583,9 @@ export default function DocCreatePage() {
           {loading ? (
             <div className="empty-state">기본 데이터를 불러오는 중입니다...</div>
           ) : (
-            <div className="doc-form-grid">
-              <label className="field"><span>발주일</span><input required type="date" value={form.orderDate} onChange={(event) => updateForm('orderDate', event.target.value)} /></label>
-              <label className="field"><span>입고일</span><input required type="date" value={form.arriveDate} onChange={(event) => updateForm('arriveDate', event.target.value)} /></label>
+            <div className="doc-form-grid doc-basic-form-grid">
+              <label className="field doc-basic-date-field"><span>발주일</span><input required type="date" value={form.orderDate} onChange={(event) => updateForm('orderDate', event.target.value)} /></label>
+              <label className="field doc-basic-date-field"><span>입고일</span><input required type="date" value={form.arriveDate} onChange={(event) => updateForm('arriveDate', event.target.value)} /></label>
               <label className="field"><span>발급번호</span><input value={form.issueNo} onChange={(event) => updateForm('issueNo', event.target.value)} /></label>
               <label className="field">
                 <span>납품처</span>
@@ -669,7 +669,7 @@ export default function DocCreatePage() {
         </section>
 
         <section className="card doc-section-card">
-          <div className="card-header doc-card-header">
+          <div className="card-header doc-card-header doc-supplier-header">
             <div>
               <h2>공급자 정보</h2>
             </div>
@@ -763,6 +763,7 @@ export default function DocCreatePage() {
           <table className="table">
             <thead>
               <tr>
+                <th className="doc-import-select-column">선택</th>
                 <th style={{ width: 190 }}>상호</th>
                 <th style={{ width: 90 }}>성명</th>
                 <th>사업장주소</th>
@@ -771,11 +772,11 @@ export default function DocCreatePage() {
             <tbody>
               {supplierLoading ? (
                 <tr>
-                  <td colSpan={3} className="table-empty">공급자 목록을 불러오는 중입니다...</td>
+                  <td colSpan={4} className="table-empty">공급자 목록을 불러오는 중입니다...</td>
                 </tr>
               ) : filteredSuppliers.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="table-empty">검색 결과가 없습니다.</td>
+                  <td colSpan={4} className="table-empty">검색 결과가 없습니다.</td>
                 </tr>
               ) : (
                 filteredSuppliers.map((supplier) => (
@@ -784,6 +785,16 @@ export default function DocCreatePage() {
                     className="modal-select-row"
                     onDoubleClick={() => handleSelectSupplier(supplier)}
                   >
+                    <td className="doc-import-select-column">
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm doc-import-select-button"
+                        onClick={() => handleSelectSupplier(supplier)}
+                        disabled={supplierLoading}
+                      >
+                        선택
+                      </button>
+                    </td>
                     <td><div className="supplier-modal-name" title={supplier.name}>{supplier.name}</div></td>
                     <td>{supplier.owner || '-'}</td>
                     <td><div className="supplier-modal-address" title={supplier.address || '-'}>{supplier.address || '-'}</div></td>
@@ -834,6 +845,7 @@ export default function DocCreatePage() {
           <table className="table">
             <thead>
               <tr>
+                <th className="doc-import-select-column">선택</th>
                 <th style={{ width: 110 }}>발급번호</th>
                 <th style={{ width: 120, textAlign: 'center' }}>발주일자</th>
                 <th style={{ width: 120, textAlign: 'center' }}>입고일자</th>
@@ -845,11 +857,11 @@ export default function DocCreatePage() {
             <tbody>
               {importLoading ? (
                 <tr>
-                  <td colSpan={6} className="table-empty">발행이력 목록을 불러오는 중입니다...</td>
+                  <td colSpan={7} className="table-empty">발행이력 목록을 불러오는 중입니다...</td>
                 </tr>
               ) : filteredImportDocuments.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="table-empty">검색 결과가 없습니다.</td>
+                  <td colSpan={7} className="table-empty">검색 결과가 없습니다.</td>
                 </tr>
               ) : (
                 filteredImportDocuments.map((document) => (
@@ -858,6 +870,16 @@ export default function DocCreatePage() {
                     className="modal-select-row"
                     onDoubleClick={() => void handleImportDocument(document)}
                   >
+                    <td className="doc-import-select-column">
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm doc-import-select-button"
+                        onClick={() => void handleImportDocument(document)}
+                        disabled={importLoading}
+                      >
+                        선택
+                      </button>
+                    </td>
                     <td>{document.issueNo || '-'}</td>
                     <td style={{ textAlign: 'center' }}>{document.orderDate || '-'}</td>
                     <td style={{ textAlign: 'center' }}>{document.arriveDate || '-'}</td>

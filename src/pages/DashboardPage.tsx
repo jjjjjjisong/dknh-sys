@@ -655,7 +655,7 @@ function DashboardIncomingCard({
   );
 
   return (
-    <button type="button" className="dashboard-panel-card" onClick={() => onOpen(document.documentId)}>
+    <article className="dashboard-panel-card">
       <div className="dashboard-panel-card-head">
         <div className="dashboard-panel-card-title-wrap">
           {showSelection ? (
@@ -690,18 +690,24 @@ function DashboardIncomingCard({
         </div>
       </div>
 
-      <div className="dashboard-panel-card-meta">
-        <span>입고일자 {document.arriveDate || '-'}</span>
-        <span>수신처 {document.receiver || '-'}</span>
-        <span>품목명 {document.productName || '-'}</span>
-      </div>
+      <button
+        type="button"
+        className="dashboard-panel-card-open"
+        onClick={() => onOpen(document.documentId)}
+      >
+        <div className="dashboard-panel-card-meta">
+          <span>입고일자 {document.arriveDate || '-'}</span>
+          <span>수신처 {document.receiver || '-'}</span>
+          <span>품목명 {document.productName || '-'}</span>
+        </div>
 
-      <div className="dashboard-panel-card-chips">
-        <Badge variant="muted">수량 {formatInteger(document.qty)}</Badge>
-        <Badge variant="muted">파레트 {formatMaybeNumber(document.pallet)}</Badge>
-        <Badge variant="muted">박스 {formatMaybeNumber(document.box)}</Badge>
-      </div>
-    </button>
+        <div className="dashboard-panel-card-chips">
+          <Badge variant="muted">수량 {formatInteger(document.qty)}</Badge>
+          <Badge variant="muted">파레트 {formatMaybeNumber(document.pallet)}</Badge>
+          <Badge variant="muted">박스 {formatMaybeNumber(document.box)}</Badge>
+        </div>
+      </button>
+    </article>
   );
 }
 
