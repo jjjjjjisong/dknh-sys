@@ -570,12 +570,12 @@ export default function DocCreatePage() {
       {error ? <div className="alert alert-error">{error}</div> : null}
 
       <section className="doc-main-stack">
-        <section className="card">
-          <div className="card-header">
+        <section className="card doc-section-card">
+          <div className="card-header doc-card-header doc-basic-header">
             <div>
               <h2>기본 정보</h2>
             </div>
-            <button className="btn btn-secondary doc-import-trigger-button" type="button" onClick={() => void openImportModal()}>
+            <button className="btn btn-secondary doc-import-trigger-button doc-basic-import-button" type="button" onClick={() => void openImportModal()}>
               불러오기
             </button>
           </div>
@@ -668,12 +668,12 @@ export default function DocCreatePage() {
           )}
         </section>
 
-        <section className="card">
-          <div className="card-header">
+        <section className="card doc-section-card">
+          <div className="card-header doc-card-header">
             <div>
               <h2>공급자 정보</h2>
             </div>
-            <div className="button-row">
+            <div className="button-row doc-card-header-actions">
               <button className="btn btn-secondary" type="button" onClick={() => void openSupplierModal()}>
                 불러오기
               </button>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clearStoredUser, getStoredUser, subscribeSessionChange } from '../../lib/session';
 import ScheduleCalendarModal from './ScheduleCalendarModal';
@@ -42,7 +42,9 @@ export default function TopBar({ mobileNavOpen, onToggleMobileNav }: TopBarProps
             <span />
             <span />
           </button>
-          <img className="topbar-logo-image" src={logoImage} alt="DK&H 시스템" />
+          <button type="button" className="topbar-logo-button" onClick={() => navigate('/')}>
+            <img className="topbar-logo-image" src={logoImage} alt="DK&H 시스템" />
+          </button>
         </div>
         <div className="topbar-actions">
           <div className="topbar-clock">

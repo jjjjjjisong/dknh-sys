@@ -40,7 +40,12 @@ export default function Modal({
             <h2>{title}</h2>
             {description ? <p>{description}</p> : null}
           </div>
-          {headerAction ? <div className="modal-head-actions">{headerAction}</div> : null}
+          <div className="modal-head-actions">
+            {headerAction}
+            <button type="button" className="modal-close-button" onClick={onClose} aria-label="닫기">
+              ×
+            </button>
+          </div>
         </div>
         <div className="modal-form">
           {children}

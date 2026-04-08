@@ -648,14 +648,10 @@ function DashboardIncomingCard({
   onOpen: (documentId: string) => void;
   onChangeShippedStatus?: (shippedStatus: OrderBookShippingStatus) => void;
 }) {
-  const statusBadge = showShippedStatus ? (
+  const statusBadge = (
     <Badge variant={document.shippedStatus === SHIPPED_STATUS_SHIPPED ? 'muted-blue' : 'muted'}>
       {document.shippedStatus === SHIPPED_STATUS_SHIPPED ? '출고' : '미출고'}
     </Badge>
-  ) : document.status === 'ST01' ? (
-    <Badge variant="cancel">거래취소</Badge>
-  ) : (
-    <Badge>진행중</Badge>
   );
 
   return (
@@ -673,27 +669,25 @@ function DashboardIncomingCard({
           ) : null}
           <strong className="dashboard-panel-card-title">{document.client || '-'}</strong>
         </div>
-        {showStatusColumn ? (
-          <div
-            className="dashboard-panel-card-status"
-            onClick={(event) => showShippedStatus && event.stopPropagation()}
-          >
-            {showShippedStatus ? (
-              <select
-                className="history-filter-select dashboard-panel-card-select"
-                value={document.shippedStatus}
-                onChange={(event) =>
-                  onChangeShippedStatus?.(event.target.value as OrderBookShippingStatus)
-                }
-              >
-                <option value={SHIPPED_STATUS_UNSHIPPED}>미출고</option>
-                <option value={SHIPPED_STATUS_SHIPPED}>출고</option>
-              </select>
-            ) : (
-              statusBadge
-            )}
-          </div>
-        ) : null}
+        <div
+          className="dashboard-panel-card-status"
+          onClick={(event) => showShippedStatus && event.stopPropagation()}
+        >
+          {showShippedStatus ? (
+            <select
+              className="history-filter-select dashboard-panel-card-select"
+              value={document.shippedStatus}
+              onChange={(event) =>
+                onChangeShippedStatus?.(event.target.value as OrderBookShippingStatus)
+              }
+            >
+              <option value={SHIPPED_STATUS_UNSHIPPED}>미출고</option>
+              <option value={SHIPPED_STATUS_SHIPPED}>출고</option>
+            </select>
+          ) : (
+            statusBadge
+          )}
+        </div>
       </div>
 
       <div className="dashboard-panel-card-meta">
