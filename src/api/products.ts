@@ -1,6 +1,7 @@
 import { getActiveAuditFields, getDeletedAuditFields } from './audit';
 import { getSupabaseClient } from './supabase/client';
 import type { Product, ProductInput } from '../types/product';
+import { toNullableDbId } from '../utils/dbIds';
 
 type ProductRow = {
   id: number | string;
@@ -57,15 +58,15 @@ export async function fetchProductsByClient(clientName: string): Promise<Product
 }
 
 export async function fetchProductsByClientId(clientId: string): Promise<Product[]> {
-  const normalizedClientId = clientId.trim();
-  if (!normalizedClientId) return [];
+  const normalizedClientId = toNullableDbId(clientId);
+  if (normalizedClientId === null) return [];
 
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('products')
     .select(productSelectColumns)
     .eq('del_yn', 'N')
-    .eq('client_id', Number(normalizedClientId))
+    .eq('client_id', normalizedClientId)
     .order('no');
 
   if (error) {
@@ -81,7 +82,7 @@ export async function createProduct(input: ProductInput): Promise<Product> {
   const nextNo = await fetchNextProductNo();
   const payload = {
     no: nextNo,
-    client_id: Number(input.clientId),
+    client_id: toNullableDbId(input.clientId),
     client: input.client,
     gubun: input.gubun,
     supplier: input.supplier,
@@ -133,7 +134,7 @@ export async function updateProduct(id: string, currentNo: number | null, input:
     .from('products')
     .update({
       no: currentNo,
-      client_id: Number(input.clientId),
+      client_id: toNullableDbId(input.clientId),
       client: input.client,
       gubun: input.gubun,
       supplier: input.supplier,

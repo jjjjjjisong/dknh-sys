@@ -2,6 +2,7 @@ import { getSupabaseClient } from './supabase/client';
 import { getActiveAuditFields, getDeletedAuditFields } from './audit';
 import type { DocumentHistory, DocumentPayload, DocumentStatus } from '../types/document';
 import { getStoredUser } from '../lib/session';
+import { toNullableDbId } from '../utils/dbIds';
 
 let creatingDocument = false;
 const updatingDocumentIds = new Set<string>();
@@ -58,7 +59,7 @@ export async function saveDocument(payload: DocumentPayload) {
     if (payload.items.length > 0) {
       const itemRows = payload.items.map((item) => ({
         document_id: documentRow.id,
-        product_id: item.productId ? Number(item.productId) : null,
+        product_id: toNullableDbId(item.productId),
         seq: item.seq,
         name1: item.name1,
         name2: item.name2,
@@ -291,7 +292,7 @@ export async function updateDocument(document: DocumentHistory) {
     for (const item of nextItems) {
       const itemPayload = {
         document_id: document.id,
-        product_id: item.productId ? Number(item.productId) : null,
+        product_id: toNullableDbId(item.productId),
         seq: item.seq,
         name1: item.name1,
         name2: item.name2,

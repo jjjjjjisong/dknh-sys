@@ -6,6 +6,7 @@ import type {
   OrderBookShippingStatus,
   OrderBookStatus,
 } from '../types/order-book';
+import { toNullableDbId } from '../utils/dbIds';
 
 type OrderBookRow = {
   id: string;
@@ -85,7 +86,7 @@ export async function createOrderBookEntry(payload: OrderBookInput) {
     .from('order_book')
     .insert({
       issue_no: payload.issueNo,
-      product_id: payload.productId ? Number(payload.productId) : null,
+      product_id: toNullableDbId(payload.productId),
       date: payload.date,
       deadline: payload.deadline,
       client: payload.client,
@@ -112,7 +113,7 @@ export async function updateOrderBookEntry(id: string, payload: OrderBookInput) 
     .from('order_book')
     .update({
       issue_no: payload.issueNo,
-      product_id: payload.productId ? Number(payload.productId) : null,
+      product_id: toNullableDbId(payload.productId),
       date: payload.date,
       deadline: payload.deadline,
       client: payload.client,
