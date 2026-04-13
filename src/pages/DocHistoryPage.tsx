@@ -47,6 +47,8 @@ export default function DocHistoryPage() {
   const [receiverDropdownOpen, setReceiverDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const saveLockRef = useRef(false);
+  const prevBaseOrderDateRef = useRef('');
+  const prevBaseArriveDateRef = useRef('');
 
   useEffect(() => {
     void reload();
@@ -89,11 +91,16 @@ export default function DocHistoryPage() {
   useEffect(() => {
     if (!documentId) {
       setDraft(null);
+      prevBaseOrderDateRef.current = '';
+      prevBaseArriveDateRef.current = '';
       return;
     }
 
     const selected = documents.find((row) => row.id === documentId) ?? null;
-    setDraft(selected ? cloneDocument(selected) : null);
+    const nextDraft = selected ? cloneDocument(selected) : null;
+    prevBaseOrderDateRef.current = nextDraft?.orderDate || '';
+    prevBaseArriveDateRef.current = nextDraft?.arriveDate || '';
+    setDraft(nextDraft);
   }, [documentId, documents]);
 
   useEffect(() => {
@@ -130,7 +137,39 @@ export default function DocHistoryPage() {
     }
 
     setItems(mapDraftItemsToSharedRows(draft, products));
-  }, [draft, products, setItems]);
+  }, [draft?.id, products, setItems]);
+
+  useEffect(() => {
+    if (!draft) return;
+
+    const previousOrderDate = prevBaseOrderDateRef.current;
+    setItems((current) =>
+      current.map((item) => ({
+        ...item,
+        orderDate:
+          !item.orderDate || item.orderDate === previousOrderDate
+            ? draft.orderDate || ''
+            : item.orderDate,
+      })),
+    );
+    prevBaseOrderDateRef.current = draft.orderDate || '';
+  }, [draft?.orderDate, setItems]);
+
+  useEffect(() => {
+    if (!draft) return;
+
+    const previousArriveDate = prevBaseArriveDateRef.current;
+    setItems((current) =>
+      current.map((item) => ({
+        ...item,
+        arriveDate:
+          !item.arriveDate || item.arriveDate === previousArriveDate
+            ? draft.arriveDate || ''
+            : item.arriveDate,
+      })),
+    );
+    prevBaseArriveDateRef.current = draft.arriveDate || '';
+  }, [draft?.arriveDate, setItems]);
 
   const filteredDocuments = useMemo(() => {
     const search = keyword.trim().toLowerCase();
