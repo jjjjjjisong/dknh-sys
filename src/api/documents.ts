@@ -19,6 +19,7 @@ export async function saveDocument(payload: DocumentPayload) {
   const currentUser = getStoredUser();
   const clientId = await resolveClientId(payload.clientId, payload.client);
   const authorId = payload.authorId ?? currentUser?.id ?? null;
+  let createdDocumentId: string | null = null;
 
   try {
     const { data: documentRow, error: documentError } = await supabase
@@ -55,6 +56,8 @@ export async function saveDocument(payload: DocumentPayload) {
     if (documentError) {
       throw documentError;
     }
+
+    createdDocumentId = String(documentRow.id);
 
     if (payload.items.length > 0) {
       const itemRows = payload.items.map((item) => ({
@@ -120,6 +123,12 @@ export async function saveDocument(payload: DocumentPayload) {
     }
 
     return documentRow.id as string;
+  } catch (error) {
+    if (createdDocumentId) {
+      await supabase.from('documents').delete().eq('id', createdDocumentId);
+    }
+
+    throw error;
   } finally {
     creatingDocument = false;
   }
