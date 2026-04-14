@@ -76,7 +76,7 @@ function createThinBorder(): Partial<ExcelJS.Borders> {
   };
 }
 
-function applyOuterMediumBorder(
+function applyOuterThinBorder(
   ws: ExcelJS.Worksheet,
   startRow: number,
   endRow: number,
@@ -88,17 +88,36 @@ function applyOuterMediumBorder(
       const cell = ws.getCell(row, col);
       const border = { ...(cell.border ?? {}) };
 
-      if (row === startRow) border.top = { style: 'medium' };
-      if (row === endRow) border.bottom = { style: 'medium' };
-      if (col === startCol) border.left = { style: 'medium' };
-      if (col === endCol) border.right = { style: 'medium' };
+      if (row === startRow) border.top = { style: 'thin' };
+      if (row === endRow) border.bottom = { style: 'thin' };
+      if (col === startCol) border.left = { style: 'thin' };
+      if (col === endCol) border.right = { style: 'thin' };
 
       cell.border = border;
     }
   }
 }
 
-export async function exportInvoiceToExcel(data: InvoiceData) {
+function sanitizeFilePart(value: string) {
+  return (value || '')
+    .replace(/[\\/:*?"<>|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function formatFileDate(value: string | null | undefined) {
+  const digits = (value || '').replace(/[^0-9]/g, '');
+  if (digits.length === 8) return digits.slice(2);
+  return digits || '미정';
+}
+
+function buildInvoiceFileName(data: InvoiceData) {
+  const client = sanitizeFilePart(data.client || '납품처');
+  const arriveDate = formatFileDate(data.arriveDate || data.orderDate);
+  return `DKH거래명세서_${client || '납품처'}_${arriveDate}.xlsx`;
+}
+
+function createInvoiceWorkbook(data: InvoiceData) {
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet('거래명세서', {
     pageSetup: {
@@ -212,7 +231,7 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
     ws.getCell(startRow + 4, 8).value = invoiceData.supplierBusinessItem;
     ws.getCell(startRow + 4, 8).alignment = { horizontal: 'center', vertical: 'middle' };
 
-    applyOuterMediumBorder(ws, startRow + 1, startRow + 4, 1, 10);
+    applyOuterThinBorder(ws, startRow + 1, startRow + 4, 1, 10);
 
     startRow += 5;
 
@@ -226,7 +245,7 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
     ws.getCell(startRow, 4).font = font10Bold;
     ws.getCell(startRow, 4).alignment = { horizontal: 'right', vertical: 'middle' };
     ws.getRow(startRow).height = 25;
-    applyOuterMediumBorder(ws, startRow, startRow, 1, 10);
+    applyOuterThinBorder(ws, startRow, startRow, 1, 10);
 
     startRow += 1;
 
@@ -246,7 +265,7 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
       cell.alignment = { horizontal: 'center', vertical: 'middle' };
       cell.border = createThinBorder();
     }
-    applyOuterMediumBorder(ws, startRow, startRow, 1, 10);
+    applyOuterThinBorder(ws, startRow, startRow, 1, 10);
     ws.getRow(startRow).height = 23;
     startRow += 1;
 
@@ -292,7 +311,7 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
       ws.getCell(startRow, 9).numFmt = '#,##0';
       ws.getCell(startRow, 10).alignment = { horizontal: 'left', vertical: 'middle' };
 
-      applyOuterMediumBorder(ws, startRow, startRow, 1, 10);
+      applyOuterThinBorder(ws, startRow, startRow, 1, 10);
       ws.getRow(startRow).height = 23;
       startRow += 1;
     }
@@ -318,7 +337,7 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
     ws.getCell(startRow, 9).font = font10Bold;
     ws.getCell(startRow, 9).alignment = { horizontal: 'right', vertical: 'middle' };
     ws.getCell(startRow, 9).numFmt = '#,##0';
-    applyOuterMediumBorder(ws, startRow, startRow, 1, 10);
+    applyOuterThinBorder(ws, startRow, startRow, 1, 10);
     ws.getRow(startRow).height = 27;
 
     startRow += 1;
@@ -340,7 +359,7 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
     for (let c = 1; c <= 10; c += 1) {
       ws.getCell(startRow, c).border = createThinBorder();
     }
-    applyOuterMediumBorder(ws, startRow, startRow, 1, 10);
+    applyOuterThinBorder(ws, startRow, startRow, 1, 10);
     ws.getRow(startRow).height = 25;
 
     startRow += 2;
@@ -417,9 +436,18 @@ export async function exportInvoiceToExcel(data: InvoiceData) {
     }
   });
 
-  const buffer = await wb.xlsx.writeBuffer();
-  const blob = new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-  saveAs(blob, `거래명세서_${data.issueNo}.xlsx`);
+  return wb;
+}
+
+export async function exportInvoiceToExcel(data: InvoiceData) {
+  const groupedDocs = splitInvoiceDataByArriveDate(data);
+
+  for (const group of groupedDocs) {
+    const wb = createInvoiceWorkbook(group);
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    saveAs(blob, buildInvoiceFileName(group));
+  }
 }
