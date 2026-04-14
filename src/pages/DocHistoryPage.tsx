@@ -424,9 +424,12 @@ export default function DocHistoryPage() {
   }
 
   async function exportToExcel() {
-    if (!draft) return;
+    if (!previewData) {
+      window.alert('엑셀 다운로드 전에 품목을 먼저 확인해 주세요.');
+      return;
+    }
     try {
-      await exportInvoiceToExcel(draft as any);
+      await exportInvoiceToExcel(previewData as any);
     } catch (err) {
       window.alert('엑셀 파일 생성 중 오류가 발생했습니다.');
     }
