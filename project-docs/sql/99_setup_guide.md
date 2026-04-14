@@ -14,6 +14,14 @@ Or run this single file in Supabase SQL Editor:
 
 - `00_full_production_setup.sql`
 
+Product / document relational hardening:
+
+- 신규 환경: `00_full_production_setup.sql` 또는 기본 순서 실행
+- 기존 운영 구조 보강: `07_relational_hardening.sql`
+- 기존 데이터 `product_id` 백필: `20260413_document_items_product_id_backfill.sql`
+- import 후 identity/sequence 정렬: `20260413_identity_sequence_reset.sql`
+- 상세 가이드: `product-id-rollout.md`
+
 Notes:
 
 - Old migration and history scripts were moved to `project-docs/sql/sql_history`.
