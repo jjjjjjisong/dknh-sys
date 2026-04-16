@@ -240,7 +240,7 @@ export default function DocHistoryPage() {
     if (!draft) return null;
     const validItems = itemSummaries
       .map((summary, index) => {
-        if (!summary.name1 || summary.qty <= 0) return null;
+        if (!summary.name1 || summary.qty === 0) return null;
         const item = items[index];
         return {
           seq: index + 1,
@@ -340,7 +340,7 @@ export default function DocHistoryPage() {
   function buildDraftItems() {
     return itemSummaries
       .map((summary, index) => {
-        if (!summary.name1 || summary.qty <= 0) return null;
+        if (!summary.name1 || summary.qty === 0) return null;
 
         const item = items[index];
         const existingItem = draft?.items.find((row) => row.id === item.id);
@@ -749,7 +749,7 @@ function mapDraftItemsToSharedRows(draft: DocumentHistory, products: Product[]):
       manualGubun: productId === MANUAL_PRODUCT_ID ? item.gubun || '기타' : '',
       orderDate: item.orderDate || draft.orderDate || '',
       arriveDate: item.arriveDate || draft.arriveDate || '',
-      qty: item.qty || 0,
+      qty: item.qty ?? 0,
       customPallet: item.customPallet ?? null,
       customBox: item.customBox ?? null,
       unitPrice: item.unitPrice ?? null,
@@ -763,11 +763,11 @@ function mapDraftItemsToSharedRows(draft: DocumentHistory, products: Product[]):
 
 function calculatePallet(item: DocumentHistoryItem) {
   const eaPerP = item.eaPerB && item.boxPerP ? item.eaPerB * item.boxPerP : null;
-  return eaPerP ? Math.ceil(item.qty / eaPerP) : '';
+  return eaPerP ? getSignedPackageCount(item.qty, eaPerP) : '';
 }
 
 function calculateBox(item: DocumentHistoryItem) {
-  return item.eaPerB ? Math.ceil(item.qty / item.eaPerB) : '';
+  return item.eaPerB ? getSignedPackageCount(item.qty, item.eaPerB) : '';
 }
 
 function sumItemQty(items: DocumentHistoryItem[]) {
@@ -814,4 +814,10 @@ function getDateOneYearLater(baseDate: string) {
   const date = new Date(baseDate);
   date.setFullYear(date.getFullYear() + 1);
   return date.toISOString().slice(0, 10);
+}
+
+function getSignedPackageCount(qty: number, unitSize: number) {
+  if (!Number.isFinite(qty) || !Number.isFinite(unitSize) || unitSize <= 0) return '';
+  if (qty <= 0) return '';
+  return Math.ceil(qty / unitSize);
 }

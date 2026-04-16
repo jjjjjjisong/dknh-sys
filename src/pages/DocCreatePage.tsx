@@ -232,7 +232,7 @@ export default function DocCreatePage() {
   const previewData = useMemo<PreviewData | null>(() => {
     const validItems: PreviewItem[] = itemSummaries
       .map((summary, index) => {
-        if (!summary.name1 || summary.qty <= 0) return null;
+        if (!summary.name1 || summary.qty === 0) return null;
         const item = items[index];
 
         return {
