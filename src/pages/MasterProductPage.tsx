@@ -507,19 +507,18 @@ export default function MasterProductPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th style={{ width: 56 }}>No</th>
-                  <th style={{ width: 100 }}>구분</th>
-                  <th style={{ minWidth: 260 }}>공통 품목명</th>
-                  <th style={{ minWidth: 260 }}>거래명세서 기본명</th>
+                  <th style={{ width: 46 }}>No</th>
+                  <th style={{ width: 80 }}>구분</th>
+                  <th style={{ minWidth: 260 }}>품목 정보</th>
                   <th style={{ width: 110 }}>연결 개수</th>
-                  <th style={{ width: 96 }}>상태</th>
-                  <th style={{ width: 72 }}>관리</th>
+                  <th style={{ width: 80 }}>상태</th>
+                  <th style={{ width: 60 }}>관리</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredMasters.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="table-empty">검색 결과가 없습니다.</td>
+                    <td colSpan={6} className="table-empty">검색 결과가 없습니다.</td>
                   </tr>
                 ) : (
                   (pagedRows as ProductMaster[]).map((master, index) => (
@@ -530,8 +529,16 @@ export default function MasterProductPage() {
                     >
                       <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
                       <td><div className="table-clamp-2" title={master.gubun || '-'}>{master.gubun || '-'}</div></td>
-                      <td><div className="table-clamp-2" title={master.name1 || '-'}>{master.name1 || '-'}</div></td>
-                      <td><div className="table-clamp-2" title={master.name2 || '-'}>{master.name2 || '-'}</div></td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div className="table-clamp-2" style={{ fontWeight: 500, color: 'var(--text-1)' }} title={master.name1 || '-'}>
+                            {master.name1 || '-'}
+                          </div>
+                          <div className="table-clamp-2" style={{ fontSize: '12.5px', color: 'var(--text-3)' }} title={`기본명: ${master.name2 || '-'}`}>
+                            명세서 기본명: {master.name2 || '-'}
+                          </div>
+                        </div>
+                      </td>
                       <td>{master.linkedProductCount}</td>
                       <td>
                         <span className={master.delYn === 'Y' ? 'badge badge-muted' : 'badge'}>
@@ -558,12 +565,11 @@ export default function MasterProductPage() {
                 <tr>
                   <th style={{ width: 46 }}>No</th>
                   <th style={{ width: 80 }}>구분</th>
-                  <th style={{ minWidth: 180 }}>공통 품목</th>
                   <th style={{ width: 150 }}>거래처</th>
-                  <th style={{ minWidth: 200 }}>거래처별 품목명</th>
+                  <th style={{ minWidth: 260 }}>품목 정보</th>
                   <th style={{ width: 120 }}>공급처</th>
-                  <th style={{ width: 100, textAlign: 'right' }}>입고 단가</th>
-                  <th style={{ width: 100, textAlign: 'right' }}>판매 단가</th>
+                  <th style={{ width: 90, textAlign: 'right' }}>입고 단가</th>
+                  <th style={{ width: 90, textAlign: 'right' }}>판매 단가</th>
                   <th style={{ width: 80 }}>상태</th>
                   <th style={{ width: 60 }}>관리</th>
                 </tr>
@@ -571,7 +577,7 @@ export default function MasterProductPage() {
               <tbody>
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="table-empty">검색 결과가 없습니다.</td>
+                    <td colSpan={9} className="table-empty">검색 결과가 없습니다.</td>
                   </tr>
                 ) : (
                   (pagedRows as Product[]).map((product, index) => (
@@ -582,9 +588,17 @@ export default function MasterProductPage() {
                     >
                       <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
                       <td><div className="table-clamp-2" title={product.gubun || '-'}>{product.gubun || '-'}</div></td>
-                      <td><div className="table-clamp-2" title={product.masterName1 || '-'}>{product.masterName1 || '-'}</div></td>
                       <td><div className="table-clamp-2" title={product.client || '-'}>{product.client || '-'}</div></td>
-                      <td><div className="table-clamp-2" title={product.name1 || '-'}>{product.name1 || '-'}</div></td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div className="table-clamp-2" style={{ fontWeight: 500, color: 'var(--text-1)' }} title={product.name1 || '-'}>
+                            {product.name1 || '-'}
+                          </div>
+                          <div className="table-clamp-2" style={{ fontSize: '12.5px', color: 'var(--text-3)' }} title={`공통: ${product.masterName1 || '-'}`}>
+                            공통: {product.masterName1 || '-'}
+                          </div>
+                        </div>
+                      </td>
                       <td><div className="table-clamp-2" title={product.supplier || '-'}>{product.supplier || '-'}</div></td>
                       <td style={{ textAlign: 'right' }}>{product.cost_price ?? '-'}</td>
                       <td style={{ textAlign: 'right' }}>{product.sell_price ?? '-'}</td>
