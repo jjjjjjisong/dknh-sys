@@ -514,7 +514,6 @@ export default function DocCreatePage() {
               <label className="field"><span>발주일</span><input required type="date" value={form.orderDate} onChange={(event) => updateForm('orderDate', event.target.value)} /></label>
               <label className="field"><span>입고일</span><input required type="date" value={form.arriveDate} onChange={(event) => updateForm('arriveDate', event.target.value)} /></label>
               <label className="field"><span>발급번호</span><input value={form.issueNo} onChange={(event) => updateForm('issueNo', event.target.value)} /></label>
-              <label className="field field-span-2"><span>발급번호 수정이력</span><textarea rows={2} value={form.issueNoEditHistory} onChange={(event) => updateForm('issueNoEditHistory', event.target.value)} /></label>
               <label className="field">
                 <span>납품처</span>
                 <div className="client-search-box">
@@ -592,6 +591,7 @@ export default function DocCreatePage() {
               <label className="field field-span-2-cols"><span>납품주소</span><input required value={form.deliveryAddr} onChange={(event) => updateForm('deliveryAddr', event.target.value)} /></label>
               <label className="field field-span-2"><span>유의사항</span><textarea value={form.remark} onChange={(event) => updateForm('remark', event.target.value)} /></label>
               <label className="field field-span-2"><span>요청사항</span><textarea value={form.requestNote} onChange={(event) => updateForm('requestNote', event.target.value)} /></label>
+              <label className="field field-span-2"><span>발급번호 수정이력</span><textarea rows={2} value={form.issueNoEditHistory} onChange={(event) => updateForm('issueNoEditHistory', event.target.value)} /></label>
             </div>
           )}
         </section>
