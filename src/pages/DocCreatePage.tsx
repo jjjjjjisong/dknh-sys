@@ -33,6 +33,7 @@ type DocForm = {
   managerTel: string;
   receiver: string;
   deliveryAddr: string;
+  issueNoEditHistory: string;
   remark: string;
   requestNote: string;
   supplierBizNo: string;
@@ -56,6 +57,7 @@ function createInitialForm(): DocForm {
     managerTel: '',
     receiver: '',
     deliveryAddr: '',
+    issueNoEditHistory: '',
     remark: '',
     requestNote: '',
     supplierBizNo: '',
@@ -326,6 +328,7 @@ export default function DocCreatePage() {
       const payload: DocumentPayload = buildDocumentPayload(
         previewData,
         getStoredUser()?.name ?? '로컬 사용자',
+        form.issueNoEditHistory.trim(),
       );
 
       const documentId = await saveDocument(payload);
@@ -426,6 +429,7 @@ export default function DocCreatePage() {
         managerTel: document.managerTel,
         receiver: document.receiver,
         deliveryAddr: document.deliveryAddr,
+        issueNoEditHistory: document.issueNoEditHistory,
         remark: document.remark,
         requestNote: document.requestNote,
         supplierBizNo: document.supplierBizNo,
@@ -510,6 +514,7 @@ export default function DocCreatePage() {
               <label className="field"><span>발주일</span><input required type="date" value={form.orderDate} onChange={(event) => updateForm('orderDate', event.target.value)} /></label>
               <label className="field"><span>입고일</span><input required type="date" value={form.arriveDate} onChange={(event) => updateForm('arriveDate', event.target.value)} /></label>
               <label className="field"><span>발급번호</span><input value={form.issueNo} onChange={(event) => updateForm('issueNo', event.target.value)} /></label>
+              <label className="field field-span-2"><span>발급번호 수정이력</span><textarea rows={2} value={form.issueNoEditHistory} onChange={(event) => updateForm('issueNoEditHistory', event.target.value)} /></label>
               <label className="field">
                 <span>납품처</span>
                 <div className="client-search-box">

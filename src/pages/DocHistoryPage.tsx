@@ -576,6 +576,7 @@ export default function DocHistoryPage() {
                 <label className="field"><span>발주일</span><input type="date" value={draft.orderDate || ''} onChange={(event) => updateDraft('orderDate', emptyToNull(event.target.value))} /></label>
                 <label className="field"><span>입고일</span><input type="date" value={draft.arriveDate || ''} onChange={(event) => updateDraft('arriveDate', emptyToNull(event.target.value))} /></label>
                 <label className="field"><span>발급번호</span><input value={draft.issueNo} onChange={(event) => updateDraft('issueNo', event.target.value)} /></label>
+                <label className="field field-span-2"><span>발급번호 수정이력</span><textarea rows={2} value={draft.issueNoEditHistory} onChange={(event) => updateDraft('issueNoEditHistory', event.target.value)} /></label>
                 <label className="field">
                   <span>거래처</span>
                   <div className="client-search-box">
