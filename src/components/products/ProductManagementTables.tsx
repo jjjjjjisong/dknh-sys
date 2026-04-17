@@ -186,38 +186,54 @@ function MasterCard({
 }: MasterCardProps) {
   return (
     <section className={`master-card${expanded ? ' is-expanded' : ''}`}>
-      <button type="button" className="master-card-main" onClick={onToggle}>
+      <div 
+        className="master-card-main" 
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+      >
         <div className="master-card-lead">
-          <span className="master-card-index">{index}</span>
           <span className="master-card-gubun">{master.gubun || '-'}</span>
         </div>
 
         <div className="master-card-body">
-          <div className="master-card-title-row">
+          <div className="master-card-content">
             <h3 className="master-card-title">{master.name1 || '-'}</h3>
-            <span className="master-card-chevron" aria-hidden="true">
-              {expanded ? '▾' : '▸'}
-            </span>
+            <p className="master-card-subtitle">거래명세서명 {master.name2 || '-'}</p>
+            <div className="master-card-metrics">
+              <span className="master-card-metric">1B=ea {master.ea_per_b ?? '-'}</span>
+              <span className="master-card-metric">1P=BOX {master.box_per_p ?? '-'}</span>
+              <span className="master-card-metric">1P=ea {master.ea_per_p ?? '-'}</span>
+              <span className="master-card-metric">1대당 팔레트 {master.pallets_per_truck ?? '-'}</span>
+              <span className="master-card-metric is-accent">연결 {master.linkedProductCount}개</span>
+            </div>
           </div>
-          <p className="master-card-subtitle">거래명세서명 {master.name2 || '-'}</p>
-          <div className="master-card-metrics">
-            <span className="master-card-metric">1B=ea {master.ea_per_b ?? '-'}</span>
-            <span className="master-card-metric">1P=BOX {master.box_per_p ?? '-'}</span>
-            <span className="master-card-metric">1P=ea {master.ea_per_p ?? '-'}</span>
-            <span className="master-card-metric">1대당 팔레트 {master.pallets_per_truck ?? '-'}</span>
-            <span className="master-card-metric is-accent">연결 {master.linkedProductCount}개</span>
+          
+          <div className="master-card-right" onClick={(e) => e.stopPropagation()}>
+            <div className="master-card-chevron-wrap" onClick={onToggle}>
+              <span className="master-card-chevron" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </div>
+            <div className="master-card-actions">
+              <TableActionButton variant="primary" onClick={onCreateChild}>
+                하위 추가
+              </TableActionButton>
+              <TableActionButton onClick={onEditMaster}>수정</TableActionButton>
+              <TableActionButton variant="danger" onClick={onDeleteMaster}>
+                삭제
+              </TableActionButton>
+            </div>
           </div>
         </div>
-      </button>
-
-      <div className="master-card-actions">
-        <TableActionButton variant="primary" onClick={onCreateChild}>
-          하위 추가
-        </TableActionButton>
-        <TableActionButton onClick={onEditMaster}>수정</TableActionButton>
-        <TableActionButton variant="danger" onClick={onDeleteMaster}>
-          삭제
-        </TableActionButton>
       </div>
 
       {expanded ? (
