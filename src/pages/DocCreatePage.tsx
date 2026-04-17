@@ -31,6 +31,7 @@ type DocForm = {
   managerTel: string;
   receiver: string;
   deliveryAddr: string;
+  issueNoEditHistory: string;
   remark: string;
   requestNote: string;
   supplierBizNo: string;
@@ -53,6 +54,7 @@ function createInitialForm(): DocForm {
     managerTel: '',
     receiver: '',
     deliveryAddr: '',
+    issueNoEditHistory: '',
     remark: '',
     requestNote: '',
     supplierBizNo: '',
@@ -272,9 +274,10 @@ export default function DocCreatePage() {
       supplierBusinessItem: form.supplierBusinessItem.trim(),
       orderDate: emptyToNull(form.orderDate),
       arriveDate: emptyToNull(form.arriveDate),
-      deliveryAddr: form.deliveryAddr.trim(),
-      remark: form.remark.trim(),
-      requestNote: form.requestNote.trim(),
+        deliveryAddr: form.deliveryAddr.trim(),
+        issueNoEditHistory: form.issueNoEditHistory.trim(),
+        remark: form.remark.trim(),
+        requestNote: form.requestNote.trim(),
       totalSupply: totals.supply,
       totalVat: totals.vat,
       totalAmount: totals.total,
@@ -379,6 +382,7 @@ export default function DocCreatePage() {
         orderDate: previewData.orderDate,
         arriveDate: previewData.arriveDate,
         deliveryAddr: previewData.deliveryAddr,
+        issueNoEditHistory: form.issueNoEditHistory.trim(),
         remark: previewData.remark,
         requestNote: previewData.requestNote,
         totalSupply: previewData.totalSupply,
@@ -503,6 +507,7 @@ export default function DocCreatePage() {
         managerTel: document.managerTel,
         receiver: document.receiver,
         deliveryAddr: document.deliveryAddr,
+        issueNoEditHistory: document.issueNoEditHistory,
         remark: document.remark,
         requestNote: document.requestNote,
         supplierBizNo: document.supplierBizNo,
@@ -587,6 +592,7 @@ export default function DocCreatePage() {
               <label className="field"><span>발주일</span><input required type="date" value={form.orderDate} onChange={(event) => updateForm('orderDate', event.target.value)} /></label>
               <label className="field"><span>입고일</span><input required type="date" value={form.arriveDate} onChange={(event) => updateForm('arriveDate', event.target.value)} /></label>
               <label className="field"><span>발급번호</span><input value={form.issueNo} onChange={(event) => updateForm('issueNo', event.target.value)} /></label>
+              <label className="field field-span-2"><span>발급번호 수정이력</span><textarea rows={2} value={form.issueNoEditHistory} onChange={(event) => updateForm('issueNoEditHistory', event.target.value)} /></label>
               <label className="field">
                 <span>납품처</span>
                 <div className="client-search-box">
