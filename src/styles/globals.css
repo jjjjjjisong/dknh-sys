@@ -1044,7 +1044,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0;
-  border-top: 2px solid var(--border-2);
+  border-top: 1px solid var(--border);
 }
 
 .master-card {
@@ -1060,8 +1060,8 @@ a {
   border-bottom: none;
 }
 
-.master-card.is-expanded {
-  background: #f8fafc;
+.master-card.is-expanded .master-card-main {
+  background: var(--surface-2);
 }
 
 .master-card-main {
@@ -1069,7 +1069,7 @@ a {
   border: 0;
   background: transparent;
   display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
+  grid-template-columns: 96px minmax(0, 1fr);
   gap: 16px;
   padding: 16px 20px;
   text-align: left;
@@ -1086,19 +1086,22 @@ a {
   flex-direction: column;
   gap: 8px;
   align-items: flex-start;
+  padding-top: 2px;
 }
 
 .master-card-gubun {
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border-radius: var(--r);
-  background: var(--surface-2);
-  color: var(--text-2);
-  font-size: 12px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 11.5px;
   font-weight: 600;
-  border: 1px solid var(--border);
+  border: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .master-card-body {
@@ -1113,7 +1116,7 @@ a {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .master-card-title {
@@ -1127,7 +1130,7 @@ a {
 
 .master-card-subtitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--text-3);
   font-weight: 500;
 }
@@ -1135,27 +1138,40 @@ a {
 .master-card-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 0;
+  margin-top: 2px;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .master-card-metric {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--surface-2);
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 500;
-  border: 1px solid transparent;
+  border: 0;
+}
+
+.master-card-metric + .master-card-metric::before {
+  content: "·";
+  margin: 0 8px;
+  color: var(--border-2);
+  font-weight: 400;
 }
 
 .master-card-metric.is-accent {
-  background: var(--accent-light);
-  color: var(--accent-s);
+  background: transparent;
+  color: var(--accent);
   font-weight: 600;
-  border-color: rgba(37,99,235,0.15);
+  border-color: transparent;
 }
 
 .master-card-right {
@@ -1204,29 +1220,14 @@ a {
 }
 
 .master-card-children {
-  background: #ffffff;
+  background: transparent;
   border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 20px 16px 136px;
-  margin-bottom: -1px;
-}
-
-.master-child-head {
-  display: grid;
-  grid-template-columns: 1.1fr 1.4fr 1.4fr 1fr 90px 90px 90px;
-  gap: 12px;
-  padding: 0 12px 10px;
-  color: var(--text-3);
-  font-size: 11.5px;
-  font-weight: 600;
-  border-bottom: 2px solid var(--border);
-  margin-bottom: 8px;
+  padding: 4px 20px 12px 132px;
 }
 
 .master-child-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 .master-child-row {
@@ -1234,14 +1235,14 @@ a {
   border: 0;
   border-bottom: 1px solid var(--border);
   background: transparent;
-  display: grid;
-  grid-template-columns: 1.1fr 1.4fr 1.4fr 1fr 90px 90px 90px;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 10px;
   text-align: left;
   cursor: pointer;
   transition: background 0.12s ease;
+  border-radius: 6px;
 }
 
 .master-child-row:last-child {
@@ -1250,71 +1251,118 @@ a {
 
 .master-child-row:hover {
   background: var(--surface-2);
-  border-radius: var(--r);
 }
 
-.master-child-cell {
+.master-child-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   min-width: 0;
-  color: var(--text-2);
-  font-size: 13px;
-  line-height: 1.45;
-  word-break: break-word;
 }
 
-.master-child-cell strong {
-  display: block;
-  color: var(--text-1);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.master-child-cell em {
-  display: block;
-  margin-top: 2px;
+.master-child-client {
+  flex-shrink: 0;
+  min-width: 120px;
   color: var(--text-3);
-  font-style: normal;
-  font-size: 11.5px;
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
-.master-child-cell.is-number {
-  text-align: right;
+.master-child-name {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-1);
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.master-child-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
+.master-child-stats > span + span {
+  margin-left: 0;
+}
+
 .master-child-actions {
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.master-child-sub {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  padding-left: 134px;
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.master-child-sub > span,
+.master-child-stats > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.master-child-sep {
+  margin: 0 8px;
+  color: var(--border-2);
 }
 
 @media (max-width: 980px) {
   .master-card-main {
     grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 18px;
+    gap: 10px;
+    padding: 16px 18px;
   }
 
   .master-card-lead {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    padding-top: 0;
   }
 
-  .master-card-actions,
   .master-card-children {
-    padding-left: 18px;
+    padding: 4px 18px 12px 18px;
   }
 
-  .master-card-children::before {
-    display: none;
+  .master-child-top {
+    flex-wrap: wrap;
+    gap: 8px 12px;
   }
 
-  .master-child-head,
-  .master-child-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .master-child-client {
+    min-width: 0;
+    order: 0;
+  }
+
+  .master-child-name {
+    order: 1;
+    white-space: normal;
+    flex-basis: 100%;
+  }
+
+  .master-child-stats {
+    order: 2;
   }
 
   .master-child-actions {
-    grid-column: 2;
+    order: 3;
+    margin-left: auto;
+  }
+
+  .master-child-sub {
+    padding-left: 0;
   }
 }
 

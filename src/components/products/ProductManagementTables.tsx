@@ -243,42 +243,31 @@ function MasterCard({
               연결된 거래처별 품목이 없습니다.
             </div>
           ) : (
-            <>
-              <div className="master-child-head">
-                <span>거래처</span>
-                <span>품목명</span>
-                <span>거래명세서명</span>
-                <span>출고처</span>
-                <span style={{ textAlign: 'right' }}>1B=ea</span>
-                <span style={{ textAlign: 'right' }}>1P=BOX</span>
-                <span style={{ textAlign: 'right' }}>관리</span>
-              </div>
-              <div className="master-child-list">
-                {childrenRows.map((product) => (
-                  <div
-                    key={product.id}
-                    className="master-child-row"
-                    onClick={() => onEditChild(product)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        onEditChild(product);
-                      }
-                    }}
-                  >
-                    <span className="master-child-cell">{product.client || '-'}</span>
-                    <span className="master-child-cell">
-                      <strong>{product.name1 || '-'}</strong>
-                      <em>{product.gubun || '-'}</em>
+            <div className="master-child-list">
+              {childrenRows.map((product) => (
+                <div
+                  key={product.id}
+                  className="master-child-row"
+                  onClick={() => onEditChild(product)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onEditChild(product);
+                    }
+                  }}
+                >
+                  <div className="master-child-top">
+                    <span className="master-child-client">{product.client || '-'}</span>
+                    <strong className="master-child-name">{product.name1 || '-'}</strong>
+                    <span className="master-child-stats">
+                      <span>1B=ea {product.ea_per_b ?? '-'}</span>
+                      <span className="master-child-sep">·</span>
+                      <span>1P=BOX {product.box_per_p ?? '-'}</span>
                     </span>
-                    <span className="master-child-cell">{product.name2 || '-'}</span>
-                    <span className="master-child-cell">{product.supplier || '-'}</span>
-                    <span className="master-child-cell is-number">{product.ea_per_b ?? '-'}</span>
-                    <span className="master-child-cell is-number">{product.box_per_p ?? '-'}</span>
                     <span
-                      className="master-child-cell master-child-actions"
+                      className="master-child-actions"
                       onClick={(event) => event.stopPropagation()}
                     >
                       <TableActionButton variant="danger" onClick={() => onDeleteChild(product)}>
@@ -286,9 +275,20 @@ function MasterCard({
                       </TableActionButton>
                     </span>
                   </div>
-                ))}
-              </div>
-            </>
+                  <div className="master-child-sub">
+                    <span>거래명세서명 {product.name2 || '-'}</span>
+                    <span className="master-child-sep">·</span>
+                    <span>출고처 {product.supplier || '-'}</span>
+                    {product.gubun ? (
+                      <>
+                        <span className="master-child-sep">·</span>
+                        <span>{product.gubun}</span>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       ) : null}
