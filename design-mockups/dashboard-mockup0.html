@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대시보드 - 모던 엔터프라이즈 목업</title>
+  <style>
+    /* ═══════════════════════════════
+       Modern Enterprise Dashboard Design
+    ═══════════════════════════════ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #f3f4f6;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --border: #e5e7eb;
+      --border-hover: #d1d5db;
+      --text-1: #111827;
+      --text-2: #4b5563;
+      --text-3: #9ca3af;
+      
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-hover: #1d4ed8;
+      
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      --success: #10b981;
+      --success-light: #ecfdf5;
+
+      --warn: #f59e0b;
+      --warn-light: #fffbeb;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      
+      --r-md: 8px;
+      --r-lg: 12px;
+      --r-xl: 16px;
+      
+      font-family: 'Inter', "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+      color: var(--text-1);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100vh; font-size: 14px; }
+    button, input, select, textarea { font: inherit; outline: none; }
+    button { cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout */
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    
+    .topbar {
+      height: 60px; background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; position: sticky; top: 0; z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+    .topbar-brand { font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    .topbar-brand span { color: var(--text-1); }
+    
+    .topbar-right { display: flex; align-items: center; gap: 24px; }
+    .date-display { font-size: 13px; font-weight: 500; color: var(--text-2); background: var(--surface-2); padding: 6px 12px; border-radius: 20px; }
+    .user-profile { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+
+    .app-body { flex: 1; display: flex; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 24px 16px; display: flex; flex-direction: column; gap: 32px;
+    }
+    .nav-group { display: flex; flex-direction: column; gap: 8px; }
+    .nav-label { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-3); padding-left: 12px; letter-spacing: 0.5px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px;
+      border-radius: var(--r-md); color: var(--text-2); font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: var(--surface-2); color: var(--text-1); transform: translateX(4px); }
+    .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+    
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; max-width: 1440px; margin: 0 auto; width: 100%; }
+    
+    .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .page-title h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+    .page-title p { margin: 0; color: var(--text-2); font-size: 15px; }
+    
+    .btn-primary { background: var(--accent); color: white; padding: 10px 20px; border-radius: var(--r-md); font-weight: 600; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+    /* KPI Grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+    
+    .kpi-card {
+      background: var(--surface); padding: 24px; border-radius: var(--r-lg);
+      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px;
+      box-shadow: var(--shadow-sm); transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .kpi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--accent-light); }
+    
+    /* Subtle decorative line for KPI cards */
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--border); transition: background 0.3s; }
+    .kpi-card:nth-child(1):hover::before { background: var(--accent); }
+    .kpi-card:nth-child(2):hover::before { background: var(--warn); }
+    .kpi-card:nth-child(3):hover::before { background: var(--text-3); }
+    .kpi-card:nth-child(4):hover::before { background: var(--danger); }
+
+    .kpi-header { display: flex; justify-content: space-between; align-items: center; }
+    .kpi-title { font-size: 14px; font-weight: 600; color: var(--text-2); }
+    .kpi-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    
+    .icon-blue { background: var(--accent-light); color: var(--accent); }
+    .icon-orange { background: var(--warn-light); color: var(--warn); }
+    .icon-gray { background: #f3f4f6; color: var(--text-2); }
+    .icon-red { background: var(--danger-light); color: var(--danger); }
+
+    .kpi-value { font-size: 36px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
+    .kpi-meta { font-size: 13px; color: var(--text-3); font-weight: 500; display: flex; align-items: center; gap: 4px; }
+    
+    /* Mid Section Grid */
+    .mid-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px; }
+
+    /* Chart Card */
+    .chart-card, .list-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 24px; box-shadow: var(--shadow-sm);
+    }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .card-head h2 { margin: 0; font-size: 16px; font-weight: 700; }
+    
+    /* Sleek Bar Chart */
+    .chart-container { height: 260px; display: flex; align-items: flex-end; gap: 12%; position: relative; padding-top: 20px; }
+    /* Grid lines */
+    .chart-container::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, transparent 99%, var(--border) 1%);
+      background-size: 100% 25%; z-index: 0; pointer-events: none; opacity: 0.5;
+    }
+    
+    .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; height: 100%; justify-content: flex-end; z-index: 1; group: bar; cursor: pointer; }
+    .bar { width: 100%; max-width: 48px; background: var(--accent-light); border-radius: 6px 6px 0 0; position: relative; transition: all 0.3s; border: 1px solid transparent; border-bottom: none; }
+    .bar-fill { width: 100%; height: 100%; background: var(--accent); border-radius: 6px 6px 0 0; opacity: 0.85; transition: opacity 0.3s, background 0.3s; }
+    .bar-group:hover .bar-fill { opacity: 1; background: var(--accent-hover); }
+    .bar-group:hover .bar { border-color: var(--accent); }
+    
+    .bar-value { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 13px; color: var(--text-2); opacity: 0; transition: all 0.3s; }
+    .bar-group:hover .bar-value { opacity: 1; top: -30px; color: var(--accent); }
+    
+    .bar-label { font-size: 13px; font-weight: 500; color: var(--text-3); text-align: center; white-space: nowrap; }
+    .bar-group:hover .bar-label { color: var(--text-1); font-weight: 600; }
+
+    /* Today's Tasks List */
+    .task-list { display: flex; flex-direction: column; gap: 12px; }
+    .task-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px; border: 1px solid var(--border); border-radius: var(--r-md);
+      transition: all 0.2s; cursor: pointer; background: var(--surface);
+    }
+    .task-item:hover { border-color: var(--warn); background: var(--warn-light); transform: translateX(4px); }
+    .task-info { display: flex; flex-direction: column; gap: 4px; }
+    .task-client { font-weight: 600; font-size: 14px; color: var(--text-1); }
+    .task-meta { font-size: 12px; color: var(--text-3); }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .badge-warn { background: #fffbeb; color: #d97706; border: 1px solid #fcd34d; }
+    .badge-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+
+    /* Table */
+    .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .table-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .table-header h2 { margin: 0; font-size: 16px; font-weight: 700; }
+    .view-all { color: var(--accent); font-weight: 600; font-size: 13px; }
+    .view-all:hover { text-decoration: underline; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { background: var(--surface-2); padding: 16px 24px; text-align: left; font-size: 12px; text-transform: uppercase; font-weight: 600; color: var(--text-3); letter-spacing: 0.5px; }
+    td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text-2); }
+    tbody tr { transition: background 0.2s; cursor: pointer; }
+    tbody tr:hover { background: var(--surface-2); }
+    tbody tr:last-child td { border-bottom: none; }
+    .td-strong { font-weight: 600; color: var(--text-1); }
+    
+    /* Status dots */
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+    .dot-success { background: var(--success); }
+    .dot-warn { background: var(--warn); }
+
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      DK<span>NH</span>
+    </div>
+    <div class="topbar-right">
+      <div class="date-display">2026-04-20 (월)</div>
+      <div class="user-profile">
+        <span style="font-weight: 500; font-size: 14px;">관리자님</span>
+        <div class="avatar">관</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-group">
+        <div class="nav-label">Main Menu</div>
+        <a class="nav-item active" href="#">
+          <span style="font-size: 18px">📊</span> 대시보드
+        </a>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">📝</span> 문서 작성
+        </a>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">📂</span> 문서 내역
+        </a>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">📒</span> 발주장
+        </a>
+      </div>
+      
+      <div class="nav-group">
+        <div class="nav-label">Master Data</div>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">🏢</span> 거래처 관리
+        </a>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">🏭</span> 공급처 관리
+        </a>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">📦</span> 품목 관리
+        </a>
+        <a class="nav-item" href="#">
+          <span style="font-size: 18px">💰</span> 단가 관리
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="page-header">
+        <div class="page-title">
+          <h1>대시보드</h1>
+          <p>오늘의 업무 현황과 향후 입고 일정을 한눈에 파악하세요.</p>
+        </div>
+        <button class="btn-primary">+ 새 문서 작성</button>
+      </div>
+
+      <!-- 1. KPI Grid (4 columns) -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">금일 총 건수</span>
+            <div class="kpi-icon icon-blue">📦</div>
+          </div>
+          <div class="kpi-value">12</div>
+          <div class="kpi-meta"><span style="color:var(--success)">↑ 2</span> 어제 대비</div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">미출고 건수</span>
+            <div class="kpi-icon icon-orange">⏳</div>
+          </div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-meta">출고 처리가 필요합니다</div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">거래취소</span>
+            <div class="kpi-icon icon-gray">⛔</div>
+          </div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-meta">금일 취소된 문서</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">지연 건수</span>
+            <div class="kpi-icon icon-red">⚠️</div>
+          </div>
+          <div class="kpi-value" style="color: var(--danger)">2</div>
+          <div class="kpi-meta">어제까지 미입고 건수</div>
+        </div>
+      </div>
+
+      <!-- 2. Mid Section -->
+      <div class="mid-grid">
+        <!-- Chart -->
+        <div class="chart-card">
+          <div class="card-head">
+            <h2>주간 입고 예정 추이</h2>
+            <select style="border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-weight: 500; background:var(--surface-2)">
+              <option>이번 주 (04.14 ~ 04.20)</option>
+              <option>다음 주</option>
+            </select>
+          </div>
+          <div class="chart-container">
+            <!-- Bars -->
+            <div class="bar-group">
+              <div class="bar" style="height: 10%"><div class="bar-fill"></div><div class="bar-value">1</div></div>
+              <span class="bar-label">일</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 60%"><div class="bar-fill"></div><div class="bar-value">6</div></div>
+              <span class="bar-label">월</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 40%"><div class="bar-fill"></div><div class="bar-value">4</div></div>
+              <span class="bar-label">화</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 80%"><div class="bar-fill"></div><div class="bar-value">8</div></div>
+              <span class="bar-label">수</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 100%"><div class="bar-fill"></div><div class="bar-value">10</div></div>
+              <span class="bar-label">목</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 50%"><div class="bar-fill"></div><div class="bar-value">5</div></div>
+              <span class="bar-label">금</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 20%"><div class="bar-fill"></div><div class="bar-value">2</div></div>
+              <span class="bar-label" style="color:var(--accent); font-weight:600">토 (오늘)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Tasks -->
+        <div class="list-card">
+          <div class="card-head">
+            <h2>긴급 처리 요망</h2>
+          </div>
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <span class="task-client">(주)에이치앤비</span>
+                <span class="task-meta">입고예정: 오늘 15:00</span>
+              </div>
+              <span class="badge badge-danger">미출고</span>
+            </div>
+            <div class="task-item">
+              <div class="task-info">
+                <span class="task-client">대한네트웍스</span>
+                <span class="task-meta">지연: 1일 경과</span>
+              </div>
+              <span class="badge badge-danger">지연</span>
+            </div>
+            <div class="task-item">
+              <div class="task-info">
+                <span class="task-client">제일물산</span>
+                <span class="task-meta">입고예정: 오늘 17:00</span>
+              </div>
+              <span class="badge badge-warn">확인요망</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Bottom Table -->
+      <div class="table-container">
+        <div class="table-header">
+          <h2>최근 등록 문서</h2>
+          <a href="#" class="view-all">전체보기 →</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:140px">발급번호</th>
+              <th>납품처</th>
+              <th>수신처</th>
+              <th style="width:120px">입고일자</th>
+              <th style="width:120px">상태</th>
+              <th style="width:180px; text-align:right;">작성 일시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family: monospace; color: var(--text-2);">DOC-2604-001</td>
+              <td class="td-strong">(주)에이치앤비</td>
+              <td>용인물류센터</td>
+              <td>2026-04-20</td>
+              <td><span class="status-dot dot-warn"></span>진행중</td>
+              <td style="text-align:right">오늘 14:30</td>
+            </tr>
+            <tr>
+              <td style="font-family: monospace; color: var(--text-2);">DOC-2604-002</td>
+              <td class="td-strong">대한네트웍스</td>
+              <td>김포공항점</td>
+              <td>2026-04-20</td>
+              <td><span class="status-dot dot-success"></span>출고완료</td>
+              <td style="text-align:right">오늘 11:15</td>
+            </tr>
+            <tr>
+              <td style="font-family: monospace; color: var(--text-2);">DOC-2604-003</td>
+              <td class="td-strong">제일물산</td>
+              <td>본사</td>
+              <td>2026-04-19</td>
+              <td><span class="status-dot dot-success"></span>출고완료</td>
+              <td style="text-align:right">어제 16:45</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>
