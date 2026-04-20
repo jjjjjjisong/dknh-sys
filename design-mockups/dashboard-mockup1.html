@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대시보드 - 실무형 엔터프라이즈</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #f4f5f8;
+      --surface: #ffffff;
+      --surface-2: #fafafa;
+      --border: #e4e4e7;
+      --border-hover: #d4d4d8;
+      --text-1: #09090b;
+      --text-2: #52525b;
+      --text-3: #a1a1aa;
+      
+      --accent: #18181b;
+      --accent-hover: #27272a;
+      
+      --danger: #ef4444;
+      --success: #10b981;
+      --warn: #f59e0b;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      
+      font-family: 'Inter', "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+      color: var(--text-1);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100vh; font-size: 14px; }
+    button, input, select, textarea { font: inherit; outline: none; }
+    button { cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout - Compact and Dense */
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    
+    .topbar {
+      height: 48px; background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-brand { font-size: 16px; font-weight: 800; color: var(--text-1); letter-spacing: -0.5px; }
+    
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .date-display { font-size: 13px; font-weight: 500; color: var(--text-2); }
+    .user-profile { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 13px; color: var(--text-1); }
+
+    .app-body { flex: 1; display: flex; }
+
+    /* Sidebar - Clean, No Emojis */
+    .sidebar {
+      width: 220px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px 12px; display: flex; flex-direction: column; gap: 24px;
+    }
+    .nav-group { display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; color: var(--text-3); padding-left: 12px; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .nav-item {
+      display: flex; align-items: center; padding: 8px 12px;
+      border-radius: 6px; color: var(--text-2); font-weight: 500; font-size: 13px;
+    }
+    .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+    .nav-item.active { background: #f4f4f5; color: var(--text-1); font-weight: 600; }
+    
+    /* Main Content - Reduced Padding */
+    .main { flex: 1; padding: 20px 24px; overflow-y: auto; width: 100%; }
+    .page-content { display: flex; flex-direction: column; gap: 16px; max-width: 100%; margin: 0 auto; }
+    
+    .page-header { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .page-title h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    
+    /* KPI Grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .kpi-card {
+      background: var(--surface); padding: 16px 20px; border-radius: 8px;
+      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-header { display: flex; justify-content: space-between; align-items: center; }
+    .kpi-title { font-size: 13px; font-weight: 600; color: var(--text-2); }
+    .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
+    
+    /* Mid Section Grid */
+    .mid-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: var(--shadow-sm); }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-head h2 { margin: 0; font-size: 15px; font-weight: 700; }
+    
+    /* Sleek Bar Chart */
+    .chart-container { height: 200px; display: flex; align-items: flex-end; gap: 12%; position: relative; padding-top: 10px; }
+    .chart-container::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, transparent 99%, var(--border) 1%);
+      background-size: 100% 25%; z-index: 0; pointer-events: none; opacity: 0.5;
+    }
+    .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; z-index: 1; }
+    .bar { width: 100%; max-width: 40px; background: #f4f4f5; border-radius: 4px 4px 0 0; position: relative; transition: all 0.2s; }
+    .bar-fill { width: 100%; height: 100%; background: var(--text-3); border-radius: 4px 4px 0 0; transition: background 0.2s; }
+    .bar-group:hover .bar-fill { background: var(--text-1); }
+    .bar-value { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 12px; color: var(--text-2); opacity: 0; }
+    .bar-group:hover .bar-value { opacity: 1; color: var(--text-1); }
+    .bar-label { font-size: 12px; font-weight: 500; color: var(--text-2); text-align: center; }
+
+    /* Today's Tasks List */
+    .task-list { display: flex; flex-direction: column; gap: 8px; }
+    .task-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surface);
+    }
+    .task-info { display: flex; flex-direction: column; gap: 2px; }
+    .task-client { font-weight: 600; font-size: 13px; color: var(--text-1); }
+    .task-meta { font-size: 12px; color: var(--text-3); }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-warn { background: #fffbeb; color: #d97706; border: 1px solid #fcd34d; }
+    .badge-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+
+    /* Table */
+    .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .table-header h2 { margin: 0; font-size: 15px; font-weight: 700; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { background: var(--surface-2); padding: 12px 20px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-2); border-bottom: 1px solid var(--border); }
+    td { padding: 12px 20px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-1); }
+    tbody tr:last-child td { border-bottom: none; }
+    .td-strong { font-weight: 600; }
+    
+    .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot-success { background: var(--success); }
+    .dot-warn { background: var(--warn); }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">DKNH</div>
+    <div class="topbar-right">
+      <div class="date-display">2026-04-20 (월)</div>
+      <div class="user-profile">관리자님 <div style="width:24px;height:24px;background:#e4e4e7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;">관</div></div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-group">
+        <div class="nav-label">업무</div>
+        <a class="nav-item active" href="#">대시보드</a>
+        <a class="nav-item" href="#">문서 작성</a>
+        <a class="nav-item" href="#">문서 내역</a>
+        <a class="nav-item" href="#">발주장</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">기준정보</div>
+        <a class="nav-item" href="#">거래처 관리</a>
+        <a class="nav-item" href="#">공급처 관리</a>
+        <a class="nav-item" href="#">품목 관리</a>
+        <a class="nav-item" href="#">단가 관리</a>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>대시보드</h1>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-title">금일 총 건수</span>
+            <div class="kpi-value">12</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">미출고 건수</span>
+            <div class="kpi-value" style="color: var(--warn)">3</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">거래취소</span>
+            <div class="kpi-value" style="color: var(--text-3)">1</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-title">지연 건수</span>
+            <div class="kpi-value" style="color: var(--danger)">2</div>
+          </div>
+        </div>
+
+        <div class="mid-grid">
+          <div class="card">
+            <div class="card-head">
+              <h2>주간 입고 예정 추이</h2>
+            </div>
+            <div class="chart-container">
+              <div class="bar-group"><div class="bar" style="height: 10%"><div class="bar-fill"></div><div class="bar-value">1</div></div><span class="bar-label">일</span></div>
+              <div class="bar-group"><div class="bar" style="height: 60%"><div class="bar-fill"></div><div class="bar-value">6</div></div><span class="bar-label">월</span></div>
+              <div class="bar-group"><div class="bar" style="height: 40%"><div class="bar-fill"></div><div class="bar-value">4</div></div><span class="bar-label">화</span></div>
+              <div class="bar-group"><div class="bar" style="height: 80%"><div class="bar-fill"></div><div class="bar-value">8</div></div><span class="bar-label">수</span></div>
+              <div class="bar-group"><div class="bar" style="height: 100%"><div class="bar-fill"></div><div class="bar-value">10</div></div><span class="bar-label">목</span></div>
+              <div class="bar-group"><div class="bar" style="height: 50%"><div class="bar-fill"></div><div class="bar-value">5</div></div><span class="bar-label">금</span></div>
+              <div class="bar-group"><div class="bar" style="height: 20%"><div class="bar-fill" style="background:var(--text-1)"></div><div class="bar-value">2</div></div><span class="bar-label" style="font-weight:600; color:var(--text-1)">토</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2>긴급 처리 요망</h2>
+            </div>
+            <div class="task-list">
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-client">(주)에이치앤비</span>
+                  <span class="task-meta">오늘 15:00 입고</span>
+                </div>
+                <span class="badge badge-danger">미출고</span>
+              </div>
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-client">대한네트웍스</span>
+                  <span class="task-meta">1일 지연</span>
+                </div>
+                <span class="badge badge-danger">지연</span>
+              </div>
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-client">제일물산</span>
+                  <span class="task-meta">오늘 17:00 입고</span>
+                </div>
+                <span class="badge badge-warn">확인</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header">
+            <h2>최근 등록 문서</h2>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:140px">발급번호</th>
+                <th>납품처</th>
+                <th>수신처</th>
+                <th style="width:120px">입고일자</th>
+                <th style="width:120px">상태</th>
+                <th style="width:140px; text-align:right;">작성 일시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color: var(--text-2);">DOC-2604-001</td>
+                <td class="td-strong">(주)에이치앤비</td>
+                <td>용인물류센터</td>
+                <td>2026-04-20</td>
+                <td><span class="status-dot dot-warn"></span>진행중</td>
+                <td style="text-align:right; color: var(--text-2);">오늘 14:30</td>
+              </tr>
+              <tr>
+                <td style="color: var(--text-2);">DOC-2604-002</td>
+                <td class="td-strong">대한네트웍스</td>
+                <td>김포공항점</td>
+                <td>2026-04-20</td>
+                <td><span class="status-dot dot-success"></span>출고완료</td>
+                <td style="text-align:right; color: var(--text-2);">오늘 11:15</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
