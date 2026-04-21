@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>발행 이력 - 실무형 엔터프라이즈</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --border: #cbd5e1;
+      --border-focus: #0f172a;
+      --text-1: #0f172a;
+      --text-2: #334155;
+      --text-3: #64748b;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      
+      font-family: 'Inter', "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+      color: var(--text-1);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100vh; font-size: 15px; } /* 15px 고정 */
+    button, input, select, textarea { font: inherit; outline: none; }
+    button { cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout */
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    
+    .topbar {
+      height: 56px; background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-brand { font-size: 18px; font-weight: 800; color: var(--text-1); letter-spacing: -0.5px; }
+
+    .app-body { flex: 1; display: flex; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 24px 16px; display: flex; flex-direction: column; gap: 24px;
+    }
+    .nav-group { display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 13px; font-weight: 700; color: var(--text-3); padding-left: 12px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; padding: 10px 12px; border-radius: 6px; color: var(--text-2); font-weight: 600; font-size: 15px; }
+    .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+    .nav-item.active { background: #e2e8f0; color: var(--text-1); font-weight: 700; }
+
+    /* Main Content */
+    .main { flex: 1; padding: 24px 32px; overflow-y: auto; width: 100%; }
+    .page-content { display: flex; flex-direction: column; gap: 24px; max-width: 100%; margin: 0 auto; }
+    
+    .page-header { margin-bottom: 8px; }
+    .page-title h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+
+    /* Card */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-sm); overflow: hidden; }
+
+    /* Filters */
+    .filter-grid { display: grid; grid-template-columns: auto auto auto 1fr; gap: 16px; padding: 20px 24px; align-items: end; background: var(--surface); }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field > span { font-size: 15px; font-weight: 700; color: var(--text-1); }
+    .input-control { height: 40px; border: 1px solid #94a3b8; border-radius: 4px; padding: 0 12px; font-size: 15px; background: var(--surface); color: var(--text-1); transition: border-color 0.2s; font-weight: 500; }
+    .input-control:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1); }
+
+    /* Table */
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #f1f5f9; padding: 14px 16px; text-align: left; font-size: 15px; font-weight: 700; color: var(--text-1); border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); }
+    .table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; background: var(--surface); font-size: 15px; }
+    .table tbody tr { cursor: pointer; transition: background 0.1s; }
+    .table tbody tr:hover td { background: var(--surface-2); }
+    
+    .row-cancelled td { color: var(--text-3); text-decoration: line-through; background: #fef2f2 !important; }
+
+    /* Pagination */
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 20px; background: var(--surface); border-top: 1px solid var(--border); }
+    .page-btn { min-width: 36px; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 15px; font-weight: 500; color: var(--text-1); background: var(--surface); }
+    .page-btn:hover { border-color: var(--border-focus); background: var(--surface-2); }
+    .page-btn.active { background: var(--text-1); color: var(--surface); border-color: var(--text-1); font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">DKNH</div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-group">
+        <div class="nav-label">업무</div>
+        <a class="nav-item" href="#">대시보드</a>
+        <a class="nav-item" href="#">문서 작성</a>
+        <a class="nav-item active" href="#">문서 내역</a>
+        <a class="nav-item" href="#">발주장</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">기준정보</div>
+        <a class="nav-item" href="#">거래처 관리</a>
+        <a class="nav-item" href="#">공급처 관리</a>
+        <a class="nav-item" href="#">품목 관리</a>
+        <a class="nav-item" href="#">단가 관리</a>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>발행 이력</h1>
+          </div>
+        </div>
+
+        <section class="card">
+          <div class="filter-grid">
+            <label class="field">
+              <span>입고일(시작)</span>
+              <input class="input-control" type="date" value="2025-04-20" />
+            </label>
+            <label class="field">
+              <span>입고일(종료)</span>
+              <input class="input-control" type="date" value="2027-04-20" />
+            </label>
+            <label class="field">
+              <span>검색 필터</span>
+              <select class="input-control">
+                <option value="all">전체</option>
+                <option value="client">거래처</option>
+              </select>
+            </label>
+            <label class="field" style="width:280px">
+              <span>키워드</span>
+              <input class="input-control" placeholder="검색어 입력" />
+            </label>
+          </div>
+        </section>
+
+        <section class="card">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 120px; text-align: center">발급번호</th>
+                <th style="width: 120px; text-align: center">발주일자</th>
+                <th style="width: 120px; text-align: center">입고일자</th>
+                <th style="min-width: 180px">거래처</th>
+                <th style="min-width: 140px">수신처</th>
+                <th style="min-width: 220px">품목명</th>
+                <th style="width: 100px; text-align: right">수량</th>
+                <th style="width: 120px; text-align: center">작성자</th>
+                <th style="width: 160px; text-align: center">수정일시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align: center; color:var(--text-2)">DOC-001</td>
+                <td style="text-align: center">2026-04-20</td>
+                <td style="text-align: center">2026-04-22</td>
+                <td style="font-weight: 700">(주)에이치앤비</td>
+                <td>용인물류센터</td>
+                <td>아이스컵 외 3건</td>
+                <td style="text-align: right">500</td>
+                <td style="text-align: center">관리자</td>
+                <td style="text-align: center; color:var(--text-2)">04.20 14:30</td>
+              </tr>
+              <tr>
+                <td style="text-align: center; color:var(--text-2)">DOC-002</td>
+                <td style="text-align: center">2026-04-19</td>
+                <td style="text-align: center">2026-04-20</td>
+                <td style="font-weight: 700">대한네트웍스</td>
+                <td>김포공항점</td>
+                <td>종이컵(소)</td>
+                <td style="text-align: right">1,200</td>
+                <td style="text-align: center">홍길동</td>
+                <td style="text-align: center; color:var(--text-2)">04.19 16:15</td>
+              </tr>
+              <tr class="row-cancelled">
+                <td style="text-align: center">DOC-003</td>
+                <td style="text-align: center">2026-04-18</td>
+                <td style="text-align: center">2026-04-19</td>
+                <td style="font-weight: 700">제일물산</td>
+                <td>본사</td>
+                <td>포장용 비닐</td>
+                <td style="text-align: right">300</td>
+                <td style="text-align: center">관리자</td>
+                <td style="text-align: center">04.18 09:20</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="pagination">
+            <button class="page-btn">«</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">»</button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

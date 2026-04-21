@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문서 작성 - 목업</title>
+  <style>
+    /* ═══════════════════════════════
+       Minimalist & Clean Flat Design (High Legibility)
+    ═══════════════════════════════ */
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --border: #e2e8f0;
+      --border-2: #cbd5e1;
+      --border-hover: #94a3b8;
+      --text-1: #0f172a;
+      --text-2: #334155;
+      --text-3: #64748b;
+      --accent: #0f172a;
+      --accent-blue: #2563eb;
+      --accent-light: #f1f5f9;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --r: 6px;
+      --r-lg: 8px;
+      font-family: "Pretendard Variable","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+      color: var(--text-1);
+      background: var(--bg);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { min-height: 100vh; background: var(--bg); color: var(--text-1); font-size: 15px; }
+    button, input, select, textarea { font: inherit; }
+    button { transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout */
+    .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar {
+      height: 56px; background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px 0 0; gap: 12px; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-brand {
+      width: 240px; display: flex; align-items: center; gap: 12px;
+      justify-content: flex-start; flex-shrink: 0;
+      padding-left: 24px; border-right: 1px solid var(--border); height: 100%;
+    }
+    .topbar-logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--text-1); }
+    .topbar-actions { display: flex; align-items: center; gap: 16px; }
+    .topbar-user { color: var(--text-2); font-size: 14px; font-weight: 500; }
+    .sidebar-user-avatar {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-1); font-weight: 600; font-size: 14px;
+    }
+    .app-body { flex: 1; display: flex; min-height: 0; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 24px 16px; display: flex; flex-direction: column;
+      justify-content: space-between; gap: 24px;
+      position: sticky; top: 56px; height: calc(100vh - 56px);
+      min-height: calc(100vh - 56px); overflow-y: auto;
+    }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 24px; }
+    .sidebar-section { display: flex; flex-direction: column; gap: 8px; }
+    .sidebar-section-title { padding: 0 12px; font-size: 12px; color: var(--text-3); font-weight: 600; letter-spacing: 0.05em; }
+    .sidebar-links { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: var(--r); color: var(--text-2);
+      font-size: 15px; font-weight: 500;
+    }
+    .sidebar-link:hover { background: var(--surface-2); color: var(--text-1); }
+    .sidebar-link.active { background: var(--surface-2); color: var(--text-1); font-weight: 600; }
+    .sidebar-link-icon { width: 20px; height: 20px; color: var(--text-3); flex-shrink: 0; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar-link.active .sidebar-link-icon { color: var(--text-1); }
+
+    /* Main */
+    .app-main { flex: 1; min-width: 0; padding: 32px; }
+    .page-content { display: flex; flex-direction: column; gap: 24px; max-width: 1400px; margin: 0 auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .page-title { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: var(--text-1); }
+
+    /* Card */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; box-shadow: var(--shadow-sm); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .card-header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 40px; padding: 0 16px; border-radius: var(--r);
+      border: 1px solid var(--border); cursor: pointer; font-size: 14px; font-weight: 500;
+      background: var(--surface); color: var(--text-1); gap: 8px; white-space: nowrap;
+    }
+    .btn:hover { background: var(--surface-2); border-color: var(--border-hover); }
+    .btn-primary { background: var(--text-1); color: var(--surface); border-color: var(--text-1); }
+    .btn-primary:hover { background: #334155; border-color: #334155; color: var(--surface); }
+
+    /* Form Grid */
+    .doc-form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field > span { font-size: 14px; font-weight: 600; color: var(--text-2); }
+    .field-span-2 { grid-column: span 2; }
+    
+    .doc-cell-control, .search-input {
+      width: 100%; height: 40px; border: 1px solid var(--border);
+      border-radius: var(--r); padding: 0 12px; font-size: 15px; background: var(--surface); color: var(--text-1);
+    }
+    .doc-cell-control:focus, .search-input:focus { outline: none; border-color: var(--text-1); }
+    textarea.doc-cell-control { min-height: 80px; padding: 12px; resize: vertical; }
+
+    /* Table */
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--r); }
+    .table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .table th, .table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .table th { background: #f8fafc; color: var(--text-2); font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .table tbody tr { background: var(--surface); }
+    
+    .price-input-inline {
+      width: 100%; height: 36px; border: 1px solid var(--border);
+      border-radius: 4px; padding: 0 10px; font-size: 15px; text-align: right;
+    }
+    .price-input-inline:focus { outline: none; border-color: var(--text-1); }
+
+    .doc-sticky-actions {
+      position: sticky; bottom: 0; background: var(--surface);
+      border-top: 1px solid var(--border); padding: 16px 32px;
+      display: flex; justify-content: flex-end; gap: 12px; z-index: 100;
+      margin: 0 -32px -32px -32px; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="topbar-logo-text">DKNH</span>
+    </div>
+    <div class="topbar-actions">
+      <span class="topbar-user">2026-04-20 (월) 15:10</span>
+      <span class="topbar-user">관리자</span>
+      <div class="sidebar-user-avatar">관</div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <span class="sidebar-section-title">업무</span>
+          <div class="sidebar-links">
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">📊</span> 대시보드</a>
+            <a class="sidebar-link active" href="#"><span class="sidebar-link-icon">📝</span> 문서 작성</a>
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">📂</span> 문서 내역</a>
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">📒</span> 발주장</a>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <span class="sidebar-section-title">기준정보</span>
+          <div class="sidebar-links">
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🏢</span> 거래처 관리</a>
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🏭</span> 공급처 관리</a>
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">📦</span> 품목 관리</a>
+            <a class="sidebar-link" href="#"><span class="sidebar-link-icon">💰</span> 단가 관리</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="app-main">
+      <div class="page-content">
+        <div class="page-header">
+          <h1 class="page-title">문서 작성</h1>
+        </div>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>기본 정보</h2>
+            <button class="btn">불러오기</button>
+          </div>
+          <div class="doc-form-grid">
+            <label class="field"><span>발주일</span><input type="date" class="doc-cell-control" value="2026-04-20" /></label>
+            <label class="field"><span>입고일</span><input type="date" class="doc-cell-control" value="2026-04-21" /></label>
+            <label class="field"><span>발급번호</span><input type="text" class="doc-cell-control" value="DOC-20260420-001" /></label>
+            <label class="field"><span>납품처</span><input type="text" class="doc-cell-control" placeholder="납품처 검색 또는 선택" /></label>
+            <label class="field"><span>담당자</span><input type="text" class="doc-cell-control" placeholder="납품처 선택 시 자동 입력" /></label>
+            <label class="field"><span>담당자 연락처</span><input type="text" class="doc-cell-control" placeholder="자동 입력" /></label>
+            <label class="field field-span-2"><span>수신처</span><input type="text" class="doc-cell-control" placeholder="수신처 검색 또는 선택" /></label>
+            <label class="field field-span-2"><span>납품주소</span><input type="text" class="doc-cell-control" placeholder="납품주소를 입력하세요" /></label>
+            <label class="field field-span-2"><span>유의사항</span><textarea class="doc-cell-control" style="min-height:60px"></textarea></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>공급자 정보</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn">불러오기</button>
+              <button class="btn">접기</button>
+            </div>
+          </div>
+          <div class="doc-form-grid">
+            <label class="field"><span>등록번호</span><input type="text" class="doc-cell-control" value="123-45-67890" /></label>
+            <label class="field"><span>상호</span><input type="text" class="doc-cell-control" value="주식회사 공급사" /></label>
+            <label class="field"><span>성명</span><input type="text" class="doc-cell-control" value="홍길동" /></label>
+            <label class="field field-span-2"><span>사업장주소</span><input type="text" class="doc-cell-control" value="서울시 강남구 테헤란로 123" /></label>
+            <label class="field"><span>업태</span><input type="text" class="doc-cell-control" value="제조업" /></label>
+            <label class="field"><span>종목</span><input type="text" class="doc-cell-control" value="식품가공" /></label>
+          </div>
+        </section>
+
+        <section class="card" style="padding:0; overflow:hidden;">
+          <div class="table-wrap" style="border:none; border-radius:0;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:50px;text-align:center">No</th>
+                  <th style="width:120px">발주일</th>
+                  <th style="width:120px">입고일</th>
+                  <th>품목명</th>
+                  <th style="width:100px;text-align:right">수량</th>
+                  <th style="width:120px;text-align:right">단가</th>
+                  <th style="width:140px;text-align:right">공급가액</th>
+                  <th style="width:60px;text-align:center">삭제</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="text-align:center">1</td>
+                  <td><input type="date" class="price-input-inline" style="text-align:left; width:100%;" value="2026-04-20" /></td>
+                  <td><input type="date" class="price-input-inline" style="text-align:left; width:100%;" value="2026-04-21" /></td>
+                  <td><input type="text" class="price-input-inline" style="text-align:left; width:100%;" placeholder="품목 검색" /></td>
+                  <td><input type="text" class="price-input-inline" value="0" /></td>
+                  <td><input type="text" class="price-input-inline" value="0" /></td>
+                  <td style="text-align:right; font-weight:600; padding-right:16px;">0</td>
+                  <td style="text-align:center"><button style="background:none;border:none;color:var(--red);cursor:pointer;">✕</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:16px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--surface-2);">
+            <button class="btn">+ 품목 추가</button>
+            <div style="font-size:18px;">
+              총 금액: <strong style="font-size:24px; color:var(--text-1); margin-left:8px;">0</strong> 원
+            </div>
+          </div>
+        </section>
+
+      </div>
+      
+      <div class="doc-sticky-actions">
+        <button class="btn">출고의뢰서 미리보기</button>
+        <button class="btn">거래명세서 미리보기</button>
+        <button class="btn btn-primary">저장</button>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

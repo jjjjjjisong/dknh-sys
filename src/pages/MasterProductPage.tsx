@@ -154,6 +154,7 @@ export default function MasterProductPage() {
         product.name2,
         product.client,
         product.gubun,
+        product.receiver,
         product.supplier,
       ]
         .filter(Boolean)
@@ -195,19 +196,23 @@ export default function MasterProductPage() {
     }
   }, [activeRows.length, currentPage]);
 
-  // 거래처 드롭다운 외부 클릭 닫기
   useEffect(() => {
     if (!clientDropdownOpen) return;
+
     function handleOutsideClick(event: MouseEvent) {
       if (clientSearchBoxRef.current && !clientSearchBoxRef.current.contains(event.target as Node)) {
         setClientDropdownOpen(false);
       }
     }
+
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [clientDropdownOpen]);
 
-  function updateMasterForm<K extends keyof ProductMasterInput>(key: K, value: ProductMasterInput[K]) {
+  function updateMasterForm<K extends keyof ProductMasterInput>(
+    key: K,
+    value: ProductMasterInput[K],
+  ) {
     setMasterForm((current) => {
       const next = { ...current, [key]: value };
       if (key === 'ea_per_b' || key === 'box_per_p') {
@@ -430,7 +435,9 @@ export default function MasterProductPage() {
       await loadPageData();
       setProductModalOpen(false);
     } catch (err) {
-      setProductFormError(err instanceof Error ? err.message : '거래처별 품목 저장에 실패했습니다.');
+      setProductFormError(
+        err instanceof Error ? err.message : '거래처별 품목 저장에 실패했습니다.',
+      );
     } finally {
       setSaving(false);
     }
@@ -478,9 +485,10 @@ export default function MasterProductPage() {
             구분: product.gubun || '',
             공통품목명: product.masterName1 || '',
             거래처: product.client || '',
+            수신처: product.receiver || '',
+            공급처: product.supplier || '',
             거래처별품목명: product.name1 || '',
             거래명세서명: product.name2 || '',
-            공급처: product.supplier || '',
             입고단가: product.cost_price ?? '',
             판매단가: product.sell_price ?? '',
             '1B=ea': product.ea_per_b ?? '',
@@ -494,7 +502,11 @@ export default function MasterProductPage() {
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, activeTab === 'masters' ? '공통품목' : '거래처별품목');
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      activeTab === 'masters' ? '공통품목' : '거래처별품목',
+    );
     XLSX.writeFile(workbook, `품목관리_${activeTab}_${formatFileStamp(new Date())}.xlsx`);
   }
 
@@ -548,7 +560,7 @@ export default function MasterProductPage() {
               placeholder={
                 activeTab === 'masters'
                   ? '공통 품목명, 거래명세서명, 구분으로 검색하세요.'
-                  : '공통 품목, 거래처, 거래처별 품목명으로 검색하세요.'
+                  : '공통 품목, 거래처, 수신처, 거래처별 품목명으로 검색하세요.'
               }
             />
           </div>
@@ -556,7 +568,12 @@ export default function MasterProductPage() {
           <div className="client-toolbar-actions product-toolbar-actions">
             <div className="toolbar-meta">검색 결과 {activeRows.length}건</div>
             <div className="button-row">
-              <Button type="button" variant="secondary" className="excel-download-button" onClick={handleDownloadExcel}>
+              <Button
+                type="button"
+                variant="secondary"
+                className="excel-download-button"
+                onClick={handleDownloadExcel}
+              >
                 엑셀다운
               </Button>
               <Button

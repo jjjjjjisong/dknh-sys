@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문서 작성 - 실무형 엔터프라이즈</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #f4f5f8;
+      --surface: #ffffff;
+      --surface-2: #fafafa;
+      --border: #e4e4e7;
+      --border-focus: #18181b;
+      --text-1: #09090b;
+      --text-2: #52525b;
+      --text-3: #a1a1aa;
+      --accent: #18181b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      
+      font-family: 'Inter', "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+      color: var(--text-1);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100vh; font-size: 13px; }
+    button, input, select, textarea { font: inherit; outline: none; }
+    button { cursor: pointer; transition: all 0.2s ease; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout */
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    
+    .topbar {
+      height: 48px; background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-brand { font-size: 16px; font-weight: 800; color: var(--text-1); letter-spacing: -0.5px; }
+    
+    .app-body { flex: 1; display: flex; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px 12px; display: flex; flex-direction: column; gap: 24px;
+      flex-shrink: 0;
+    }
+    .nav-group { display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 11px; font-weight: 600; color: var(--text-3); padding-left: 12px; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .nav-item { display: flex; align-items: center; padding: 8px 12px; border-radius: 6px; color: var(--text-2); font-weight: 500; font-size: 13px; }
+    .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+    .nav-item.active { background: #f4f4f5; color: var(--text-1); font-weight: 600; }
+    
+    /* Main Content */
+    .main { flex: 1; padding: 20px 24px; overflow-y: auto; width: 100%; position: relative; }
+    .page-content { display: flex; flex-direction: column; gap: 16px; max-width: 100%; margin: 0 auto; padding-bottom: 80px; }
+    
+    .page-header { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .page-title h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+
+    .btn { height: 32px; padding: 0 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-weight: 500; font-size: 13px; color: var(--text-1); }
+    .btn:hover { background: var(--surface-2); }
+    .btn-primary { background: var(--text-1); color: var(--surface); border-color: var(--text-1); }
+    .btn-primary:hover { background: #27272a; }
+    .btn-danger { color: #dc2626; border-color: #fca5a5; background: #fef2f2; }
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* Card */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-sm); }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .card-header h2 { margin: 0; font-size: 14px; font-weight: 700; }
+
+    /* Form Grid */
+    .form-body { padding: 16px 20px; }
+    .doc-form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px 16px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field > span { font-size: 12px; font-weight: 600; color: var(--text-2); }
+    .field-span-2 { grid-column: span 2; }
+    .field-span-full { grid-column: 1 / -1; }
+    
+    .input-control {
+      width: 100%; height: 32px; border: 1px solid var(--border); border-radius: 4px; padding: 0 10px; font-size: 13px; background: var(--surface); color: var(--text-1); transition: border-color 0.2s;
+    }
+    .input-control:focus { border-color: var(--border-focus); }
+    textarea.input-control { height: auto; min-height: 50px; padding: 8px 10px; resize: vertical; }
+
+    /* Table */
+    .table-wrap { width: 100%; overflow-x: auto; }
+    .table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+    .table th { background: var(--surface-2); padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .table-input { width: 100%; height: 30px; border: 1px solid transparent; padding: 0 8px; font-size: 13px; border-radius: 4px; }
+    .table-input:hover { border-color: var(--border); }
+    .table-input:focus { border-color: var(--border-focus); background: var(--surface); }
+    .table-input-right { text-align: right; }
+    
+    /* Document item specific table styling */
+    .doc-item-note-row td { border-bottom: 1px solid var(--border); padding-top: 4px; padding-bottom: 12px; background: #fdfdfd; }
+    .doc-item-main-row td { border-bottom: none; padding-bottom: 4px; }
+
+    /* Sticky Bottom Actions */
+    .sticky-actions {
+      position: fixed; bottom: 0; left: 220px; right: 0; height: 60px;
+      background: var(--surface); border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 0 32px;
+      z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+    }
+    
+    /* Totals strip */
+    .totals-strip {
+      display: flex; justify-content: flex-end; align-items: center; gap: 24px;
+      padding: 16px 24px; background: var(--surface-2); border-top: 1px solid var(--border);
+    }
+    .total-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); }
+    .total-item strong { font-size: 15px; color: var(--text-1); }
+    .total-item.final strong { font-size: 18px; color: var(--text-1); font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">DKNH</div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-group">
+        <div class="nav-label">업무</div>
+        <a class="nav-item" href="#">대시보드</a>
+        <a class="nav-item active" href="#">문서 작성</a>
+        <a class="nav-item" href="#">문서 내역</a>
+        <a class="nav-item" href="#">발주장</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">기준정보</div>
+        <a class="nav-item" href="#">거래처 관리</a>
+        <a class="nav-item" href="#">공급처 관리</a>
+        <a class="nav-item" href="#">품목 관리</a>
+        <a class="nav-item" href="#">단가 관리</a>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>문서 작성</h1>
+          </div>
+        </div>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>기본 정보</h2>
+            <button class="btn">불러오기</button>
+          </div>
+          <div class="form-body doc-form-grid">
+            <label class="field"><span>발주일</span><input type="date" class="input-control" value="2026-04-20" /></label>
+            <label class="field"><span>입고일</span><input type="date" class="input-control" value="2026-04-21" /></label>
+            <label class="field"><span>발급번호</span><input type="text" class="input-control" value="DOC-20260420-001" /></label>
+            <label class="field"><span>납품처</span><input type="text" class="input-control" placeholder="납품처 검색 또는 선택" /></label>
+            <label class="field"><span>담당자</span><input type="text" class="input-control" placeholder="납품처 선택 시 자동 입력" /></label>
+            <label class="field"><span>담당자 연락처</span><input type="text" class="input-control" placeholder="납품처 선택 시 자동 입력" /></label>
+            <label class="field field-span-2"><span>수신처</span><input type="text" class="input-control" placeholder="수신처 검색 또는 선택" /></label>
+            <label class="field field-span-2"><span>납품주소</span><input type="text" class="input-control" value="서울시 강남구 테헤란로 123" /></label>
+            <label class="field field-span-2"><span>유의사항</span><textarea class="input-control"></textarea></label>
+            <label class="field field-span-2"><span>요청사항</span><textarea class="input-control"></textarea></label>
+            <label class="field field-span-2"><span>발급번호 수정이력</span><textarea class="input-control"></textarea></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>공급자 정보</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn">불러오기</button>
+              <button class="btn">접기</button>
+            </div>
+          </div>
+          <div class="form-body doc-form-grid">
+            <label class="field"><span>등록번호</span><input type="text" class="input-control" value="123-45-67890" /></label>
+            <label class="field"><span>상호</span><input type="text" class="input-control" value="주식회사 공급사" /></label>
+            <label class="field"><span>성명</span><input type="text" class="input-control" value="홍길동" /></label>
+            <label class="field field-span-2"><span>사업장주소</span><input type="text" class="input-control" value="서울시 강남구 테헤란로 123" /></label>
+            <label class="field"><span>업태</span><input type="text" class="input-control" value="제조업" /></label>
+            <label class="field"><span>종목</span><input type="text" class="input-control" value="식품가공" /></label>
+          </div>
+        </section>
+
+        <section class="card" style="overflow:hidden;">
+          <div class="card-header" style="border-bottom:none;">
+            <h2>품목 정보</h2>
+            <button class="btn btn-primary">+ 품목 추가</button>
+          </div>
+          
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:40px;text-align:center">#</th>
+                  <th style="width:200px">품목명</th>
+                  <th style="width:100px">구분</th>
+                  <th style="width:120px">발주일자</th>
+                  <th style="width:120px">입고일자</th>
+                  <th style="width:80px;text-align:right">수량(ea)</th>
+                  <th style="width:80px;text-align:right">파레트</th>
+                  <th style="width:80px;text-align:right">BOX</th>
+                  <th style="width:100px;text-align:right">단가</th>
+                  <th style="width:120px;text-align:right">공급가액</th>
+                  <th style="width:60px;text-align:center">VAT</th>
+                  <th style="width:60px;text-align:center">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Item 1: Main Row -->
+                <tr class="doc-item-main-row">
+                  <td style="text-align:center; color:var(--text-3)">1</td>
+                  <td>
+                    <select class="input-control" style="width:100%; height:30px">
+                      <option>아이스컵 14oz</option>
+                      <option>직접입력</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="input-control" style="width:100%; height:30px">
+                      <option>컵</option>
+                      <option>뚜껑</option>
+                      <option>비닐</option>
+                    </select>
+                  </td>
+                  <td><input type="date" class="table-input" value="2026-04-20" /></td>
+                  <td><input type="date" class="table-input" value="2026-04-21" /></td>
+                  <td><input type="text" class="table-input table-input-right" value="1,000" /></td>
+                  <td><input type="text" class="table-input table-input-right" placeholder="자동" /></td>
+                  <td><input type="text" class="table-input table-input-right" placeholder="자동" /></td>
+                  <td><input type="text" class="table-input table-input-right" value="50" /></td>
+                  <td><input type="text" class="table-input table-input-right" value="50,000" /></td>
+                  <td style="text-align:center"><input type="checkbox" checked /> 포함</td>
+                  <td style="text-align:center"><button class="btn btn-danger" style="height:28px; padding:0 8px; font-size:12px;">삭제</button></td>
+                </tr>
+                <!-- Item 1: Note Row -->
+                <tr class="doc-item-note-row">
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td colspan="2"><input type="text" class="table-input" placeholder="비고(출고의뢰서) 입력" /></td>
+                  <td colspan="2"><input type="text" class="table-input" placeholder="비고(거래명세서) 입력" /></td>
+                  <td colspan="5"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="totals-strip">
+            <div class="total-item">
+              <span>공급가액 합계</span>
+              <strong>50,000</strong>
+            </div>
+            <div class="total-item">
+              <span>부가세 합계</span>
+              <strong>5,000</strong>
+            </div>
+            <div class="total-item final">
+              <span>합계금액</span>
+              <strong>55,000</strong>
+            </div>
+          </div>
+        </section>
+
+      </div>
+      
+      <!-- Sticky Actions -->
+      <div class="sticky-actions">
+        <button class="btn">출고의뢰서 미리보기</button>
+        <button class="btn">거래명세서 미리보기</button>
+        <button class="btn" style="background:#217346; color:white; border-color:#217346;">엑셀 다운로드</button>
+        <button class="btn btn-primary" style="width:100px;">저장</button>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
