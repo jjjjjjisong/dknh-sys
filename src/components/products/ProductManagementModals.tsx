@@ -89,11 +89,11 @@ export function ProductMasterModal({
           </select>
         </FormField>
 
-        <FormField label="품목명 *">
+        <FormField label="품목명(출고의뢰서) *">
           <input
             value={masterForm.name1}
             onChange={(event) => onUpdateForm('name1', event.target.value)}
-            placeholder="품목명을 입력하세요"
+            placeholder="품목명(출고의뢰서)를 입력하세요"
           />
         </FormField>
 
@@ -101,11 +101,11 @@ export function ProductMasterModal({
           <input
             value={masterForm.name2}
             onChange={(event) => onUpdateForm('name2', event.target.value)}
-            placeholder="비워두면 품목명과 동일하게 저장됩니다"
+            placeholder="비워두면 품목명(출고의뢰서)와 동일하게 저장됩니다"
           />
         </FormField>
 
-        <FormField label="1Box(ea)">
+        <FormField label="1B=EA">
           <input
             value={formatNullableNumber(masterForm.ea_per_b)}
             onChange={(event) => onUpdateForm('ea_per_b', parseNullableNumber(event.target.value))}
@@ -114,16 +114,16 @@ export function ProductMasterModal({
           />
         </FormField>
 
-        <FormField label="1Pallet(Box)">
+        <FormField label="1P=BOX">
           <input
             value={formatNullableNumber(masterForm.box_per_p)}
             onChange={(event) => onUpdateForm('box_per_p', parseNullableNumber(event.target.value))}
             inputMode="numeric"
-            placeholder="1Pallet 기준 Box 수량"
+            placeholder="1P 기준 BOX 수량"
           />
         </FormField>
 
-        <FormField label="1Pallet(EA)">
+        <FormField label="1P=EA">
           <input value={formatNullableNumber(masterForm.ea_per_p)} readOnly placeholder="자동 계산" />
         </FormField>
 
@@ -134,7 +134,7 @@ export function ProductMasterModal({
               onUpdateForm('pallets_per_truck', parseNullableNumber(event.target.value))
             }
             inputMode="numeric"
-            placeholder="파레트 수량"
+            placeholder="차량당 파레트 수량"
           />
         </FormField>
 
@@ -147,7 +147,7 @@ export function ProductMasterModal({
                   연결된 납품처별 품목이 없습니다.
                 </span>
               ) : (
-                <span className="badge">{linkedProductsCount}개 연결됨</span>
+                <span className="badge">{linkedProductsCount.toLocaleString('ko-KR')}개 연결됨</span>
               )}
             </div>
           </div>
@@ -272,14 +272,14 @@ export function ProductItemModal({
         </FormField>
 
         <div className="product-form-section field-span-2">
-          <p className="product-form-section-label">품목명</p>
+          <p className="product-form-section-label">품목명(출고의뢰서)</p>
         </div>
 
-        <FormField label="품목명 *">
+        <FormField label="품목명(출고의뢰서) *">
           <input
             value={productForm.name1}
             onChange={(event) => onUpdateForm('name1', event.target.value)}
-            placeholder="품목명을 입력하세요"
+            placeholder="품목명(출고의뢰서)를 입력하세요"
           />
         </FormField>
 
@@ -287,7 +287,40 @@ export function ProductItemModal({
           <input
             value={productForm.name2}
             onChange={(event) => onUpdateForm('name2', event.target.value)}
-            placeholder="비워두면 품목명과 동일하게 저장됩니다"
+            placeholder="비워두면 품목명(출고의뢰서)와 동일하게 저장됩니다"
+          />
+        </FormField>
+
+        <FormField label="1B=EA">
+          <input
+            value={formatNullableNumber(productForm.ea_per_b)}
+            onChange={(event) => onUpdateForm('ea_per_b', parseNullableNumber(event.target.value))}
+            inputMode="numeric"
+            placeholder="1Box 기준 EA 수량"
+          />
+        </FormField>
+
+        <FormField label="1P=BOX">
+          <input
+            value={formatNullableNumber(productForm.box_per_p)}
+            onChange={(event) => onUpdateForm('box_per_p', parseNullableNumber(event.target.value))}
+            inputMode="numeric"
+            placeholder="1P 기준 BOX 수량"
+          />
+        </FormField>
+
+        <FormField label="1P=EA">
+          <input value={formatNullableNumber(productForm.ea_per_p)} readOnly placeholder="자동 계산" />
+        </FormField>
+
+        <FormField label="1대당 파레트">
+          <input
+            value={formatNullableNumber(productForm.pallets_per_truck)}
+            onChange={(event) =>
+              onUpdateForm('pallets_per_truck', parseNullableNumber(event.target.value))
+            }
+            inputMode="numeric"
+            placeholder="차량당 파레트 수량"
           />
         </FormField>
 

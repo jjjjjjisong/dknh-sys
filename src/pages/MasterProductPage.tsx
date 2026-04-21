@@ -121,8 +121,8 @@ export default function MasterProductPage() {
               onChange={(event) => setQuery(event.target.value)}
               placeholder={
                 activeTab === 'masters'
-                  ? '공통 품목명, 거래명세서명, 구분으로 검색하세요.'
-                  : '공통 품목, 납품처, 수신처, 납품처별 품목명으로 검색하세요.'
+                  ? '공통 품목명(출고의뢰서), 거래명세서명, 구분으로 검색하세요.'
+                  : '공통 품목명(출고의뢰서), 납품처, 수신처, 납품처별 품목명(출고의뢰서)으로 검색하세요.'
               }
             />
           </div>
@@ -141,9 +141,8 @@ export default function MasterProductPage() {
               <Button
                 type="button"
                 variant="primary"
-                onClick={
-                  activeTab === 'masters' ? openCreateMasterModal : () => openCreateProductModal()
-                }
+                style={activeTab === 'masters' ? undefined : { display: 'none' }}
+                onClick={openCreateMasterModal}
               >
                 {activeTab === 'masters' ? '공통 품목 추가' : '납품처별 품목 추가'}
               </Button>

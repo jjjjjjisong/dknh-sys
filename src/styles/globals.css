@@ -1096,7 +1096,7 @@ a {
 }
 
 .master-tree-child-cell {
-  padding: 0 0 16px 44px !important;
+  padding: 0 0 16px 152px !important;
   border-top: none !important;
   border-bottom: 1px solid var(--border);
 }
@@ -1113,6 +1113,7 @@ a {
 .child-table {
   margin: 0;
   border-collapse: collapse;
+  width: 100%;
 }
 
 .child-table th {

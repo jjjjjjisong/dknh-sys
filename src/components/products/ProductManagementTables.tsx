@@ -34,6 +34,10 @@ type ProductsTableProps = {
   onDeleteProduct: (product: Product) => void;
 };
 
+function formatDisplayNumber(value: number | null) {
+  return value === null ? '-' : value.toLocaleString('ko-KR');
+}
+
 export function MasterProductsTable({
   filteredMasters,
   pagedMasters,
@@ -57,11 +61,11 @@ export function MasterProductsTable({
           <tr>
             <th style={{ width: 44 }}></th>
             <th style={{ width: 80 }}>구분</th>
-            <th style={{ width: 260 }}>품목명</th>
+            <th style={{ width: 260 }}>품목명(출고의뢰서)</th>
             <th style={{ width: 260 }}>품목명(거래명세서)</th>
-            <th style={{ width: 110, textAlign: 'right' }}>1Box(ea)</th>
-            <th style={{ width: 120, textAlign: 'right' }}>1Pallet(Box)</th>
-            <th style={{ width: 120, textAlign: 'right' }}>1Pallet(EA)</th>
+            <th style={{ width: 110, textAlign: 'right' }}>1B=EA</th>
+            <th style={{ width: 120, textAlign: 'right' }}>1P=BOX</th>
+            <th style={{ width: 120, textAlign: 'right' }}>1P=EA</th>
             <th style={{ width: 110, textAlign: 'right' }}>1대당 파레트</th>
             <th style={{ width: 90, textAlign: 'center' }}>하위 품목</th>
             <th style={{ width: 150 }}>관리</th>
@@ -95,12 +99,16 @@ export function MasterProductsTable({
                   <td>{master.gubun || '-'}</td>
                   <td className="font-bold">{master.name1 || '-'}</td>
                   <td>{master.name2 || '-'}</td>
-                  <td style={{ textAlign: 'right' }}>{master.ea_per_b ?? '-'}</td>
-                  <td style={{ textAlign: 'right' }}>{master.box_per_p ?? '-'}</td>
-                  <td style={{ textAlign: 'right' }}>{master.ea_per_p ?? '-'}</td>
-                  <td style={{ textAlign: 'right' }}>{master.pallets_per_truck ?? '-'}</td>
+                  <td style={{ textAlign: 'right' }}>{formatDisplayNumber(master.ea_per_b)}</td>
+                  <td style={{ textAlign: 'right' }}>{formatDisplayNumber(master.box_per_p)}</td>
+                  <td style={{ textAlign: 'right' }}>{formatDisplayNumber(master.ea_per_p)}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    {formatDisplayNumber(master.pallets_per_truck)}
+                  </td>
                   <td style={{ textAlign: 'center' }}>
-                    <span className="badge badge-accent">{master.linkedProductCount}개</span>
+                    <span className="badge badge-accent">
+                      {master.linkedProductCount.toLocaleString('ko-KR')}개
+                    </span>
                   </td>
                   <td onClick={(event) => event.stopPropagation()}>
                     <div className="button-row">
@@ -118,19 +126,29 @@ export function MasterProductsTable({
                   <tr className="master-tree-child-row">
                     <td colSpan={10} className="master-tree-child-cell">
                       {children.length === 0 ? (
-                        <div className="empty-state child-empty">연결된 납품처별 품목이 없습니다.</div>
+                        <div className="empty-state child-empty">
+                          연결된 납품처별 품목이 없습니다.
+                        </div>
                       ) : (
                         <div className="child-table-wrap">
                           <table className="table child-table">
+                            <colgroup>
+                              <col style={{ width: 260 }} />
+                              <col style={{ width: 260 }} />
+                              <col style={{ width: 160 }} />
+                              <col style={{ width: 140 }} />
+                              <col style={{ width: 90 }} />
+                              <col style={{ width: 90 }} />
+                              <col style={{ width: 70 }} />
+                            </colgroup>
                             <thead>
                               <tr>
+                                <th style={{ width: 260 }}>품목명(출고의뢰서)</th>
+                                <th style={{ width: 260 }}>품목명(거래명세서)</th>
                                 <th style={{ width: 160 }}>납품처</th>
-                                <th style={{ width: 240 }}>품목명</th>
-                                <th style={{ width: 240 }}>품목명(거래명세서)</th>
                                 <th style={{ width: 140 }}>수신처</th>
                                 <th style={{ width: 90, textAlign: 'right' }}>입고단가</th>
                                 <th style={{ width: 90, textAlign: 'right' }}>판매단가</th>
-                                <th style={{ width: 70, textAlign: 'center' }}>상태</th>
                                 <th style={{ width: 70, textAlign: 'center' }}>관리</th>
                               </tr>
                             </thead>
@@ -142,11 +160,6 @@ export function MasterProductsTable({
                                   className="history-clickable-row"
                                 >
                                   <td>
-                                    <div className="table-clamp-2" title={child.client || '-'}>
-                                      {child.client || '-'}
-                                    </div>
-                                  </td>
-                                  <td>
                                     <div className="table-clamp-2" title={child.name1 || '-'}>
                                       {child.name1 || '-'}
                                     </div>
@@ -157,16 +170,20 @@ export function MasterProductsTable({
                                     </div>
                                   </td>
                                   <td>
+                                    <div className="table-clamp-2" title={child.client || '-'}>
+                                      {child.client || '-'}
+                                    </div>
+                                  </td>
+                                  <td>
                                     <div className="table-clamp-2" title={child.receiver || '-'}>
                                       {child.receiver || '-'}
                                     </div>
                                   </td>
-                                  <td style={{ textAlign: 'right' }}>{child.cost_price ?? '-'}</td>
-                                  <td style={{ textAlign: 'right' }}>{child.sell_price ?? '-'}</td>
-                                  <td style={{ textAlign: 'center' }}>
-                                    <span className={child.delYn === 'Y' ? 'badge badge-muted' : 'badge'}>
-                                      {child.delYn === 'Y' ? '비활성' : '사용'}
-                                    </span>
+                                  <td style={{ textAlign: 'right' }}>
+                                    {formatDisplayNumber(child.cost_price)}
+                                  </td>
+                                  <td style={{ textAlign: 'right' }}>
+                                    {formatDisplayNumber(child.sell_price)}
                                   </td>
                                   <td onClick={(event) => event.stopPropagation()}>
                                     <div className="button-row" style={{ justifyContent: 'center' }}>
@@ -214,21 +231,22 @@ export function ProductsTable({
             <th style={{ width: 56 }}>No</th>
             <th style={{ width: 90 }}>구분</th>
             <th style={{ width: 180 }}>납품처</th>
-            <th style={{ width: 270 }}>품목명</th>
+            <th style={{ width: 270 }}>품목명(출고의뢰서)</th>
             <th style={{ width: 270 }}>품목명(거래명세서)</th>
             <th style={{ width: 140 }}>수신처</th>
-            <th style={{ width: 130, textAlign: 'right' }}>입고단가</th>
-            <th style={{ width: 130, textAlign: 'right' }}>판매단가</th>
-            <th style={{ width: 90, textAlign: 'right' }}>1B=ea</th>
+            <th style={{ width: 110, textAlign: 'right' }}>입고단가</th>
+            <th style={{ width: 110, textAlign: 'right' }}>판매단가</th>
+            <th style={{ width: 90, textAlign: 'right' }}>1B=EA</th>
             <th style={{ width: 90, textAlign: 'right' }}>1P=BOX</th>
-            <th style={{ width: 96 }}>상태</th>
+            <th style={{ width: 90, textAlign: 'right' }}>1P=EA</th>
+            <th style={{ width: 110, textAlign: 'right' }}>1대당 파레트</th>
             <th style={{ width: 120 }}>관리</th>
           </tr>
         </thead>
         <tbody>
           {filteredProducts.length === 0 ? (
             <tr>
-              <td colSpan={12} className="table-empty">
+              <td colSpan={13} className="table-empty">
                 검색 결과가 없습니다.
               </td>
             </tr>
@@ -299,15 +317,21 @@ export function ProductsTable({
                     placeholder="판매단가"
                   />
                 </td>
-                <td style={{ textAlign: 'right' }}>{product.ea_per_b ?? '-'}</td>
-                <td style={{ textAlign: 'right' }}>{product.box_per_p ?? '-'}</td>
-                <td>
-                  <span className={product.delYn === 'Y' ? 'badge badge-muted' : 'badge'}>
-                    {product.delYn === 'Y' ? '비활성' : '사용중'}
-                  </span>
+                <td style={{ textAlign: 'right' }}>{formatDisplayNumber(product.ea_per_b)}</td>
+                <td style={{ textAlign: 'right' }}>{formatDisplayNumber(product.box_per_p)}</td>
+                <td style={{ textAlign: 'right' }}>{formatDisplayNumber(product.ea_per_p)}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {formatDisplayNumber(product.pallets_per_truck)}
                 </td>
                 <td onClick={(event) => event.stopPropagation()}>
                   <div className="button-row">
+                    <TableActionButton
+                      variant="primary"
+                      onClick={() => onSaveProductPrices(product)}
+                      disabled={savingPriceProductId === product.id}
+                    >
+                      {savingPriceProductId === product.id ? '저장중...' : '저장'}
+                    </TableActionButton>
                     <TableActionButton variant="danger" onClick={() => onDeleteProduct(product)}>
                       삭제
                     </TableActionButton>

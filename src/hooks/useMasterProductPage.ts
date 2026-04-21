@@ -237,10 +237,27 @@ export function useMasterProductPage() {
     try {
       setSaving(true);
       setProductFormError(null);
-      await saveProduct(
+      const savedProduct = await saveProduct(
         editingProduct ? { id: editingProduct.id, currentNo: editingProduct.no } : null,
         productForm,
       );
+      setProducts((current) => {
+        const existingIndex = current.findIndex((item) => item.id === savedProduct.id);
+        if (existingIndex >= 0) {
+          return current.map((item) => (item.id === savedProduct.id ? savedProduct : item));
+        }
+
+        return [...current, savedProduct].sort(
+          (a, b) => (a.no ?? Number.MAX_SAFE_INTEGER) - (b.no ?? Number.MAX_SAFE_INTEGER),
+        );
+      });
+      setProductPriceDrafts((current) => ({
+        ...current,
+        [savedProduct.id]: {
+          cost_price: formatNullableNumber(savedProduct.cost_price),
+          sell_price: formatNullableNumber(savedProduct.sell_price),
+        },
+      }));
       await loadPageData();
       setProductModalOpen(false);
     } catch (err) {

@@ -41,7 +41,7 @@ export function parseNullableNumber(value: string) {
 }
 
 export function formatNullableNumber(value: number | null) {
-  return value === null ? '' : String(value);
+  return value === null ? '' : value.toLocaleString('ko-KR');
 }
 
 export function updateCalculatedNumbers<T extends ProductInput | ProductMasterInput, K extends keyof T>(
@@ -124,6 +124,10 @@ export function buildProductsByMasterId(products: Product[]) {
   return next;
 }
 
+function formatExcelNumber(value: number | null) {
+  return value === null ? '' : value.toLocaleString('ko-KR');
+}
+
 export function buildProductExcelRows(
   activeTab: ActiveProductTab,
   masters: ProductMaster[],
@@ -132,23 +136,29 @@ export function buildProductExcelRows(
   if (activeTab === 'masters') {
     return masters.map((master) => ({
       구분: master.gubun || '',
-      품목명: master.name1 || '',
+      '품목명(출고의뢰서)': master.name1 || '',
       '품목명(거래명세서)': master.name2 || '',
-      하위품목수: master.linkedProductCount,
+      '1B=EA': formatExcelNumber(master.ea_per_b),
+      '1P=BOX': formatExcelNumber(master.box_per_p),
+      '1P=EA': formatExcelNumber(master.ea_per_p),
+      '1대당 파레트': formatExcelNumber(master.pallets_per_truck),
+      하위품목수: master.linkedProductCount.toLocaleString('ko-KR'),
     }));
   }
 
   return products.map((product) => ({
+    No: product.no ?? '',
     구분: product.gubun || '',
-    공통품목: product.masterName1 || '',
     납품처: product.client || '',
-    수신처: product.receiver || '',
-    품목명: product.name1 || '',
+    '품목명(출고의뢰서)': product.name1 || '',
     '품목명(거래명세서)': product.name2 || '',
+    수신처: product.receiver || '',
     입고단가: product.cost_price ?? '',
     판매단가: product.sell_price ?? '',
-    '1Box(ea)': product.ea_per_b ?? '',
-    '1Pallet(Box)': product.box_per_p ?? '',
+    '1B=EA': formatExcelNumber(product.ea_per_b),
+    '1P=BOX': formatExcelNumber(product.box_per_p),
+    '1P=EA': formatExcelNumber(product.ea_per_p),
+    '1대당 파레트': formatExcelNumber(product.pallets_per_truck),
   }));
 }
 
