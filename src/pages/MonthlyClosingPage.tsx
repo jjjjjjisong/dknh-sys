@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { fetchClients } from '../api/clients';
-import { fetchDocuments, updateDocumentItemInvoiceNote } from '../api/documents';
+import { fetchDocuments, updateDocumentItemMonthlyClosingNote } from '../api/documents';
 import { fetchProducts } from '../api/products';
 import PageHeader from '../components/PageHeader';
 import Alert from '../components/ui/Alert';
 import Button from '../components/ui/Button';
+import Modal from '../components/ui/Modal';
 import type { Client } from '../types/client';
 import type { DocumentHistory, DocumentHistoryItem } from '../types/document';
 import type { Product } from '../types/product';
@@ -21,6 +22,7 @@ type ClosingRow = {
   supply: number;
   vat: number;
   total: number;
+  note: string;
 };
 
 type ClosingGroup = {
@@ -37,8 +39,12 @@ type SupplierInfo = {
   supplierOwner: string;
   supplierBizNo: string;
   supplierAddress: string;
-  managerTel: string;
-  receiver: string;
+};
+
+type SummaryRow = {
+  clientId: string;
+  clientName: string;
+  totalAmount: number;
 };
 
 const today = new Date();
@@ -53,10 +59,15 @@ export default function MonthlyClosingPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
   const [selectedClientId, setSelectedClientId] = useState('');
+  const [clientKeyword, setClientKeyword] = useState('');
+  const [clientDropdownOpen, setClientDropdownOpen] = useState(false);
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [summaryNoteDrafts, setSummaryNoteDrafts] = useState<Record<string, string>>({});
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [savingRowId, setSavingRowId] = useState<string | null>(null);
+  const clientSearchBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -81,12 +92,14 @@ export default function MonthlyClosingPage() {
 
         if (!selectedClientId && activeClients.length > 0) {
           setSelectedClientId(activeClients[0].id);
+          setClientKeyword(activeClients[0].name);
         } else if (
           selectedClientId &&
           !activeClients.some((client) => client.id === selectedClientId) &&
           activeClients.length > 0
         ) {
           setSelectedClientId(activeClients[0].id);
+          setClientKeyword(activeClients[0].name);
         }
       } catch (err) {
         if (!mounted) return;
@@ -103,6 +116,19 @@ export default function MonthlyClosingPage() {
     };
   }, [selectedClientId]);
 
+  useEffect(() => {
+    if (!clientDropdownOpen) return;
+
+    function handleOutsideClick(event: MouseEvent) {
+      if (clientSearchBoxRef.current && !clientSearchBoxRef.current.contains(event.target as Node)) {
+        setClientDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [clientDropdownOpen]);
+
   const productMap = useMemo(
     () => new Map(products.map((product) => [product.id, product])),
     [products],
@@ -116,9 +142,7 @@ export default function MonthlyClosingPage() {
 
       document.items.forEach((item) => {
         const baseDate = getItemBaseDate(document, item);
-        if (baseDate) {
-          values.add(baseDate.slice(0, 7));
-        }
+        if (baseDate) values.add(baseDate.slice(0, 7));
       });
     });
 
@@ -135,15 +159,25 @@ export default function MonthlyClosingPage() {
     }
   }, [availableYearMonths, selectedYearMonth]);
 
+  const filteredClients = useMemo(() => {
+    const keyword = clientKeyword.trim().toLowerCase();
+    if (!keyword) return clients;
+    return clients.filter((client) => client.name.toLowerCase().includes(keyword));
+  }, [clientKeyword, clients]);
+
   const selectedClient = useMemo(
     () => clients.find((client) => client.id === selectedClientId) ?? null,
     [clients, selectedClientId],
   );
 
-  const closingRows = useMemo<ClosingRow[]>(() => {
-    if (!selectedYearMonth || !selectedClient) {
-      return [];
+  useEffect(() => {
+    if (selectedClient) {
+      setClientKeyword(selectedClient.name);
     }
+  }, [selectedClient]);
+
+  const closingRows = useMemo<ClosingRow[]>(() => {
+    if (!selectedYearMonth || !selectedClient) return [];
 
     const rows: ClosingRow[] = [];
 
@@ -172,6 +206,7 @@ export default function MonthlyClosingPage() {
           supply,
           vat,
           total: supply + vat,
+          note: item.monthlyClosingNote?.trim() || '',
         });
       });
     });
@@ -187,7 +222,9 @@ export default function MonthlyClosingPage() {
     setNoteDrafts((current) => {
       const next: Record<string, string> = {};
       closingRows.forEach((row) => {
-        next[row.id] = Object.prototype.hasOwnProperty.call(current, row.id) ? current[row.id] : '';
+        next[row.id] = Object.prototype.hasOwnProperty.call(current, row.id)
+          ? current[row.id]
+          : row.note;
       });
       return next;
     });
@@ -211,7 +248,6 @@ export default function MonthlyClosingPage() {
       group.subtotalSupply += row.supply;
       group.subtotalVat += row.vat;
       group.subtotalTotal += row.total;
-
       grouped.set(row.productName, group);
     });
 
@@ -232,10 +268,39 @@ export default function MonthlyClosingPage() {
     [closingGroups],
   );
 
+  const monthlyClientSummaries = useMemo<SummaryRow[]>(() => {
+    const totalByClientId = new Map<string, number>();
+
+    documents.forEach((document) => {
+      if (document.status === 'ST01') return;
+      if (!document.clientId) return;
+
+      let documentTotal = 0;
+
+      document.items.forEach((item) => {
+        const baseDate = getItemBaseDate(document, item);
+        if (!baseDate || !baseDate.startsWith(selectedYearMonth)) return;
+
+        const supply = Number(item.supply || 0);
+        const vat = item.vat ? Math.round(supply * 0.1) : 0;
+        documentTotal += supply + vat;
+      });
+
+      if (documentTotal === 0) return;
+      totalByClientId.set(document.clientId, (totalByClientId.get(document.clientId) ?? 0) + documentTotal);
+    });
+
+    return clients
+      .map((client) => ({
+        clientId: client.id,
+        clientName: client.name,
+        totalAmount: totalByClientId.get(client.id) ?? 0,
+      }))
+      .sort((left, right) => left.clientName.localeCompare(right.clientName, 'ko'));
+  }, [clients, documents, selectedYearMonth]);
+
   const supplierInfo = useMemo<SupplierInfo | null>(() => {
-    if (!selectedClient || closingRows.length === 0) {
-      return null;
-    }
+    if (!selectedClient || closingRows.length === 0) return null;
 
     const sourceDocument =
       documents.find(
@@ -248,19 +313,21 @@ export default function MonthlyClosingPage() {
           }),
       ) ?? null;
 
-    if (!sourceDocument) {
-      return null;
-    }
+    if (!sourceDocument) return null;
 
     return {
       supplierName: sourceDocument.supplierName,
       supplierOwner: sourceDocument.supplierOwner,
       supplierBizNo: sourceDocument.supplierBizNo,
       supplierAddress: sourceDocument.supplierAddress,
-      managerTel: sourceDocument.managerTel || selectedClient.tel || '',
-      receiver: sourceDocument.receiver || '',
     };
   }, [closingRows.length, documents, selectedClient, selectedYearMonth]);
+
+  function handleClientSelect(client: Client) {
+    setSelectedClientId(client.id);
+    setClientKeyword(client.name);
+    setClientDropdownOpen(false);
+  }
 
   async function handleSaveNote(row: ClosingRow) {
     const nextNote = (noteDrafts[row.id] ?? '').trim();
@@ -268,13 +335,13 @@ export default function MonthlyClosingPage() {
     try {
       setSavingRowId(row.id);
       setError(null);
-      await updateDocumentItemInvoiceNote(row.itemId, nextNote);
+      await updateDocumentItemMonthlyClosingNote(row.itemId, nextNote);
 
       setDocuments((current) =>
         current.map((document) => ({
           ...document,
           items: document.items.map((item) =>
-            item.id === row.itemId ? { ...item, invoiceNote: nextNote } : item,
+            item.id === row.itemId ? { ...item, monthlyClosingNote: nextNote } : item,
           ),
         })),
       );
@@ -330,14 +397,44 @@ export default function MonthlyClosingPage() {
 
           <label className="field">
             <span>납품처</span>
-            <select value={selectedClientId} onChange={(event) => setSelectedClientId(event.target.value)}>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
+            <div className="client-search-box" ref={clientSearchBoxRef}>
+              <input
+                className="search-input"
+                value={clientKeyword}
+                onChange={(event) => {
+                  setClientKeyword(event.target.value);
+                  setClientDropdownOpen(true);
+                }}
+                onFocus={() => setClientDropdownOpen(true)}
+                placeholder="납품처 검색 또는 선택"
+              />
+              <span className="client-search-caret" aria-hidden="true" />
+              {clientDropdownOpen ? (
+                <div className="client-search-dropdown">
+                  {filteredClients.length > 0 ? (
+                    filteredClients.map((client) => (
+                      <button
+                        key={client.id}
+                        type="button"
+                        className="client-search-option"
+                        onClick={() => handleClientSelect(client)}
+                      >
+                        {client.name}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="client-search-option disabled">검색 결과가 없습니다.</div>
+                  )}
+                </div>
+              ) : null}
+            </div>
           </label>
+
+          <div className="monthly-closing-filter-actions">
+            <Button type="button" variant="secondary" onClick={() => setSummaryModalOpen(true)}>
+              종합장
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -450,6 +547,66 @@ export default function MonthlyClosingPage() {
           </div>
         )}
       </section>
+
+      <Modal
+        open={summaryModalOpen}
+        title={`${formatYearMonthLabel(selectedYearMonth)} 거래명세서 합계`}
+        description="납품처별 해당 월 총 금액 합계를 확인합니다."
+        onClose={() => setSummaryModalOpen(false)}
+        closeOnOverlayClick
+        cardClassName="monthly-summary-modal-card"
+        footer={
+          <Button type="button" variant="secondary" onClick={() => setSummaryModalOpen(false)}>
+            닫기
+          </Button>
+        }
+      >
+        <div className="table-wrap">
+          <table className="table monthly-summary-table">
+            <thead>
+              <tr>
+                <th style={{ minWidth: 220 }}>거래처</th>
+                <th style={{ width: 180, textAlign: 'right' }}>금액</th>
+                <th style={{ minWidth: 180 }}>비고</th>
+              </tr>
+            </thead>
+            <tbody>
+              {monthlyClientSummaries.map((row) => (
+                <tr key={row.clientId}>
+                  <td>{row.clientName}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    {row.totalAmount > 0 ? formatNumber(row.totalAmount) : '-'}
+                  </td>
+                  <td>
+                    <input
+                      className="search-input monthly-summary-note-input"
+                      value={summaryNoteDrafts[row.clientId] ?? ''}
+                      onChange={(event) =>
+                        setSummaryNoteDrafts((current) => ({
+                          ...current,
+                          [row.clientId]: event.target.value,
+                        }))
+                      }
+                      placeholder="비고 입력"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="monthly-closing-grand-total-row">
+                <td>합계</td>
+                <td style={{ textAlign: 'right' }}>
+                  {formatNumber(
+                    monthlyClientSummaries.reduce((sum, row) => sum + row.totalAmount, 0),
+                  )}
+                </td>
+                <td />
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -530,15 +687,15 @@ async function exportMonthlyClosingToExcel(params: {
   };
 
   worksheet.columns = [
-    { width: 9 },
-    { width: 34 },
-    { width: 7 },
-    { width: 10 },
+    { width: 7.5 },
+    { width: 37 },
+    { width: 6.5 },
+    { width: 7.5 },
     { width: 14 },
     { width: 16 },
     { width: 14 },
-    { width: 16 },
-    { width: 26 },
+    { width: 15 },
+    { width: 18 },
   ];
 
   worksheet.mergeCells('A1:I1');
@@ -567,7 +724,7 @@ async function exportMonthlyClosingToExcel(params: {
   headerRow.values = ['날짜', '품목명', '단위', '단가', '입고량', '공급가액', '부가세', '합계', '비고란'];
   headerRow.height = 24;
   headerRow.eachCell((cell) => {
-    cell.font = { name: excelFontName, size: 10, bold: true, color: { argb: 'FF000000' } };
+    cell.font = { name: excelFontName, size: 11, bold: true, color: { argb: 'FF000000' } };
     cell.fill = createSolidFill('FFDADDE2');
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
     applyCellBorder(cell, 'FFB8BEC8');
@@ -592,7 +749,7 @@ async function exportMonthlyClosingToExcel(params: {
       excelRow.height = 22;
 
       excelRow.eachCell((cell, colNumber) => {
-        cell.font = { name: excelFontName, size: 10, color: { argb: 'FF000000' } };
+        cell.font = { name: excelFontName, size: 11, color: { argb: 'FF000000' } };
         cell.alignment = {
           horizontal: colNumber >= 4 && colNumber <= 8 ? 'right' : colNumber === 3 ? 'center' : 'left',
           vertical: 'middle',
@@ -600,7 +757,8 @@ async function exportMonthlyClosingToExcel(params: {
         applyCellBorder(cell, 'FFC9CED6');
       });
 
-      [4, 5, 6, 7, 8].forEach((col) => {
+      excelRow.getCell(4).numFmt = '#,##0.0';
+      [5, 6, 7, 8].forEach((col) => {
         excelRow.getCell(col).numFmt = '#,##0';
       });
 
@@ -611,7 +769,7 @@ async function exportMonthlyClosingToExcel(params: {
     subtotalRow.values = ['', '소계', '', '', group.subtotalQty, group.subtotalSupply, group.subtotalVat, group.subtotalTotal, ''];
     subtotalRow.height = 23;
     subtotalRow.eachCell((cell, colNumber) => {
-      cell.font = { name: excelFontName, size: 10, bold: true, color: { argb: 'FF000000' } };
+      cell.font = { name: excelFontName, size: 11, bold: true, color: { argb: 'FF000000' } };
       cell.fill = createSolidFill('FFF3F4F6');
       cell.alignment = {
         horizontal: colNumber >= 5 && colNumber <= 8 ? 'right' : colNumber === 2 ? 'center' : 'left',
@@ -631,7 +789,7 @@ async function exportMonthlyClosingToExcel(params: {
   totalRow.values = ['', '월 합계', '', '', params.summary.qty, params.summary.supply, params.summary.vat, params.summary.total, ''];
   totalRow.height = 24;
   totalRow.eachCell((cell, colNumber) => {
-    cell.font = { name: excelFontName, size: 10, bold: true, color: { argb: 'FF000000' } };
+    cell.font = { name: excelFontName, size: 11, bold: true, color: { argb: 'FF000000' } };
     cell.fill = createSolidFill('FFE5E7EB');
     cell.alignment = {
       horizontal: colNumber >= 5 && colNumber <= 8 ? 'right' : colNumber === 2 ? 'center' : 'left',
@@ -668,12 +826,12 @@ async function exportMonthlyClosingToExcel(params: {
 
     const labelCell = worksheet.getCell(`A${currentRow}`);
     labelCell.value = label;
-    labelCell.font = { name: excelFontName, size: 10, bold: true, color: { argb: 'FF000000' } };
+    labelCell.font = { name: excelFontName, size: 11, bold: true, color: { argb: 'FF000000' } };
     labelCell.alignment = { horizontal: 'right', vertical: 'middle' };
 
     const valueCell = worksheet.getCell(`D${currentRow}`);
     valueCell.value = `: ${value}`;
-    valueCell.font = { name: excelFontName, size: 10, color: { argb: 'FF000000' } };
+    valueCell.font = { name: excelFontName, size: 11, color: { argb: 'FF000000' } };
     valueCell.alignment = { horizontal: 'left', vertical: 'middle' };
 
     worksheet.getRow(currentRow).height = 22;
@@ -684,6 +842,5 @@ async function exportMonthlyClosingToExcel(params: {
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-
   saveAs(blob, `월마감_${params.clientName}_${params.yearMonth.replace('-', '')}.xlsx`);
 }

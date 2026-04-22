@@ -2725,13 +2725,19 @@ a {
 
 .monthly-closing-filter-grid {
   display: grid;
-  grid-template-columns: 220px minmax(260px, 420px);
+  grid-template-columns: 220px minmax(260px, 420px) 1fr;
   gap: 12px;
   align-items: end;
 }
 
 .monthly-closing-filter-grid .field {
   margin-bottom: 0;
+}
+
+.monthly-closing-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .monthly-closing-stat-strip {
@@ -2837,6 +2843,20 @@ a {
   border-top: 2px solid #bfd7ff;
 }
 
+.monthly-summary-modal-card {
+  width: min(100%, 920px);
+}
+
+.monthly-summary-table {
+  min-width: 0;
+}
+
+.monthly-summary-note-input {
+  min-width: 140px;
+  height: 34px;
+  font-size: 13px;
+}
+
 @media (max-width: 960px) {
   .app-body {
     flex-direction: column;
@@ -2906,6 +2926,10 @@ a {
   .monthly-closing-stat-strip,
   .monthly-closing-partner-card {
     grid-template-columns: 1fr;
+  }
+
+  .monthly-closing-filter-actions {
+    justify-content: flex-start;
   }
 
   .monthly-closing-partner-lines.align-right {
