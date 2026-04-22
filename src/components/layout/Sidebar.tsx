@@ -15,6 +15,8 @@ const navItems: NavItem[] = [
   { group: '문서', label: '문서 작성', to: '/doc-create', icon: <SidebarIconPen /> },
   { group: '문서', label: '발행 이력', to: '/doc-history', icon: <SidebarIconHistory /> },
   { group: '문서', label: '수주대장', to: '/order-book', icon: <SidebarIconList /> },
+  { group: '정상관리', label: '월마감', to: '/monthly-closing', icon: <SidebarIconTrend /> },
+  { group: '정상관리', label: '일일판매', to: '/daily-sales', icon: <SidebarIconTrend /> },
   { group: '관리', label: '납품처 관리', to: '/master-client', icon: <SidebarIconUsers /> },
   { group: '관리', label: '품목 관리', to: '/master-product', icon: <SidebarIconBox /> },
   { group: '관리', label: '공급자 관리', to: '/master-supplier', icon: <SidebarIconStore /> },
@@ -67,7 +69,7 @@ export default function Sidebar() {
         <div className="sidebar-user-avatar">{(user?.name ?? '관').slice(0, 1)}</div>
         <div className="sidebar-user-meta">
           <strong>{user?.name ?? '관리자'}</strong>
-          <span>{user?.rank || '업무 시스템'}</span>
+          <span>{user?.rank || '직급 미설정'}</span>
         </div>
       </div>
     </aside>
@@ -76,7 +78,15 @@ export default function Sidebar() {
 
 function SidebarIconDashboard() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="4" y="4" width="6.5" height="6.5" rx="1.2" />
       <rect x="13.5" y="4" width="6.5" height="9.5" rx="1.2" />
       <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2" />
@@ -87,7 +97,15 @@ function SidebarIconDashboard() {
 
 function SidebarIconPen() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 20H5l1.2-4.2L15.6 6.4a1.8 1.8 0 0 1 2.5 0l1.5 1.5a1.8 1.8 0 0 1 0 2.5L10.2 19.8 12 20Z" />
       <path d="m14.5 7.5 2 2" />
     </svg>
@@ -96,7 +114,15 @@ function SidebarIconPen() {
 
 function SidebarIconHistory() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M3.5 12a8.5 8.5 0 1 0 2.49-6.01" />
       <path d="M3.5 4.5v4h4" />
       <path d="M12 7.5V12l3 1.75" />
@@ -106,7 +132,15 @@ function SidebarIconHistory() {
 
 function SidebarIconList() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M9 6.5h10" />
       <path d="M9 12h10" />
       <path d="M9 17.5h10" />
@@ -119,7 +153,15 @@ function SidebarIconList() {
 
 function SidebarIconUsers() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M9 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
       <path d="M4.5 18.5a4.5 4.5 0 0 1 9 0" />
       <path d="M17 11a2.5 2.5 0 1 0 0-5" />
@@ -130,7 +172,15 @@ function SidebarIconUsers() {
 
 function SidebarIconBox() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="m12 3.8 7 3.7v8.9l-7 3.8-7-3.8V7.5l7-3.7Z" />
       <path d="m5.3 7.2 6.7 3.6 6.7-3.6" />
       <path d="M12 10.9v9" />
@@ -140,7 +190,15 @@ function SidebarIconBox() {
 
 function SidebarIconStore() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M4.5 8.5 6 4.8h12l1.5 3.7" />
       <path d="M5 8.5h14v2a2 2 0 0 1-2 2h-1.5a2.5 2.5 0 0 1-2-1 2.5 2.5 0 0 1-4 0 2.5 2.5 0 0 1-2 1H7a2 2 0 0 1-2-2v-2Z" />
       <path d="M7.5 12.5v6.7h9v-6.7" />
@@ -150,10 +208,35 @@ function SidebarIconStore() {
 
 function SidebarIconSettings() {
   return (
-    <svg viewBox="0 0 24 24" className="sidebar-svg-icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="m12 3 1.2 2.4 2.7.5-.8 2.6 1.9 2-1.9 2 .8 2.6-2.7.5L12 21l-1.2-2.4-2.7-.5.8-2.6-1.9-2 1.9-2-.8-2.6 2.7-.5L12 3Z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
 }
 
+function SidebarIconTrend() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="sidebar-svg-icon"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4.5 18.5h15" />
+      <path d="m6.5 15 4-4 3 3 4-6" />
+      <path d="M17.5 8h2v2" />
+    </svg>
+  );
+}

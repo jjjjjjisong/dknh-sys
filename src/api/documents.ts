@@ -1,5 +1,5 @@
 import { getSupabaseClient } from './supabase/client';
-import { getActiveAuditFields, getDeletedAuditFields } from './audit';
+import { getActiveAuditFields, getAuditFields, getDeletedAuditFields } from './audit';
 import type { DocumentHistory, DocumentPayload, DocumentStatus } from '../types/document';
 import { getStoredUser } from '../lib/session';
 import { toNullableDbId } from '../utils/dbIds';
@@ -507,6 +507,28 @@ export async function toggleDocumentCancelled(id: string, cancelled: boolean) {
     }
   } finally {
     togglingDocumentIds.delete(id);
+  }
+}
+
+export async function updateDocumentItemInvoiceNote(itemId: string, invoiceNote: string) {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('document_items')
+    .update({
+      invoice_note: invoiceNote,
+      ...getAuditFields(),
+    })
+    .eq('id', itemId)
+    .eq('del_yn', 'N')
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    throw new Error('비고를 저장할 대상 품목을 찾지 못했습니다.');
   }
 }
 
