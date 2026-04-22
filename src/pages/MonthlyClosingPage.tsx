@@ -807,14 +807,14 @@ async function exportMonthlyClosingToExcel(params: {
 
   worksheet.columns = [
     { width: 7.5 },
-    { width: 37 },
+    { width: 40.6 },
     { width: 6.5 },
     { width: 7.5 },
     { width: 14 },
     { width: 16 },
     { width: 14 },
     { width: 15 },
-    { width: 18 },
+    { width: 14.4 },
   ];
 
   worksheet.mergeCells('A1:I1');
