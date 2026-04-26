@@ -3242,6 +3242,148 @@ a {
   font-size: 13px;
 }
 
+.daily-sales-filter-card,
+.daily-sales-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.daily-sales-filter-grid {
+  display: grid;
+  grid-template-columns: 220px minmax(360px, 560px) 1fr;
+  gap: 16px;
+  align-items: end;
+}
+
+.daily-sales-filter-grid .field {
+  margin-bottom: 0;
+}
+
+.daily-sales-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.daily-sales-search-grid {
+  display: grid;
+  grid-template-columns: 140px minmax(180px, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.daily-sales-search-grid .field {
+  margin-bottom: 0;
+}
+
+.daily-sales-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.daily-sales-sheet-head h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.daily-sales-sheet-head p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.daily-sales-table-wrap {
+  max-height: calc(100vh - 320px);
+  min-height: 360px;
+}
+
+.daily-sales-table {
+  min-width: 2980px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.daily-sales-table th,
+.daily-sales-table td {
+  min-width: 72px;
+  white-space: nowrap;
+}
+
+.daily-sales-table th:nth-child(n + 4),
+.daily-sales-table td:nth-child(n + 4) {
+  border-left: 1px solid #e2e8f0;
+}
+
+.daily-sales-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #eef4fb;
+}
+
+.daily-sales-table .client-col {
+  left: 0;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+}
+
+.daily-sales-table .product-col {
+  left: 220px;
+  width: 380px;
+  min-width: 380px;
+  max-width: 380px;
+}
+
+.daily-sales-sticky-col {
+  position: sticky;
+  z-index: 2;
+  background: #ffffff;
+}
+
+.daily-sales-table thead .daily-sales-sticky-col {
+  z-index: 4;
+  background: #e5edf7;
+}
+
+.daily-sales-table tbody tr:hover .daily-sales-sticky-col {
+  background: #f8fbff;
+}
+
+.daily-sales-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  background: #eaf3ff;
+  border-top: 2px solid #bfd7ff;
+  font-weight: 800;
+}
+
+.daily-sales-table tfoot .daily-sales-sticky-col {
+  z-index: 4;
+  background: #dbeafe;
+}
+
+.daily-sales-note-input {
+  width: 180px;
+  min-width: 180px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.daily-qty-cell {
+  width: 72px;
+}
+
+.carryover-cell {
+  color: #b42318;
+  font-weight: 700;
+}
+
 @media (max-width: 960px) {
   .app-body {
     flex-direction: column;
@@ -3320,11 +3462,14 @@ a {
 
   .monthly-closing-filter-grid,
   .monthly-closing-stat-strip,
-  .monthly-closing-partner-card {
+  .monthly-closing-partner-card,
+  .daily-sales-filter-grid,
+  .daily-sales-search-grid {
     grid-template-columns: 1fr;
   }
 
-  .monthly-closing-filter-actions {
+  .monthly-closing-filter-actions,
+  .daily-sales-filter-actions {
     justify-content: flex-start;
   }
 
