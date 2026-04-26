@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
   workflow_dispatch:
 
 permissions:
@@ -39,6 +40,21 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Set custom domain
+        shell: bash
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            main)
+              echo "dknh-sys.co.kr" > dist/CNAME
+              ;;
+            develop)
+              echo "dev.dknh-sys.co.kr" > dist/CNAME
+              ;;
+            *)
+              echo "No custom domain configured for ${GITHUB_REF_NAME}"
+              ;;
+          esac
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

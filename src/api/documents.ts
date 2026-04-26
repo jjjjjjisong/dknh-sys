@@ -1,5 +1,5 @@
 import { getSupabaseClient } from './supabase/client';
-import { getActiveAuditFields, getDeletedAuditFields } from './audit';
+import { getActiveAuditFields, getAuditFields, getDeletedAuditFields } from './audit';
 import type { DocumentHistory, DocumentPayload, DocumentStatus } from '../types/document';
 import { getStoredUser } from '../lib/session';
 import { toNullableDbId } from '../utils/dbIds';
@@ -78,6 +78,7 @@ export async function saveDocument(payload: DocumentPayload) {
         item_note: item.releaseNote,
         release_note: item.releaseNote,
         invoice_note: item.invoiceNote,
+        monthly_closing_note: item.monthlyClosingNote ?? '',
         ea_per_b: item.eaPerB,
         box_per_p: item.boxPerP,
         custom_pallet: item.customPallet,
@@ -141,7 +142,7 @@ export async function fetchDocuments(): Promise<DocumentHistory[]> {
   const { data, error } = await supabase
     .from('documents')
     .select(
-      'id, issue_no, client_id, client, manager, manager_tel, receiver, supplier_biz_no, supplier_name, supplier_owner, supplier_address, supplier_business_type, supplier_business_item, order_date, arrive_date, delivery_addr, issue_no_edit_history, remark, request_note, total_supply, total_vat, total_amount, author_id, author, status, approval_title, approval_status, approval_requested_at, approval_completed_at, approval_current_step, created_at, updated_at, updated_by, del_yn, document_items(id, product_id, seq, name1, name2, gubun, qty, cost_price, unit_price, supply, vat, order_date, arrive_date, item_note, release_note, invoice_note, ea_per_b, box_per_p, custom_pallet, custom_box, updated_at, updated_by, del_yn)',
+      'id, issue_no, client_id, client, manager, manager_tel, receiver, supplier_biz_no, supplier_name, supplier_owner, supplier_address, supplier_business_type, supplier_business_item, order_date, arrive_date, delivery_addr, issue_no_edit_history, remark, request_note, total_supply, total_vat, total_amount, author_id, author, status, approval_title, approval_status, approval_requested_at, approval_completed_at, approval_current_step, created_at, updated_at, updated_by, del_yn, document_items(id, product_id, seq, name1, name2, gubun, qty, cost_price, unit_price, supply, vat, order_date, arrive_date, item_note, release_note, invoice_note, monthly_closing_note, ea_per_b, box_per_p, custom_pallet, custom_box, updated_at, updated_by, del_yn)',
     )
     .eq('del_yn', 'N')
     .order('created_at', { ascending: false });
@@ -204,7 +205,8 @@ export async function fetchDocuments(): Promise<DocumentHistory[]> {
         orderDate: item.order_date ?? null,
         arriveDate: item.arrive_date ?? null,
         releaseNote: item.release_note ?? item.item_note ?? '',
-        invoiceNote: item.invoice_note ?? item.item_note ?? '',
+        invoiceNote: item.invoice_note ?? '',
+        monthlyClosingNote: item.monthly_closing_note ?? '',
         eaPerB: item.ea_per_b ?? null,
         boxPerP: item.box_per_p ?? null,
         customPallet: item.custom_pallet ?? null,
@@ -321,6 +323,7 @@ export async function updateDocument(document: DocumentHistory) {
         item_note: item.releaseNote,
         release_note: item.releaseNote,
         invoice_note: item.invoiceNote,
+        monthly_closing_note: item.monthlyClosingNote ?? '',
         ea_per_b: item.eaPerB,
         box_per_p: item.boxPerP,
         custom_pallet: item.customPallet,
@@ -507,6 +510,28 @@ export async function toggleDocumentCancelled(id: string, cancelled: boolean) {
     }
   } finally {
     togglingDocumentIds.delete(id);
+  }
+}
+
+export async function updateDocumentItemMonthlyClosingNote(itemId: string, monthlyClosingNote: string) {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('document_items')
+    .update({
+      monthly_closing_note: monthlyClosingNote,
+      ...getAuditFields(),
+    })
+    .eq('id', itemId)
+    .eq('del_yn', 'N')
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    throw new Error('비고를 저장할 대상 품목을 찾지 못했습니다.');
   }
 }
 
