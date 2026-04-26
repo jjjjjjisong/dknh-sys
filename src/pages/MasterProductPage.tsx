@@ -4,6 +4,7 @@ import {
   ProductItemModal,
   ProductMasterModal,
 } from '../components/products/ProductManagementModals';
+import PriceChangePanel from '../components/products/PriceChangePanel';
 import {
   MasterProductsTable,
   ProductsTable,
@@ -39,6 +40,11 @@ export default function MasterProductPage() {
     handleMasterSubmit,
     handleProductSubmit,
     handleSaveProductPrices,
+    handleApplyPriceChange,
+    handlePreviewPriceChange,
+    removeSelectedPriceChangeRow,
+    toggleAllPriceChangePreviewRows,
+    togglePriceChangePreviewRow,
     linkedProductsForEditingMaster,
     loading,
     masterForm,
@@ -50,6 +56,14 @@ export default function MasterProductPage() {
     productMasters,
     productModalOpen,
     productPriceDrafts,
+    priceChangeApplying,
+    priceChangeForm,
+    priceChangeLoadingPreview,
+    priceChangeLogs,
+    priceChangePreviewRows,
+    priceChangeSearched,
+    selectedPriceChangeItemIds,
+    products,
     productsByMasterId,
     query,
     saving,
@@ -68,6 +82,7 @@ export default function MasterProductPage() {
     openEditProductModal,
     toggleMasterAccordion,
     updateMasterForm,
+    updatePriceChangeForm,
     updateProductPriceDraft,
     updateProductForm,
   } = useMasterProductPage();
@@ -94,9 +109,17 @@ export default function MasterProductPage() {
           >
             납품처별 품목
           </button>
+          <button
+            type="button"
+            className={`product-tab-btn${activeTab === 'price-change' ? ' active' : ''}`}
+            onClick={() => setActiveTab('price-change')}
+          >
+            단가 수정
+          </button>
         </div>
 
-        <div className="client-toolbar-stacked">
+        {activeTab !== 'price-change' ? (
+          <div className="client-toolbar-stacked">
           <div className="toolbar toolbar-grid product-toolbar">
             {activeTab === 'products' ? (
               <select
@@ -148,7 +171,8 @@ export default function MasterProductPage() {
               </Button>
             </div>
           </div>
-        </div>
+          </div>
+        ) : null}
 
         {loading ? (
           <div className="empty-state">품목 목록을 불러오는 중입니다...</div>
@@ -167,7 +191,7 @@ export default function MasterProductPage() {
             onEditChild={openEditProductModal}
             onDeleteChild={(product) => void handleDeleteProduct(product)}
           />
-        ) : (
+        ) : activeTab === 'products' ? (
           <ProductsTable
             filteredProducts={filteredProducts}
             pagedProducts={pagedRows as Product[]}
@@ -180,14 +204,33 @@ export default function MasterProductPage() {
             onEditProduct={openEditProductModal}
             onDeleteProduct={(product) => void handleDeleteProduct(product)}
           />
+        ) : (
+          <PriceChangePanel
+            products={products}
+            form={priceChangeForm}
+            previewRows={priceChangePreviewRows}
+            selectedItemIds={selectedPriceChangeItemIds}
+            searched={priceChangeSearched}
+            logs={priceChangeLogs}
+            loadingPreview={priceChangeLoadingPreview}
+            applying={priceChangeApplying}
+            onUpdateForm={updatePriceChangeForm}
+            onPreview={() => void handlePreviewPriceChange()}
+            onTogglePreviewRow={togglePriceChangePreviewRow}
+            onToggleAllPreviewRows={toggleAllPriceChangePreviewRows}
+            onRemoveSelectedRow={removeSelectedPriceChangeRow}
+            onApply={() => void handleApplyPriceChange()}
+          />
         )}
 
-        <Pagination
-          currentPage={currentPage}
-          totalItems={activeRows.length}
-          pageSize={PRODUCT_PAGE_SIZE}
-          onPageChange={setCurrentPage}
-        />
+        {activeTab !== 'price-change' ? (
+          <Pagination
+            currentPage={currentPage}
+            totalItems={activeRows.length}
+            pageSize={PRODUCT_PAGE_SIZE}
+            onPageChange={setCurrentPage}
+          />
+        ) : null}
       </section>
 
       <ProductMasterModal

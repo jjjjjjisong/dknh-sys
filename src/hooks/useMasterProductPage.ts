@@ -1,7 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+﻿import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import * as XLSX from 'xlsx';
 import { fetchProductManagementData } from '../api/productManagement';
+import {
+  applyPriceChange,
+  fetchPriceChangeLogs,
+  previewPriceChange,
+  type PriceChangeLog,
+  type PriceChangePreviewRow,
+} from '../api/priceChanges';
 import { removeProduct, removeProductMaster, saveProduct, saveProductMaster } from '../api/products';
+import type { PriceChangeForm } from '../components/products/PriceChangePanel';
 import type { Client } from '../types/client';
 import type { Product, ProductInput, ProductMaster, ProductMasterInput } from '../types/product';
 import {
@@ -24,6 +32,23 @@ type ProductPriceDraft = {
   cost_price: string;
   sell_price: string;
 };
+
+const today = new Date();
+const defaultDateTo = today.toISOString().slice(0, 10);
+const defaultDateFrom = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10);
+
+function createDefaultPriceChangeForm(): PriceChangeForm {
+  return {
+    dateFrom: defaultDateFrom,
+    dateTo: defaultDateTo,
+    clientId: '',
+    receiver: '',
+    productId: '',
+    productName: '',
+    newCostPrice: '',
+    newUnitPrice: '',
+  };
+}
 
 export function useMasterProductPage() {
   const [activeTab, setActiveTab] = useState<ActiveProductTab>('products');
@@ -48,6 +73,13 @@ export function useMasterProductPage() {
   const [clientDropdownOpen, setClientDropdownOpen] = useState(false);
   const [expandedMasterIds, setExpandedMasterIds] = useState<string[]>([]);
   const [productPriceDrafts, setProductPriceDrafts] = useState<Record<string, ProductPriceDraft>>({});
+  const [priceChangeForm, setPriceChangeForm] = useState<PriceChangeForm>(createDefaultPriceChangeForm);
+  const [priceChangePreviewRows, setPriceChangePreviewRows] = useState<PriceChangePreviewRow[]>([]);
+  const [selectedPriceChangeItemIds, setSelectedPriceChangeItemIds] = useState<string[]>([]);
+  const [priceChangeSearched, setPriceChangeSearched] = useState(false);
+  const [priceChangeLogs, setPriceChangeLogs] = useState<PriceChangeLog[]>([]);
+  const [priceChangeLoadingPreview, setPriceChangeLoadingPreview] = useState(false);
+  const [priceChangeApplying, setPriceChangeApplying] = useState(false);
   const clientSearchBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,7 +96,7 @@ export function useMasterProductPage() {
       setClients(data.clients);
       setProductPriceDrafts(createProductPriceDraftMap(data.products));
     } catch (err) {
-      setError(err instanceof Error ? err.message : '품목 목록 조회에 실패했습니다.');
+      setError(err instanceof Error ? err.message : '?덈ぉ 紐⑸줉 議고쉶???ㅽ뙣?덉뒿?덈떎.');
     } finally {
       setLoading(false);
     }
@@ -111,7 +143,15 @@ export function useMasterProductPage() {
   }, [clientFilter, products, query]);
 
   const productsByMasterId = useMemo(() => buildProductsByMasterId(products), [products]);
-  const activeRows = activeTab === 'masters' ? filteredMasters : filteredProducts;
+  const activeRows =
+    activeTab === 'masters' ? filteredMasters : activeTab === 'products' ? filteredProducts : [];
+  const priceChangeReceiverOptions = useMemo(
+    () =>
+      Array.from(new Set(products.map((product) => product.receiver).filter(Boolean))).sort((a, b) =>
+        a.localeCompare(b, 'ko'),
+      ),
+    [products],
+  );
 
   const pagedRows = useMemo(() => {
     const start = (currentPage - 1) * PRODUCT_PAGE_SIZE;
@@ -121,6 +161,12 @@ export function useMasterProductPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab, clientFilter, query]);
+
+  useEffect(() => {
+    if (activeTab === 'price-change') {
+      void loadPriceChangeLogs();
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(activeRows.length / PRODUCT_PAGE_SIZE));
@@ -225,7 +271,7 @@ export function useMasterProductPage() {
       await loadPageData();
       setMasterModalOpen(false);
     } catch (err) {
-      setMasterFormError(err instanceof Error ? err.message : '공통 품목 저장에 실패했습니다.');
+      setMasterFormError(err instanceof Error ? err.message : '怨듯넻 ?덈ぉ ??μ뿉 ?ㅽ뙣?덉뒿?덈떎.');
     } finally {
       setSaving(false);
     }
@@ -261,33 +307,33 @@ export function useMasterProductPage() {
       await loadPageData();
       setProductModalOpen(false);
     } catch (err) {
-      setProductFormError(err instanceof Error ? err.message : '납품처별 품목 저장에 실패했습니다.');
+      setProductFormError(err instanceof Error ? err.message : '?⑺뭹泥섎퀎 ?덈ぉ ??μ뿉 ?ㅽ뙣?덉뒿?덈떎.');
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDeleteMaster(master: ProductMaster) {
-    const confirmed = window.confirm(`"${master.name1}" 공통 품목을 삭제하시겠습니까?`);
+    const confirmed = window.confirm(`"${master.name1}" 怨듯넻 ?덈ぉ????젣?섏떆寃좎뒿?덇퉴?`);
     if (!confirmed) return;
 
     try {
       await removeProductMaster(master.id);
       setProductMasters((current) => current.filter((item) => item.id !== master.id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : '공통 품목 삭제에 실패했습니다.');
+      setError(err instanceof Error ? err.message : '怨듯넻 ?덈ぉ ??젣???ㅽ뙣?덉뒿?덈떎.');
     }
   }
 
   async function handleDeleteProduct(product: Product) {
-    const confirmed = window.confirm(`"${product.name1}" 납품처별 품목을 삭제하시겠습니까?`);
+    const confirmed = window.confirm(`"${product.name1}" ?⑺뭹泥섎퀎 ?덈ぉ????젣?섏떆寃좎뒿?덇퉴?`);
     if (!confirmed) return;
 
     try {
       await removeProduct(product.id);
       setProducts((current) => current.filter((item) => item.id !== product.id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : '납품처별 품목 삭제에 실패했습니다.');
+      setError(err instanceof Error ? err.message : '?⑺뭹泥섎퀎 ?덈ぉ ??젣???ㅽ뙣?덉뒿?덈떎.');
     }
   }
 
@@ -305,6 +351,153 @@ export function useMasterProductPage() {
     }));
   }
 
+  function updatePriceChangeForm<K extends keyof PriceChangeForm>(key: K, value: PriceChangeForm[K]) {
+    setPriceChangeForm((current) => {
+      const next = { ...current, [key]: value };
+
+      if (key === 'productName') {
+        next.productName = String(value);
+        next.productId = '';
+      }
+
+      if (key === 'productId') {
+        const selectedProduct = products.find((product) => product.id === value);
+        next.productId = String(value);
+        if (selectedProduct) {
+          next.productName = selectedProduct.name1;
+        }
+      }
+
+      return next;
+    });
+    if (key !== 'newCostPrice' && key !== 'newUnitPrice') {
+      setPriceChangePreviewRows([]);
+      setSelectedPriceChangeItemIds([]);
+      setPriceChangeSearched(false);
+    }
+  }
+
+  async function loadPriceChangeLogs() {
+    try {
+      const logs = await fetchPriceChangeLogs();
+      setPriceChangeLogs(logs);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '';
+      if (message.includes('price_change_logs') || message.includes('schema cache')) {
+        setPriceChangeLogs([]);
+        return;
+      }
+      setError(err instanceof Error ? err.message : '?④? 蹂寃??대젰 議고쉶???ㅽ뙣?덉뒿?덈떎.');
+    }
+  }
+
+  function buildPriceChangeCriteria() {
+    return {
+      dateFrom: priceChangeForm.dateFrom,
+      dateTo: priceChangeForm.dateTo,
+      clientId: '',
+      clientName: '',
+      receiver: '',
+      productId: priceChangeForm.productId,
+      productName: priceChangeForm.productName,
+    };
+  }
+
+  function validatePriceChangeSearch() {
+    if (!priceChangeForm.dateFrom || !priceChangeForm.dateTo) {
+      return '시작일과 종료일을 입력해 주세요.';
+    }
+    if (priceChangeForm.dateFrom > priceChangeForm.dateTo) {
+      return '시작일은 종료일보다 늦을 수 없습니다.';
+    }
+    if (!priceChangeForm.productId && !priceChangeForm.productName.trim()) {
+      return '품목명을 입력하거나 검색 결과에서 품목을 선택해 주세요.';
+    }
+    return null;
+  }
+  async function handlePreviewPriceChange() {
+    const validationMessage = validatePriceChangeSearch();
+    if (validationMessage) {
+      window.alert(validationMessage);
+      return;
+    }
+
+    try {
+      setPriceChangeLoadingPreview(true);
+      setError(null);
+      const rows = await previewPriceChange(buildPriceChangeCriteria());
+      setPriceChangePreviewRows(rows);
+      setSelectedPriceChangeItemIds([]);
+      setPriceChangeSearched(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '?④? ?섏젙 誘몃━蹂닿린 議고쉶???ㅽ뙣?덉뒿?덈떎.');
+    } finally {
+      setPriceChangeLoadingPreview(false);
+    }
+  }
+
+  function togglePriceChangePreviewRow(itemId: string) {
+    setSelectedPriceChangeItemIds((current) =>
+      current.includes(itemId) ? current.filter((id) => id !== itemId) : [...current, itemId],
+    );
+  }
+
+  function toggleAllPriceChangePreviewRows() {
+    setSelectedPriceChangeItemIds((current) => {
+      if (priceChangePreviewRows.length === 0) return current;
+      const allSelected = priceChangePreviewRows.every((row) => current.includes(row.itemId));
+      return allSelected ? [] : priceChangePreviewRows.map((row) => row.itemId);
+    });
+  }
+
+  function removeSelectedPriceChangeRow(itemId: string) {
+    setSelectedPriceChangeItemIds((current) => current.filter((id) => id !== itemId));
+  }
+
+  async function handleApplyPriceChange() {
+    const newCostPrice = parseNullableNumber(priceChangeForm.newCostPrice);
+    const newUnitPrice = parseNullableNumber(priceChangeForm.newUnitPrice);
+    if (newCostPrice === null && newUnitPrice === null) {
+      window.alert('변경할 입고단가 또는 판매단가를 입력해 주세요.');
+      return;
+    }
+
+    const selectedRows = priceChangePreviewRows.filter((row) => selectedPriceChangeItemIds.includes(row.itemId));
+    if (selectedRows.length === 0) {
+      window.alert('검색 결과에서 변경할 항목을 체크해 주세요.');
+      return;
+    }
+
+    const affectedDocumentCount = new Set(selectedRows.map((row) => row.documentId)).size;
+    const confirmed = window.confirm(
+      `선택한 ${selectedRows.length.toLocaleString('ko-KR')}개 품목, ${affectedDocumentCount.toLocaleString('ko-KR')}개 문서의 단가를 변경합니다.\nproducts 테이블은 변경하지 않습니다.\n계속할까요?`,
+    );
+    if (!confirmed) return;
+
+    try {
+      setPriceChangeApplying(true);
+      setError(null);
+      const result = await applyPriceChange({
+        criteria: buildPriceChangeCriteria(),
+        itemIds: selectedRows.map((row) => row.itemId),
+        newCostPrice,
+        newUnitPrice,
+      });
+
+      window.alert(
+        `변경되었습니다.\n변경 품목: ${result.changedItemCount.toLocaleString('ko-KR')}개\n영향 문서: ${result.changedDocumentCount.toLocaleString('ko-KR')}개`,
+      );
+      setPriceChangePreviewRows([]);
+      setSelectedPriceChangeItemIds([]);
+      setPriceChangeSearched(false);
+      setPriceChangeForm((current) => ({ ...current, newCostPrice: '', newUnitPrice: '' }));
+      await loadPriceChangeLogs();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '단가 변경 적용에 실패했습니다.');
+    } finally {
+      setPriceChangeApplying(false);
+    }
+  }
   async function handleSaveProductPrices(product: Product) {
     const draft = productPriceDrafts[product.id] ?? {
       cost_price: formatNullableNumber(product.cost_price),
@@ -341,7 +534,7 @@ export function useMasterProductPage() {
         },
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : '단가 저장에 실패했습니다.');
+      setError(err instanceof Error ? err.message : '?④? ??μ뿉 ?ㅽ뙣?덉뒿?덈떎.');
     } finally {
       setSavingPriceProductId(null);
     }
@@ -355,7 +548,7 @@ export function useMasterProductPage() {
   function handleDownloadExcel() {
     const rows = buildProductExcelRows(activeTab, filteredMasters, filteredProducts);
     if (rows.length === 0) {
-      window.alert('다운로드할 데이터가 없습니다.');
+      window.alert('?ㅼ슫濡쒕뱶???곗씠?곌? ?놁뒿?덈떎.');
       return;
     }
 
@@ -364,9 +557,9 @@ export function useMasterProductPage() {
     XLSX.utils.book_append_sheet(
       workbook,
       worksheet,
-      activeTab === 'masters' ? '공통품목' : '납품처별품목',
+      activeTab === 'masters' ? '怨듯넻?덈ぉ' : '?⑺뭹泥섎퀎?덈ぉ',
     );
-    XLSX.writeFile(workbook, `품목관리_${activeTab}_${formatFileStamp(new Date())}.xlsx`);
+    XLSX.writeFile(workbook, `?덈ぉ愿由?${activeTab}_${formatFileStamp(new Date())}.xlsx`);
   }
 
   return {
@@ -392,7 +585,13 @@ export function useMasterProductPage() {
     handleMasterSubmit,
     handleProductSubmit,
     handleSaveProductPrices,
+    handleApplyPriceChange,
+    handlePreviewPriceChange,
+    removeSelectedPriceChangeRow,
+    toggleAllPriceChangePreviewRows,
+    togglePriceChangePreviewRow,
     updateProductPriceDraft,
+    updatePriceChangeForm,
     linkedProductsForEditingMaster,
     loading,
     masterForm,
@@ -404,6 +603,15 @@ export function useMasterProductPage() {
     productMasters,
     productModalOpen,
     productPriceDrafts,
+    priceChangeApplying,
+    priceChangeForm,
+    priceChangeLoadingPreview,
+    priceChangeLogs,
+    priceChangePreviewRows,
+    priceChangeReceiverOptions,
+    priceChangeSearched,
+    selectedPriceChangeItemIds,
+    products,
     productsByMasterId,
     query,
     saving,
@@ -437,3 +645,5 @@ function createProductPriceDraftMap(products: Product[]) {
     ]),
   );
 }
+
+

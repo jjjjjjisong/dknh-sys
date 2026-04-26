@@ -2142,6 +2142,391 @@ a {
   gap: 16px;
 }
 
+.price-change-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.price-change-guide {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid #cfe0ff;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%);
+  color: var(--text-2);
+  font-size: 14px;
+}
+
+.price-change-guide strong {
+  color: #1d4ed8;
+  font-weight: 800;
+}
+
+.price-change-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 16px 18px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.08), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.price-change-form-grid .field {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.price-change-form-grid .field input,
+.price-change-form-grid .field select {
+  width: 100%;
+}
+
+.price-change-action-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.price-change-action-card > span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  letter-spacing: 0.03em;
+}
+
+.price-change-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.price-change-actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.price-change-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.price-change-preview-table-wrap {
+  max-height: 360px;
+}
+
+.price-change-preview-table-wrap thead th,
+.price-change-selected-table-wrap thead th,
+.price-change-history-modal .table-wrap thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f1f5f9;
+}
+
+.price-change-date-col {
+  width: 118px;
+  min-width: 118px;
+  white-space: nowrap;
+}
+
+.price-change-history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.price-change-history-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+.price-change-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.price-change-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.price-change-section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.price-change-section-title h3 {
+  margin: 0;
+  color: var(--text-1);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.price-change-section-title p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.price-change-search-grid {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.7fr) minmax(160px, 0.7fr) minmax(320px, 1.8fr) 130px;
+  gap: 14px;
+  align-items: end;
+}
+
+.price-change-search-grid .field {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.price-change-search-grid > .btn {
+  height: 38px;
+  justify-content: center;
+}
+
+.price-change-product-search {
+  position: relative;
+}
+
+.price-change-product-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.14);
+}
+
+.price-change-product-option {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 3px;
+  border: 0;
+  border-bottom: 1px solid #edf2f7;
+  padding: 11px 12px;
+  background: #fff;
+  color: var(--text-1);
+  text-align: left;
+  cursor: pointer;
+}
+
+.price-change-product-option:hover {
+  background: #f5f8ff;
+}
+
+.price-change-product-option:disabled {
+  color: var(--text-3);
+  cursor: default;
+}
+
+.price-change-product-option strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.price-change-product-option span {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.price-change-product-summary {
+  display: grid;
+  grid-template-columns: 1.1fr 1.1fr 2fr 0.8fr 0.8fr;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #dce8ff;
+  border-radius: 16px;
+  background: #f8fbff;
+}
+
+.price-change-product-summary > div {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.price-change-product-summary span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.price-change-product-summary strong {
+  display: block;
+  overflow: hidden;
+  color: var(--text-1);
+  font-size: 14px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price-change-count-row {
+  display: flex;
+  gap: 12px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.price-change-empty-result {
+  padding: 22px;
+  border: 1px dashed #c9d7ee;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--text-3);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.price-change-target-section {
+  background: #fff;
+}
+
+.price-change-target-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.price-change-target-summary > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid #dce8ff;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.price-change-target-summary span {
+  color: var(--text-3);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.price-change-target-summary strong {
+  color: #1d4ed8;
+  font-size: 18px;
+}
+
+.price-change-selected-table-wrap {
+  max-height: 260px;
+}
+
+.price-change-remove-btn {
+  height: 30px;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  padding: 0 12px;
+  background: #fff7f7;
+  color: #b91c1c;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.price-change-apply-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 160px;
+  gap: 12px;
+  align-items: end;
+}
+
+.price-change-apply-grid .field {
+  margin-bottom: 0;
+}
+
+.price-change-apply-grid > .btn {
+  height: 38px;
+  justify-content: center;
+}
+
+.price-change-history-modal {
+  width: min(1280px, calc(100vw - 48px));
+}
+
+.price-change-history-modal .table {
+  font-size: 13px;
+}
+
+.price-change-history-modal .table th,
+.price-change-history-modal .table td {
+  padding: 10px 12px;
+}
+
+.price-change-history-modal .table th:nth-child(1),
+.price-change-history-modal .table td:nth-child(1),
+.price-change-history-modal .table th:nth-child(2),
+.price-change-history-modal .table td:nth-child(2),
+.price-change-history-modal .table th:nth-child(6),
+.price-change-history-modal .table td:nth-child(6),
+.price-change-history-modal .table th:nth-child(7),
+.price-change-history-modal .table td:nth-child(7),
+.price-change-history-modal .table th:nth-child(9),
+.price-change-history-modal .table td:nth-child(9) {
+  white-space: nowrap;
+}
+
+.price-change-next-hint {
+  padding: 18px;
+  border: 1px dashed #c9d7ee;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--text-3);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.price-change-step-enter {
+  animation: priceChangeStepEnter 0.18s ease-out;
+}
+
+@keyframes priceChangeStepEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -2748,6 +3133,17 @@ a {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .price-change-form-grid,
+  .price-change-summary-grid,
+  .price-change-actions,
+  .price-change-head,
+  .price-change-search-grid,
+  .price-change-product-summary,
+  .price-change-target-summary,
+  .price-change-apply-grid {
     grid-template-columns: 1fr;
   }
 

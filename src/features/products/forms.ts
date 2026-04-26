@@ -1,7 +1,7 @@
 import type { Product, ProductInput, ProductMaster, ProductMasterInput } from '../../types/product';
 import { DEFAULT_GUBUN } from './constants';
 
-export type ActiveProductTab = 'masters' | 'products';
+export type ActiveProductTab = 'masters' | 'products' | 'price-change';
 
 export function createEmptyMasterForm(): ProductMasterInput {
   return {
