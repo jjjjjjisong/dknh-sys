@@ -22,6 +22,7 @@ export type SharedItemRow = {
   qty: number | null;
   customPallet: number | null;
   customBox: number | null;
+  costPrice: number | null;
   unitPrice: number | null;
   customSupply: number | null;
   vat: boolean;
@@ -34,6 +35,7 @@ export type ItemSummary = {
   name2: string;
   gubun: string;
   qty: number;
+  costPrice: number | null;
   unitPrice: number;
   supply: number;
   vatAmount: number;
@@ -48,18 +50,29 @@ interface DocumentItemTableProps {
   clientProducts: Product[];
   itemSummaries: ItemSummary[];
   totals: { supply: number; vat: number; total: number };
+  productSelectionEnabled?: boolean;
+  productSelectionMessage?: string | null;
   onUpdateItem: (id: string, updater: (item: SharedItemRow) => SharedItemRow) => void;
   onRemoveItem: (id: string) => void;
   onAddItem: () => void;
 }
 
 type IntegerFieldKey = 'qty' | 'customPallet' | 'customBox' | 'customSupply';
+type NumericFieldKey =
+  | 'qty'
+  | 'customPallet'
+  | 'customBox'
+  | 'costPrice'
+  | 'unitPrice'
+  | 'customSupply';
 
 export default function DocumentItemTable({
   items,
   clientProducts,
   itemSummaries,
   totals,
+  productSelectionEnabled = true,
+  productSelectionMessage = null,
   onUpdateItem,
   onRemoveItem,
   onAddItem,
@@ -78,10 +91,7 @@ export default function DocumentItemTable({
     return formatIntegerInput(value);
   }
 
-  function handleNumericFocus(
-    id: string,
-    key: 'qty' | 'customPallet' | 'customBox' | 'unitPrice' | 'customSupply',
-  ) {
+  function handleNumericFocus(id: string, key: NumericFieldKey) {
     onUpdateItem(id, (current) => {
       const value = current[key];
       if (value === 0) {
@@ -135,6 +145,11 @@ export default function DocumentItemTable({
       <div className="card-header">
         <div>
           <h2>품목 정보</h2>
+          {productSelectionMessage ? (
+            <p style={{ marginTop: 6, color: 'var(--text-3)', fontSize: 13 }}>
+              {productSelectionMessage}
+            </p>
+          ) : null}
         </div>
         <button className="btn btn-primary" type="button" onClick={onAddItem}>
           + 품목 추가
@@ -153,7 +168,8 @@ export default function DocumentItemTable({
               <th>수량(ea)</th>
               <th className="doc-pallet-col">파레트</th>
               <th className="doc-box-col">BOX</th>
-              <th>단가</th>
+              <th className="doc-number-col-cost">입고단가</th>
+              <th className="doc-number-col-sell">판매단가</th>
               <th>공급가액</th>
               <th>VAT</th>
               <th>관리</th>
@@ -172,6 +188,7 @@ export default function DocumentItemTable({
                       <select
                         className="doc-cell-control"
                         value={item.productId}
+                        disabled={!productSelectionEnabled && item.productId !== MANUAL_PRODUCT_ID}
                         onChange={(event) => {
                           const nextId = event.target.value;
                           const selected = clientProducts.find((row) => row.id === nextId);
@@ -180,6 +197,10 @@ export default function DocumentItemTable({
                             productId: nextId,
                             manualGubun: DEFAULT_GUBUN,
                             manualName: nextId === MANUAL_PRODUCT_ID ? current.manualName : '',
+                            costPrice:
+                              nextId === MANUAL_PRODUCT_ID
+                                ? current.costPrice
+                                : selected?.cost_price ?? null,
                             unitPrice:
                               nextId === MANUAL_PRODUCT_ID
                                 ? current.unitPrice
@@ -188,7 +209,9 @@ export default function DocumentItemTable({
                           }));
                         }}
                       >
-                        <option value="">품목 선택</option>
+                        <option value="">
+                          {productSelectionEnabled ? '품목 선택' : '납품처와 수신처를 먼저 선택'}
+                        </option>
                         {clientProducts.map((product) => (
                           <option key={product.id} value={product.id}>
                             {product.name1}
@@ -288,6 +311,22 @@ export default function DocumentItemTable({
                     </td>
                     <td>
                       <input
+                        className="doc-cell-control doc-number-input-costprice"
+                        type="text"
+                        inputMode="decimal"
+                        value={formatDecimalInput(item.costPrice)}
+                        onFocus={() => handleNumericFocus(item.id, 'costPrice')}
+                        onChange={(event) =>
+                          onUpdateItem(item.id, (current) => ({
+                            ...current,
+                            costPrice: parseNullableDecimal(event.target.value),
+                          }))
+                        }
+                        placeholder="입고단가"
+                      />
+                    </td>
+                    <td>
+                      <input
                         className="doc-cell-control doc-number-input-unitprice"
                         type="text"
                         inputMode="decimal"
@@ -300,7 +339,7 @@ export default function DocumentItemTable({
                             customSupply: null,
                           }))
                         }
-                        placeholder="단가"
+                        placeholder="판매단가"
                       />
                     </td>
                     <td>
@@ -388,6 +427,7 @@ export default function DocumentItemTable({
                         placeholder="비고(거래명세서) 입력"
                       />
                     </td>
+                    <td className="doc-item-note-spacer" />
                     <td className="doc-item-note-spacer" />
                     <td className="doc-item-note-spacer" />
                     <td className="doc-item-note-spacer" />

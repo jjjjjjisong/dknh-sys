@@ -49,10 +49,38 @@
 
 1. `07_relational_hardening.sql`
 2. `20260413_document_items_product_id_backfill.sql`
-3. `20260413_identity_sequence_reset.sql`
-4. 검증 쿼리 실행
+3. `08_product_masters.sql`
+4. `20260416_product_masters_backfill.sql`
+5. `20260421_product_masters_dimension_backfill.sql`
+6. `20260413_identity_sequence_reset.sql`
+7. 검증 쿼리 실행
 
 ## 5. 검증 쿼리
+
+### 공통품목 포장수량 충돌 확인
+
+`20260421_product_masters_dimension_backfill.sql` 실행 전, 같은 공통품목 아래
+하위 품목들이 서로 다른 `1Box/1Pallet` 값을 갖고 있지 않은지 먼저 확인합니다.
+
+```sql
+select
+  p.product_master_id,
+  pm.name1,
+  count(distinct p.ea_per_b) as ea_per_b_variants,
+  count(distinct p.box_per_p) as box_per_p_variants,
+  count(distinct p.pallets_per_truck) as truck_variants
+from public.products p
+join public.product_masters pm on pm.id = p.product_master_id
+where p.del_yn = 'N'
+  and pm.del_yn = 'N'
+group by p.product_master_id, pm.name1
+having
+  count(distinct p.ea_per_b) > 1
+  or count(distinct p.box_per_p) > 1
+  or count(distinct p.pallets_per_truck) > 1;
+```
+
+결과가 0행이면 `20260421_product_masters_dimension_backfill.sql`을 바로 실행해도 됩니다.
 
 ### 구조 확인
 

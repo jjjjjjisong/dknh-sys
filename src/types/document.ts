@@ -7,6 +7,7 @@ export type DocumentItemPayload = {
   name2: string;
   gubun: string;
   qty: number;
+  costPrice: number | null;
   unitPrice: number;
   supply: number;
   vat: boolean;
@@ -14,6 +15,7 @@ export type DocumentItemPayload = {
   arriveDate: string | null;
   releaseNote: string;
   invoiceNote: string;
+  monthlyClosingNote?: string;
   eaPerB: number | null;
   boxPerP: number | null;
   customPallet: number | null;
@@ -56,6 +58,7 @@ export type DocumentHistoryItem = {
   name2: string;
   gubun: string;
   qty: number;
+  costPrice: number | null;
   unitPrice: number;
   supply: number;
   vat: boolean;
@@ -63,6 +66,7 @@ export type DocumentHistoryItem = {
   arriveDate: string | null;
   releaseNote: string;
   invoiceNote: string;
+  monthlyClosingNote: string;
   eaPerB: number | null;
   boxPerP: number | null;
   customPallet: number | null;
