@@ -314,7 +314,8 @@ function mapDocumentHistoryRow(row: any): DocumentHistory {
 }
 
 function escapeForIlike(value: string) {
-  return value.replace(/[%*,()]/g, ' ').trim();
+  // Keep parentheses so partial issue numbers like "260437(2603" still match.
+  return value.replace(/[%*,]/g, ' ').trim();
 }
 
 export async function updateDocument(document: DocumentHistory) {
