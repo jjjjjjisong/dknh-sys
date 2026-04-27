@@ -393,10 +393,9 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
       richTexts.push({ text: '참고사항', font: boldFont });
       richTexts.push({ text: ` : ${invoiceData.remark}\n`, font: normalFont });
     }
-    richTexts.push({ text: '납품처', font: boldFont });
     richTexts.push({
-      text: ` : ${invoiceData.client || ''}${invoiceData.deliveryAddr ? ` / ${invoiceData.deliveryAddr}` : ''}\n`,
-      font: normalFont,
+      text: `납품처 : ${invoiceData.client || ''}${invoiceData.deliveryAddr ? ` / ${invoiceData.deliveryAddr}` : ''}\n`,
+      font: boldFont,
     });
     if (invoiceData.manager || invoiceData.managerTel) {
       richTexts.push({ text: '담당자', font: boldFont });
