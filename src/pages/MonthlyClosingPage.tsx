@@ -305,8 +305,7 @@ export default function MonthlyClosingPage() {
         if (!baseDate || !baseDate.startsWith(selectedYearMonth)) return;
 
         const supply = Number(item.supply || 0);
-        const vat = item.vat ? Math.round(supply * 0.1) : 0;
-        documentTotal += supply + vat;
+        documentTotal += supply;
       });
 
       if (documentTotal === 0) return;
