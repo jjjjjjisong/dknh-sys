@@ -4,6 +4,7 @@ import DashboardPage from '../pages/DashboardPage';
 import DocCreatePage from '../pages/DocCreatePage';
 import DocHistoryPage from '../pages/DocHistoryPage';
 import OrderBookPage from '../pages/OrderBookPage';
+import InventoryPage from '../pages/InventoryPage';
 import MonthlyClosingPage from '../pages/MonthlyClosingPage';
 import DailySalesPage from '../pages/DailySalesPage';
 import MasterClientPage from '../pages/MasterClientPage';
@@ -55,6 +56,7 @@ export const router = createHashRouter([
       { path: 'doc-history', element: <DocHistoryPage /> },
       { path: 'doc-history/:documentId', element: <DocHistoryPage /> },
       { path: 'order-book', element: <OrderBookPage /> },
+      { path: 'inventory', element: <InventoryPage /> },
       { path: 'monthly-closing', element: <MonthlyClosingPage /> },
       { path: 'master-client', element: <MasterClientPage /> },
       { path: 'master-supplier', element: <MasterSupplierPage /> },

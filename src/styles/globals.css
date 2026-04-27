@@ -3242,6 +3242,199 @@ a {
   font-size: 13px;
 }
 
+.inventory-filter-card,
+.inventory-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inventory-week-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.inventory-week-label {
+  min-width: 260px;
+  text-align: center;
+}
+
+.inventory-week-label strong,
+.inventory-week-label span {
+  display: block;
+}
+
+.inventory-week-label strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.inventory-week-label span {
+  margin-top: 3px;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.inventory-receiver-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.inventory-receiver-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.inventory-receiver-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  background: var(--surface);
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.inventory-receiver-tab:hover {
+  background: #f4f7ff;
+  border-color: #c8d7f2;
+}
+
+.inventory-receiver-tab.active {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  box-shadow: inset 0 -2px 0 #2563eb;
+}
+
+.inventory-receiver-tab strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e8eef8;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.inventory-add-receiver {
+  display: grid;
+  grid-template-columns: 220px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.inventory-sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inventory-stat-strip .monthly-closing-stat-item strong {
+  font-size: 20px;
+}
+
+.inventory-table-wrap {
+  max-height: calc(100vh - 360px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.inventory-table {
+  min-width: 1780px;
+  font-size: 13px;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.inventory-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.inventory-table td:first-child,
+.inventory-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  min-width: 220px;
+}
+
+.inventory-table td:first-child {
+  background: var(--surface);
+}
+
+.inventory-table tbody tr:hover td:first-child {
+  background: #f4f7ff;
+}
+
+.inventory-table .number-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.inventory-number-input {
+  width: 96px;
+  height: 32px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.inventory-note-input {
+  min-width: 150px;
+  height: 32px;
+  font-size: 13px;
+}
+
+.inventory-product-sub {
+  margin-top: 3px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.inventory-partners {
+  min-width: 180px;
+}
+
+.inventory-low-row td {
+  color: #b91c1c;
+}
+
+.inventory-low-row td:first-child {
+  color: var(--text-1);
+}
+
+.inventory-add-modal-card {
+  max-width: 980px;
+}
+
+.inventory-add-table-wrap {
+  max-height: 440px;
+}
+
 .daily-sales-filter-card,
 .daily-sales-sheet {
   display: flex;

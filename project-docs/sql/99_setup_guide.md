@@ -9,7 +9,8 @@ Fresh production setup order:
 5. `08_product_masters.sql`
 6. `04_documents.sql`
 7. `05_order_book.sql`
-8. `90_policies.sql`
+8. `10_inventory.sql`
+9. `90_policies.sql`
 
 Or run this single file in Supabase SQL Editor:
 
