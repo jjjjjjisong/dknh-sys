@@ -358,14 +358,16 @@ export function useMasterProductPage() {
 
       if (key === 'productName') {
         next.productName = String(value);
-        next.productId = '';
+        if (current.productId !== MANUAL_PRICE_CHANGE_PRODUCT_ID) {
+          next.productId = '';
+        }
       }
 
       if (key === 'productId') {
         const selectedProduct = products.find((product) => product.id === value);
         next.productId = String(value);
         if (value === MANUAL_PRICE_CHANGE_PRODUCT_ID) {
-          next.productName = '직접입력';
+          next.productName = '';
         } else if (selectedProduct) {
           next.productName = selectedProduct.name1;
         } else if (!value) {
