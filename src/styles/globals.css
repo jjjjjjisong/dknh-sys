@@ -2940,6 +2940,25 @@ a {
   font-size: 18px;
 }
 
+.slide-panel-close-button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.slide-panel-close-button:hover {
+  background: var(--surface-2);
+  border-color: var(--border-2);
+  color: var(--text-1);
+}
+
 .slide-panel-body {
   display: flex;
   flex-direction: column;
@@ -3389,14 +3408,210 @@ a {
 }
 
 @media (max-width: 960px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-size: 14px;
+    background: #f4f7fb;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-inline-size: 0;
+    font-size: 16px;
+  }
+
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    line-height: normal;
+    text-align: left;
+  }
+
+  input[type="date"]::-webkit-date-and-time-value {
+    min-height: 1.2em;
+    text-align: left;
+  }
+
   .app-body {
     flex-direction: column;
   }
 
+  .app-main {
+    width: 100%;
+    padding: 14px 12px 88px;
+  }
+
+  .page-content {
+    gap: 12px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .page-description {
+    font-size: 12.5px;
+  }
+
+  .card,
+  .dashboard-chart-card,
+  .dashboard-summary-card-button,
+  .price-change-section,
+  .price-change-form-grid {
+    border-radius: 14px;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .card,
+  .dashboard-chart-card,
+  .price-change-section,
+  .price-change-form-grid {
+    padding: 14px;
+  }
+
+  .card-header,
+  .dashboard-card-head,
+  .price-change-head,
+  .monthly-closing-sheet-head,
+  .daily-sales-sheet-head,
+  .price-change-section-title {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .card-header h2,
+  .dashboard-card-head h2,
+  .monthly-closing-sheet-head h2,
+  .daily-sales-sheet-head h2 {
+    font-size: 16px;
+  }
+
+  .topbar {
+    height: auto;
+    min-height: 58px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .topbar-brand {
+    width: auto;
+    height: auto;
+    padding-left: 0;
+    border-right: 0;
+  }
+
+  .topbar-logo-image {
+    width: 92px;
+  }
+
+  .topbar-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .topbar-clock {
+    order: 3;
+    width: 100%;
+    text-align: right;
+    font-size: 11.5px;
+  }
+
+  .topbar-user {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12.5px;
+  }
+
+  .topbar-action-button {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+
   .sidebar {
     width: 100%;
+    height: auto;
+    min-height: 0;
+    position: sticky;
+    top: 58px;
+    z-index: 40;
+    padding: 8px 10px;
     border-right: 0;
     border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  .sidebar-nav,
+  .sidebar-section,
+  .sidebar-links {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .sidebar-nav {
+    gap: 10px;
+    min-width: max-content;
+  }
+
+  .sidebar-section {
+    gap: 6px;
+  }
+
+  .sidebar-section-title,
+  .sidebar-user-card {
+    display: none;
+  }
+
+  .sidebar-link {
+    min-height: 36px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .sidebar-link:hover {
+    transform: none;
+  }
+
+  .sidebar-link.active::before {
+    display: none;
+  }
+
+  .sidebar-link-icon,
+  .sidebar-svg-icon {
+    width: 16px;
+    height: 16px;
   }
 
   .stats-grid,
@@ -3404,9 +3619,133 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .toolbar,
+  .client-toolbar-actions,
+  .history-toolbar,
+  .button-row,
+  .modal-actions,
+  .account-actions,
+  .order-book-actions,
+  .order-book-top-actions,
+  .dashboard-panel-actions {
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .toolbar > *,
+  .client-toolbar-actions > *,
+  .history-toolbar > *,
+  .button-row > *,
+  .modal-actions > *,
+  .account-actions > *,
+  .order-book-actions > *,
+  .order-book-top-actions > *,
+  .dashboard-panel-actions > * {
+    min-width: 0;
+  }
+
+  .toolbar .btn,
+  .history-toolbar .btn,
+  .modal-actions .btn,
+  .account-actions .btn,
+  .order-book-actions .btn,
+  .order-book-top-actions .btn,
+  .doc-action-stack.inline .btn {
+    flex: 1 1 150px;
+  }
+
+  .search-input,
+  .field input,
+  .field select,
+  .field textarea,
+  .field-compact,
+  .history-filter-select,
+  .doc-cell-control {
+    width: 100%;
+  }
+
+  .field {
+    margin-bottom: 0;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .field-span-2,
+  .field-span-2-cols {
+    grid-column: 1 / -1;
+  }
+
+  .client-search-dropdown,
+  .price-change-product-menu {
+    max-height: 44vh;
+  }
+
   .dashboard-top-grid,
-  .dashboard-middle-grid {
+  .dashboard-middle-grid,
+  .dashboard-top-grid-asym,
+  .dashboard-left-stack {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-left-stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-summary-card-button {
+    min-height: 126px;
+    padding: 16px;
+  }
+
+  .dashboard-summary-number {
+    font-size: 30px;
+  }
+
+  .dashboard-summary-split {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-summary-split-divider {
+    display: none;
+  }
+
+  .dashboard-summary-split-label {
+    font-size: 12px;
+  }
+
+  .dashboard-summary-split-value {
+    font-size: 28px;
+  }
+
+  .dashboard-week-nav {
+    justify-content: space-between;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .dashboard-bar-chart {
+    height: 210px;
+    gap: 4px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+  }
+
+  .dashboard-bar-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .dashboard-bar-label,
+  .dashboard-bar-value {
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+
+  .dashboard-bar-track {
+    height: 144px;
+    max-width: 24px;
   }
 
   .dashboard-donut-wrap {
@@ -3414,12 +3753,59 @@ a {
     align-items: flex-start;
   }
 
+  .dashboard-panel-table {
+    min-width: 920px;
+  }
+
+  .dashboard-ellipsis-cell {
+    max-width: 12em;
+  }
+
   .doc-form-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .doc-main-stack {
+    gap: 12px;
+  }
+
+  .doc-items-table.wide {
+    min-width: 1480px;
+  }
+
+  .doc-sticky-actions {
+    padding: 10px 0 calc(8px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(244, 247, 251, 0) 0%, rgba(244, 247, 251, 0.95) 28%, #f4f7fb 100%);
+  }
+
+  .doc-action-stack.inline,
+  .doc-action-stack-sticky {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .doc-sticky-action-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+
+  .doc-totals-strip {
+    justify-content: stretch;
+  }
+
+  .doc-total-item {
+    flex: 1 1 150px;
+    min-width: 0;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .price-change-form-grid,
@@ -3437,27 +3823,197 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .product-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .product-toolbar-actions {
+    margin-top: 0;
+  }
+
+  .product-tab-list {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .product-tab-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .price-change-section-title {
+    align-items: stretch;
+  }
+
+  .price-change-history-head,
+  .price-change-count-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .price-change-target-summary > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   .release-preview-wrap {
     padding: 12px;
+    max-width: 100%;
+  }
+
+  .preview-modal-card,
+  .price-change-history-modal,
+  .doc-import-modal-card,
+  .supplier-import-modal-card,
+  .history-supplier-modal-card,
+  .monthly-summary-modal-card {
+    width: calc(100vw - 20px);
+  }
+
+  .modal-overlay {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .modal-head {
+    gap: 10px;
+  }
+
+  .slide-panel-overlay {
+    align-items: stretch;
+  }
+
+  .slide-panel-card {
+    width: 100vw;
+    padding: 16px 12px;
+  }
+
+  .slide-panel-head {
+    margin-bottom: 12px;
   }
 
   .schedule-calendar-layout {
     grid-template-columns: 1fr;
     height: auto;
+    max-height: none;
+    gap: 12px;
+    overflow: visible;
+  }
+
+  .schedule-calendar-modal-card {
+    width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+  }
+
+  .schedule-calendar-panel,
+  .schedule-calendar-detail {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .schedule-calendar-toolbar {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 8px;
+  }
+
+  .schedule-calendar-toolbar .btn {
+    width: 42px;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    text-indent: -999px;
+    position: relative;
+  }
+
+  .schedule-calendar-toolbar .btn::after {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-indent: 0;
+    font-size: 18px;
+  }
+
+  .schedule-calendar-toolbar .btn:first-child::after {
+    content: "<";
+  }
+
+  .schedule-calendar-toolbar .btn:last-child::after {
+    content: ">";
+  }
+
+  .schedule-calendar-month-label {
+    text-align: center;
+    font-size: 16px;
   }
 
   .schedule-calendar-grid {
-    gap: 6px;
+    gap: 4px;
+  }
+
+  .schedule-calendar-weekdays {
+    gap: 4px;
   }
 
   .schedule-calendar-day {
-    aspect-ratio: auto;
-    min-height: 116px;
-    padding: 8px;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    padding: 6px;
+    border-radius: 10px;
+  }
+
+  .schedule-calendar-day-head {
+    margin-bottom: 2px;
+  }
+
+  .schedule-calendar-day-number {
+    font-size: 12px;
+  }
+
+  .schedule-calendar-day-pill {
+    min-width: 0;
+    width: 24px;
+    height: 20px;
+    padding: 0;
+    font-size: 11px;
+  }
+
+  .schedule-calendar-detail {
+    min-height: 220px;
+  }
+
+  .schedule-calendar-detail-list {
+    max-height: 34vh;
+  }
+
+  .schedule-calendar-detail-top {
+    align-items: flex-start;
+  }
+
+  .schedule-calendar-detail-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .schedule-calendar-detail-stats span {
+    min-width: 0;
+    font-size: 11.5px;
+    white-space: nowrap;
   }
 
   .history-filter-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .history-edit-grid {
@@ -3470,11 +4026,21 @@ a {
   .daily-sales-filter-grid,
   .daily-sales-search-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .monthly-closing-filter-actions,
   .daily-sales-filter-actions {
-    justify-content: flex-start;
+    justify-content: stretch;
+  }
+
+  .monthly-closing-filter-actions .btn,
+  .daily-sales-filter-actions .btn {
+    width: 100%;
+  }
+
+  .monthly-closing-partner-card {
+    padding: 14px;
   }
 
   .monthly-closing-partner-lines.align-right {
@@ -3482,14 +4048,178 @@ a {
     text-align: left;
   }
 
-  .topbar {
-    height: auto;
+  .monthly-closing-partner-lines span {
+    white-space: normal;
+    word-break: keep-all;
+  }
+
+  .monthly-summary-table {
+    min-width: 760px;
+  }
+
+  .daily-sales-table-wrap {
+    max-height: 60vh;
+    min-height: 320px;
+  }
+
+  .daily-sales-table .client-col {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+  }
+
+  .daily-sales-table .product-col {
+    left: 160px;
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
+  }
+
+  .table-wrap,
+  .child-table-wrap,
+  .price-change-preview-table-wrap,
+  .price-change-selected-table-wrap,
+  .release-preview-wrap,
+  .daily-sales-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .table {
+    min-width: 860px;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 11px;
+    white-space: nowrap;
+  }
+
+  .supplier-import-modal-card .table-wrap {
+    overflow-x: auto;
+  }
+
+  .supplier-import-modal-card .table {
+    min-width: 640px;
+    table-layout: auto;
+  }
+
+  .doc-import-table-wrap {
+    max-height: 52vh;
+  }
+
+  .master-accordion-children {
+    padding: 4px 0 12px 26px;
+  }
+
+  .master-accordion-children::before {
+    left: 12px;
+  }
+
+  .pagination {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 16px;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pagination-controls,
+  .pagination-pages {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-summary {
+    text-align: center;
+  }
+
+  .pagination-button {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar {
+    grid-template-columns: 1fr;
   }
 
   .topbar-actions {
-    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .topbar-clock {
+    text-align: left;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .app-main {
+    padding-inline: 10px;
+  }
+
+  .card,
+  .dashboard-chart-card,
+  .price-change-section,
+  .price-change-form-grid {
+    padding: 12px;
+  }
+
+  .dashboard-summary-card-button {
+    min-height: 118px;
+    padding: 14px;
+  }
+
+  .dashboard-summary-split-value {
+    font-size: 24px;
+  }
+
+  .doc-action-stack.inline,
+  .doc-action-stack-sticky {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-calendar-modal-card,
+  .modal-card,
+  .slide-panel-card {
+    border-radius: 14px;
+  }
+
+  .schedule-calendar-day {
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .schedule-calendar-day-pill {
+    width: 20px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .dashboard-bar-chart {
+    gap: 2px;
+  }
+
+  .dashboard-bar-label,
+  .dashboard-bar-value {
+    font-size: 10.5px;
+  }
+
+  .dashboard-bar-track {
+    max-width: 20px;
+  }
+
+  .schedule-calendar-detail-stats {
+    gap: 4px;
+  }
+
+  .schedule-calendar-detail-stats span {
+    font-size: 10.5px;
   }
 }

@@ -807,7 +807,7 @@ export default function DocCreatePage() {
           />
         </div>
 
-        <div className="table-wrap">
+        <div className="table-wrap doc-import-table-wrap">
           <table className="table">
             <thead>
               <tr>
@@ -853,12 +853,14 @@ export default function DocCreatePage() {
             </tbody>
           </table>
         </div>
-        {!importLoading && filteredImportDocuments.length > 0 ? (
+
+        {!importLoading && filteredImportDocuments.length > IMPORT_PAGE_SIZE ? (
           <Pagination
             currentPage={importCurrentPage}
             totalItems={filteredImportDocuments.length}
             pageSize={IMPORT_PAGE_SIZE}
             onPageChange={setImportCurrentPage}
+            scrollOnChange={false}
           />
         ) : null}
       </Modal>
