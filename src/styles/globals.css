@@ -3912,6 +3912,8 @@ a {
 
   .schedule-calendar-modal-card {
     width: calc(100vw - 20px);
+    height: calc(100dvh - 20px);
+    height: calc(100svh - 20px);
     max-height: calc(100dvh - 20px);
     max-height: calc(100svh - 20px);
     display: flex;
@@ -3924,11 +3926,14 @@ a {
   }
 
   .schedule-calendar-modal-card .modal-form {
+    flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     padding-bottom: calc(18px + env(safe-area-inset-bottom));
+    touch-action: pan-y;
   }
 
   .schedule-calendar-panel,
