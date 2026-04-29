@@ -5,6 +5,7 @@ import { fetchDocuments, fetchNextIssueNo, saveDocument } from '../api/documents
 import { fetchProductsByClientId } from '../api/products';
 import { fetchSuppliers } from '../api/suppliers';
 import PageHeader from '../components/PageHeader';
+import Pagination from '../components/Pagination';
 import { getStoredUser } from '../lib/session';
 import { exportInvoiceToExcel } from '../utils/excelExport';
 import DocumentPreviewModal, { PreviewType } from '../components/ui/DocumentPreviewModal';
@@ -23,6 +24,7 @@ import { RECEIVER_OPTIONS } from '../constants/receivers';
 import { emptyToNull, formatIntegerInput, parseNullableInteger, stripNonNumeric, formatNumber, getLocalDateInputValue } from '../utils/formatters';
 
 const today = getLocalDateInputValue();
+const IMPORT_PAGE_SIZE = 10;
 
 type DocForm = {
   issueNo: string;
@@ -114,6 +116,7 @@ export default function DocCreatePage() {
   const [importLoading, setImportLoading] = useState(false);
   const [importDocuments, setImportDocuments] = useState<DocumentHistory[]>([]);
   const [importKeyword, setImportKeyword] = useState('');
+  const [importPage, setImportPage] = useState(1);
   const saveLockRef = useRef(false);
   const prevBaseOrderDateRef = useRef(form.orderDate);
   const prevBaseArriveDateRef = useRef(form.arriveDate);
@@ -405,6 +408,7 @@ export default function DocCreatePage() {
       setError(null);
       const rows = await fetchDocuments();
       setImportDocuments(rows);
+      setImportPage(1);
       setImportModalOpen(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : '불러올 발행이력 목록을 가져오지 못했습니다.');
@@ -464,6 +468,7 @@ export default function DocCreatePage() {
       setItems(mapImportedDocumentItems(document, productRows));
       setImportModalOpen(false);
       setImportKeyword('');
+      setImportPage(1);
     } catch (err) {
       setError(err instanceof Error ? err.message : '선택한 문서를 불러오지 못했습니다.');
     } finally {
@@ -488,6 +493,22 @@ export default function DocCreatePage() {
         .includes(keyword),
     );
   }, [importDocuments, importKeyword]);
+
+  useEffect(() => {
+    setImportPage(1);
+  }, [importKeyword]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(filteredImportDocuments.length / IMPORT_PAGE_SIZE));
+    if (importPage > totalPages) {
+      setImportPage(totalPages);
+    }
+  }, [filteredImportDocuments.length, importPage]);
+
+  const pagedImportDocuments = useMemo(() => {
+    const start = (importPage - 1) * IMPORT_PAGE_SIZE;
+    return filteredImportDocuments.slice(start, start + IMPORT_PAGE_SIZE);
+  }, [filteredImportDocuments, importPage]);
 
   const filteredSuppliers = useMemo(() => {
     const keyword = supplierKeyword.trim().toLowerCase();
@@ -757,6 +778,7 @@ export default function DocCreatePage() {
           if (!importLoading) {
             setImportModalOpen(false);
             setImportKeyword('');
+            setImportPage(1);
           }
         }}
         cardClassName="doc-import-modal-card"
@@ -768,6 +790,7 @@ export default function DocCreatePage() {
             onClick={() => {
               setImportModalOpen(false);
               setImportKeyword('');
+              setImportPage(1);
             }}
             disabled={importLoading}
           >
@@ -784,7 +807,7 @@ export default function DocCreatePage() {
           />
         </div>
 
-        <div className="table-wrap">
+        <div className="table-wrap doc-import-table-wrap">
           <table className="table">
             <thead>
               <tr>
@@ -806,7 +829,7 @@ export default function DocCreatePage() {
                   <td colSpan={6} className="table-empty">검색 결과가 없습니다.</td>
                 </tr>
               ) : (
-                filteredImportDocuments.map((document) => (
+                pagedImportDocuments.map((document) => (
                   <tr
                     key={document.id}
                     className="modal-select-row"
@@ -824,6 +847,16 @@ export default function DocCreatePage() {
             </tbody>
           </table>
         </div>
+
+        {!importLoading && filteredImportDocuments.length > IMPORT_PAGE_SIZE ? (
+          <Pagination
+            currentPage={importPage}
+            totalItems={filteredImportDocuments.length}
+            pageSize={IMPORT_PAGE_SIZE}
+            onPageChange={setImportPage}
+            scrollOnChange={false}
+          />
+        ) : null}
       </Modal>
     </div>
   );

@@ -3,6 +3,7 @@ type PaginationProps = {
   totalItems: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  scrollOnChange?: boolean;
 };
 
 export default function Pagination({
@@ -10,6 +11,7 @@ export default function Pagination({
   totalItems,
   pageSize,
   onPageChange,
+  scrollOnChange = true,
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const pages = getVisiblePages(currentPage, totalPages);
@@ -20,7 +22,9 @@ export default function Pagination({
     const nextPage = Math.min(Math.max(page, 1), totalPages);
     if (nextPage === currentPage) return;
     onPageChange(nextPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (scrollOnChange) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   return (
