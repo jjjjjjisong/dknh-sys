@@ -1187,6 +1187,15 @@ a {
   gap: 6px;
 }
 
+.mcee-keyword-summary {
+  display: inline-block;
+  max-width: 118px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
 .mcee-link-stack {
   display: flex;
   flex-direction: row;

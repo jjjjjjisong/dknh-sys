@@ -177,7 +177,9 @@ export default function MceePressReleasePage() {
                         {item.title || '-'}
                       </Link>
                     </td>
-                    <td>{item.searchKeyword || '-'}</td>
+                    <td title={getKeywordTitle(item)}>
+                      <span className="mcee-keyword-summary">{getKeywordSummary(item)}</span>
+                    </td>
                     <td>{item.department || '-'}</td>
                     <td style={{ textAlign: 'center' }}>
                       {item.downloadLinks.length > 0 ? (
@@ -230,4 +232,21 @@ export default function MceePressReleasePage() {
       </section>
     </div>
   );
+}
+
+function getKeywordSummary(item: MceePressRelease) {
+  const keywords = getDisplayKeywords(item);
+  if (keywords.length === 0) return '-';
+  if (keywords.length === 1) return keywords[0];
+  return `${keywords[0]} 외 ${keywords.length - 1}건`;
+}
+
+function getKeywordTitle(item: MceePressRelease) {
+  const keywords = getDisplayKeywords(item);
+  return keywords.length > 0 ? keywords.join(', ') : '';
+}
+
+function getDisplayKeywords(item: MceePressRelease) {
+  const keywords = item.matchedKeywords.length > 0 ? item.matchedKeywords : [item.searchKeyword];
+  return Array.from(new Set(keywords.map((keyword) => keyword.trim()).filter(Boolean)));
 }
