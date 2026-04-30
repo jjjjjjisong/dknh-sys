@@ -6,6 +6,8 @@ import DocHistoryPage from '../pages/DocHistoryPage';
 import OrderBookPage from '../pages/OrderBookPage';
 import MonthlyClosingPage from '../pages/MonthlyClosingPage';
 import DailySalesPage from '../pages/DailySalesPage';
+import MceePressReleaseDetailPage from '../pages/MceePressReleaseDetailPage';
+import MceePressReleasePage from '../pages/MceePressReleasePage';
 import MasterClientPage from '../pages/MasterClientPage';
 import MasterProductPage from '../pages/MasterProductPage';
 import MasterSupplierPage from '../pages/MasterSupplierPage';
@@ -56,6 +58,8 @@ export const router = createHashRouter([
       { path: 'doc-history/:documentId', element: <DocHistoryPage /> },
       { path: 'order-book', element: <OrderBookPage /> },
       { path: 'monthly-closing', element: <MonthlyClosingPage /> },
+      { path: 'mcee-press-releases', element: <MceePressReleasePage /> },
+      { path: 'mcee-press-releases/:pressReleaseId', element: <MceePressReleaseDetailPage /> },
       { path: 'master-client', element: <MasterClientPage /> },
       { path: 'master-supplier', element: <MasterSupplierPage /> },
       { path: 'master-product', element: <MasterProductPage /> },

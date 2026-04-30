@@ -9,7 +9,10 @@ Fresh production setup order:
 5. `08_product_masters.sql`
 6. `04_documents.sql`
 7. `05_order_book.sql`
-8. `90_policies.sql`
+8. `10_mcee_press_releases.sql`
+9. `11_mcee_crawl_keywords.sql`
+10. `15_mcee_press_releases_effective_date.sql`
+11. `90_policies.sql`
 
 Or run this single file in Supabase SQL Editor:
 
@@ -38,3 +41,22 @@ Notes:
   - `uq_documents_active_issue_no`
   - `uq_document_items_active_document_id_seq`
 - `01_accounts.sql` inserts a default `admin` account if it does not already exist.
+- `10_mcee_press_releases.sql` creates the text-only MCEE press release storage,
+  and `11_mcee_crawl_keywords.sql` creates the keyword/crawl-state table.
+  See `../mcee-press-releases.md` for the scrape scope, storage rules, and
+  development intent.
+- `12_mcee_press_release_cron.sql` is not part of the fresh baseline run. Use it
+  after the Edge Function is deployed and its placeholders are replaced.
+- `13_mcee_crawl_keywords_schedule_fix.sql` is a patch for environments where
+  `mcee_crawl_keywords` was created before `scheduled_iso_dow` and
+  `scheduled_time` were added. It is safe to run after `11_mcee_crawl_keywords.sql`
+  if the crawler reports a missing `scheduled_iso_dow` column.
+- `14_mcee_crawl_keywords_seed_fix.sql` is a patch for environments where the
+  keyword rows were missing or not updated to the required Korean keyword set.
+  It is safe to run after `11_mcee_crawl_keywords.sql`.
+- `15_mcee_press_releases_effective_date.sql` adds the user-managed `시행일`
+  field and update policy for the press release menu. Run it after
+  `10_mcee_press_releases.sql`.
+- For production deployment, follow
+  `../mcee-press-release-production-deploy.md`. Run the cron SQL only after a
+  manual production Edge Function test succeeds.

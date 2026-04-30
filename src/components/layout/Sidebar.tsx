@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
   { group: '관리', label: '공급자 관리', to: '/master-supplier', icon: <SidebarIconStore /> },
   { group: '정산', label: '월마감', to: '/monthly-closing', icon: <SidebarIconTrend /> },
   { group: '정산', label: '일일판매', to: '/daily-sales', icon: <SidebarIconTrend />, adminOnly: true },
+  { group: '자료실', label: '보도자료', to: '/mcee-press-releases', icon: <SidebarIconList /> },
   { group: '관리자', label: '계정 관리', to: '/account', icon: <SidebarIconSettings />, adminOnly: true },
 ];
 

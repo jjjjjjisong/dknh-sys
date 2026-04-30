@@ -1,0 +1,2 @@
+[functions.crawl-mcee-press-releases]
+verify_jwt = false
