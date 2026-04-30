@@ -1174,6 +1174,13 @@ a {
   min-width: 1080px;
 }
 
+.mcee-page-note {
+  margin-top: -8px;
+  color: var(--text-3);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
 .mcee-filter-grid {
   display: grid;
   grid-template-columns: 170px 170px minmax(280px, 1fr);

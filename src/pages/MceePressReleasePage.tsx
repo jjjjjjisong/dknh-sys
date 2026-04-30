@@ -89,6 +89,11 @@ export default function MceePressReleasePage() {
     <div className="page-content">
       <PageHeader title="보도자료" description="" />
 
+      <div className="mcee-page-note">
+        <div>*수신처: 기후에너지환경부 사이트 → 알림·홍보 → [공지·공고] / [보도·설명]</div>
+        <div>*키워드: 1회용, 일회용, 다회용, 재활용, 빨대, 스틱, 플라스틱, PET, PP, PS, 컵보증금, 폐기물</div>
+      </div>
+
       {error ? <Alert>{error}</Alert> : null}
 
       <section className="card">
