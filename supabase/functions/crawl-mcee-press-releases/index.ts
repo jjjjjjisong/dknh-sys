@@ -35,9 +35,13 @@ type PressReleaseRecord = {
   del_yn: 'N';
 };
 
+type DownloadLink = PressReleaseRecord['download_links'][number];
+
 type ExistingPressRelease = {
   search_keyword: string | null;
   matched_keywords: string[] | null;
+  body_text: string | null;
+  download_links: DownloadLink[] | null;
 };
 
 Deno.serve(async (request) => {
@@ -128,8 +132,10 @@ async function crawlKeyword({
       for (const item of list.items) {
         const detail = await fetchDetailPage(item.boardId);
         const existing = await fetchExistingPressRelease(supabaseUrl, serviceRoleKey, item.boardId);
+        const bodyText = detail.bodyText || existing?.body_text || '';
+        const downloadLinks = detail.downloadLinks.length > 0 ? detail.downloadLinks : existing?.download_links ?? [];
         const matchedKeywords = mergeKeywords(existing?.matched_keywords ?? [], getMatchedKeywords(
-          `${item.title}\n${detail.bodyText}`,
+          `${item.title}\n${bodyText}`,
           matchKeywordPool,
         ));
         const now = new Date().toISOString();
@@ -139,13 +145,13 @@ async function crawlKeyword({
           source_board_master_id: SOURCE_BOARD_MASTER_ID,
           source_menu_id: SOURCE_MENU_ID,
           title: item.title,
-          body_text: detail.bodyText,
+          body_text: bodyText,
           department: item.department,
           author: item.author,
           published_date: item.publishedDate,
           view_count: item.viewCount,
           source_url: buildDetailUrl(item.boardId),
-          download_links: detail.downloadLinks,
+          download_links: downloadLinks,
           search_keyword: existing?.search_keyword || keyword.keyword,
           matched_keywords: matchedKeywords,
           scraped_at: now,
@@ -215,7 +221,7 @@ async function fetchExistingPressRelease(
   const rows = await supabaseGet<ExistingPressRelease[]>(
     supabaseUrl,
     serviceRoleKey,
-    `/rest/v1/mcee_press_releases?select=search_keyword,matched_keywords&source_board_id=eq.${encodeURIComponent(boardId)}&limit=1`,
+    `/rest/v1/mcee_press_releases?select=search_keyword,matched_keywords,body_text,download_links&source_board_id=eq.${encodeURIComponent(boardId)}&limit=1`,
   );
   return rows[0] ?? null;
 }
@@ -315,30 +321,55 @@ function parseListRow(rowHtml: string) {
 
 function parseBodyText(html: string) {
   const bodyHtml =
-    getFirstMatch(html, /<div\b[^>]*class="[^"]*view_con[^"]*"[^>]*>([\s\S]*?)<!--\s*end view_con\s*-->/i) ??
+    extractHtmlSection(
+      html,
+      /<div\b[^>]*class="[^"]*view_con[^"]*"[^>]*>/i,
+      [
+        /<!--\s*end view_con\s*-->/i,
+        /<!--\s*start view_file\s*-->/i,
+        /<div\b[^>]*class="[^"]*view_file[^"]*"[^>]*>/i,
+        /<!--\s*start btn_wrap\s*-->/i,
+      ],
+    ) ??
     getFirstMatch(html, /<div\b[^>]*id="boardContentWrap"[^>]*>([\s\S]*?)<\/div>/i) ??
     '';
   return cleanText(stripTags(bodyHtml));
 }
 
 function parseDownloadLinks(html: string) {
-  return matchAll(
+  const links = new Map<string, DownloadLink>();
+
+  for (const match of matchAll(
     html,
-    /ajaxFileDownLoad\('([^']+)'\s*,\s*'([^']+)'\)[\s\S]*?title="파일다운로드"[^>]*>([\s\S]*?)<\/a>/gi,
-  ).map((match) => {
-    const nameAndSize = cleanText(stripTags(match[3]));
-    const size = getFirstMatch(nameAndSize, /\(([^()]+)\)\s*$/);
-    const name = size ? cleanText(nameAndSize.replace(/\s*\([^()]+\)\s*$/, '')) : nameAndSize;
-    const extension = getFileExtensionLabel(name);
-    const url = new URL('/home/file/readDownloadFile.do', SOURCE_ORIGIN);
-    url.searchParams.set('fileId', match[1]);
-    url.searchParams.set('fileSeq', match[2]);
-    return {
-      name,
-      url: url.toString(),
-      ...(extension ? { extension } : {}),
-      ...(size ? { size } : {}),
-    };
+    /<a\b[^>]*href="[^"]*ajaxFileDownLoad\('([^']+)'\s*,\s*'([^']+)'\);?[^"]*"[^>]*>([\s\S]*?)<\/a>/gi,
+  )) {
+    addDownloadLink(links, match[1], match[2], match[3]);
+  }
+
+  for (const match of matchAll(html, /ajaxFileDownLoad\('([^']+)'\s*,\s*'([^']+)'\)[\s\S]{0,500}?<\/a>/gi)) {
+    const anchorHtml = getFirstMatch(match[0], /<a\b[^>]*>([\s\S]*?)<\/a>/i) ?? '';
+    addDownloadLink(links, match[1], match[2], anchorHtml);
+  }
+
+  return Array.from(links.values());
+}
+
+function addDownloadLink(links: Map<string, DownloadLink>, fileId: string, fileSeq: string, labelHtml: string) {
+  const nameAndSize = cleanText(stripTags(labelHtml));
+  if (!nameAndSize) return;
+
+  const size = getFirstMatch(nameAndSize, /\(([^()]+)\)\s*$/);
+  const name = size ? cleanText(nameAndSize.replace(/\s*\([^()]+\)\s*$/, '')) : nameAndSize;
+  const extension = getFileExtensionLabel(name);
+  const url = new URL('/home/file/readDownloadFile.do', SOURCE_ORIGIN);
+  url.searchParams.set('fileId', fileId);
+  url.searchParams.set('fileSeq', fileSeq);
+
+  links.set(`${fileId}:${fileSeq}`, {
+    name,
+    url: url.toString(),
+    ...(extension ? { extension } : {}),
+    ...(size ? { size } : {}),
   });
 }
 
@@ -519,6 +550,20 @@ function normalizeDate(value: string) {
 function parseNullableInteger(value: string) {
   const parsed = parseInt(value.replace(/,/g, '').trim(), 10);
   return Number.isNaN(parsed) ? null : parsed;
+}
+
+function extractHtmlSection(value: string, startPattern: RegExp, endPatterns: RegExp[]) {
+  const start = value.match(startPattern);
+  if (!start || start.index === undefined) return null;
+
+  const contentStart = start.index + start[0].length;
+  const rest = value.slice(contentStart);
+  const endIndexes = endPatterns
+    .map((pattern) => rest.search(pattern))
+    .filter((index) => index >= 0);
+
+  const contentEnd = endIndexes.length > 0 ? Math.min(...endIndexes) : rest.length;
+  return rest.slice(0, contentEnd);
 }
 
 function getFirstMatch(value: string, pattern: RegExp) {
