@@ -34,7 +34,6 @@ export default function MasterProductPage() {
     filteredMasters,
     filteredProducts,
     handleClientSelect,
-    handleDeleteMaster,
     handleDeleteProduct,
     handleDownloadExcel,
     handleMasterSubmit,
@@ -78,7 +77,6 @@ export default function MasterProductPage() {
     closeProductModal,
     openCreateMasterModal,
     openCreateProductModal,
-    openEditMasterModal,
     openEditProductModal,
     toggleMasterAccordion,
     updateMasterForm,
@@ -164,10 +162,9 @@ export default function MasterProductPage() {
               <Button
                 type="button"
                 variant="primary"
-                style={activeTab === 'masters' ? undefined : { display: 'none' }}
-                onClick={openCreateMasterModal}
+                onClick={activeTab === 'masters' ? openCreateMasterModal : () => openCreateProductModal()}
               >
-                {activeTab === 'masters' ? '공통 품목 추가' : '납품처별 품목 추가'}
+                {activeTab === 'masters' ? '공통 품목 추가' : '품목추가'}
               </Button>
             </div>
           </div>
@@ -185,11 +182,6 @@ export default function MasterProductPage() {
             expandedMasterIds={expandedMasterIds}
             productsByMasterId={productsByMasterId}
             onToggleMaster={toggleMasterAccordion}
-            onCreateChild={openCreateProductModal}
-            onEditMaster={openEditMasterModal}
-            onDeleteMaster={(master) => void handleDeleteMaster(master)}
-            onEditChild={openEditProductModal}
-            onDeleteChild={(product) => void handleDeleteProduct(product)}
           />
         ) : activeTab === 'products' ? (
           <ProductsTable
@@ -255,7 +247,7 @@ export default function MasterProductPage() {
         productForm={productForm}
         productFormError={productFormError}
         saving={saving}
-        showPricingFields={false}
+        showPricingFields
         productMasters={productMasters}
         clients={clients}
         filteredFormClientOptions={filteredFormClientOptions}
