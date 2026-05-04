@@ -5,7 +5,7 @@ import PageHeader from '../components/PageHeader';
 import Alert from '../components/ui/Alert';
 import type { MceePressRelease } from '../types/mceePressRelease';
 
-const NEW_BADGE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+const NEW_BADGE_SCRAPED_FROM = Date.parse('2026-05-01T00:00:00+09:00');
 
 export default function MceePressReleaseDetailPage() {
   const { pressReleaseId } = useParams();
@@ -126,5 +126,5 @@ function isNewPressRelease(item: MceePressRelease) {
   if (!item.scrapedAt) return false;
   const scrapedTime = Date.parse(item.scrapedAt);
   if (!Number.isFinite(scrapedTime)) return false;
-  return Date.now() - scrapedTime <= NEW_BADGE_WINDOW_MS;
+  return scrapedTime >= NEW_BADGE_SCRAPED_FROM;
 }
