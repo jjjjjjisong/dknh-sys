@@ -29,6 +29,7 @@ type ProductModalProps = {
   productFormError: string | null;
   saving: boolean;
   showPricingFields: boolean;
+  readOnly?: boolean;
   productMasters: ProductMaster[];
   clients: Client[];
   filteredFormClientOptions: Client[];
@@ -166,6 +167,7 @@ export function ProductItemModal({
   productFormError,
   saving,
   showPricingFields,
+  readOnly = false,
   productMasters,
   clients,
   filteredFormClientOptions,
@@ -183,18 +185,24 @@ export function ProductItemModal({
   return (
     <Modal
       open={open}
-      title={editingProduct ? '납품처별 품목 수정' : '납품처별 품목 추가'}
+      title={readOnly ? '납품처별 품목 상세' : editingProduct ? '납품처별 품목 수정' : '납품처별 품목 추가'}
       onClose={onClose}
       closeOnOverlayClick={false}
       footer={
-        <>
+        readOnly ? (
           <Button type="button" variant="secondary" onClick={onClose}>
-            취소
+            닫기
           </Button>
-          <Button type="submit" variant="primary" form="product-form" disabled={saving}>
-            {saving ? '저장 중...' : '저장'}
-          </Button>
-        </>
+        ) : (
+          <>
+            <Button type="button" variant="secondary" onClick={onClose}>
+              취소
+            </Button>
+            <Button type="submit" variant="primary" form="product-form" disabled={saving}>
+              {saving ? '저장 중...' : '저장'}
+            </Button>
+          </>
+        )
       }
     >
       <form id="product-form" className="form-grid" onSubmit={onSubmit}>
@@ -206,6 +214,7 @@ export function ProductItemModal({
               onUpdateForm('productMasterId', nextId);
               onApplyMasterDefaults(nextId);
             }}
+            disabled={readOnly}
           >
             <option value="">공통 품목 선택</option>
             {productMasters.map((master) => (
@@ -233,10 +242,11 @@ export function ProductItemModal({
                 onSetClientDropdownOpen(true);
               }}
               onFocus={() => onSetClientDropdownOpen(true)}
+              readOnly={readOnly}
               placeholder="납품처를 선택하세요"
             />
             <span className="client-search-caret" aria-hidden="true" />
-            {clientDropdownOpen ? (
+            {clientDropdownOpen && !readOnly ? (
               <div className="client-search-dropdown">
                 {filteredFormClientOptions.length > 0 ? (
                   filteredFormClientOptions.map((client) => (
@@ -261,6 +271,7 @@ export function ProductItemModal({
           <select
             value={productForm.receiver}
             onChange={(event) => onUpdateForm('receiver', event.target.value)}
+            disabled={readOnly}
           >
             <option value="">수신처를 선택하세요</option>
             {RECEIVER_OPTIONS.map((receiver) => (
@@ -279,6 +290,7 @@ export function ProductItemModal({
           <input
             value={productForm.name1}
             onChange={(event) => onUpdateForm('name1', event.target.value)}
+            readOnly={readOnly}
             placeholder="품목명(출고의뢰서)를 입력하세요"
           />
         </FormField>
@@ -287,6 +299,7 @@ export function ProductItemModal({
           <input
             value={productForm.name2}
             onChange={(event) => onUpdateForm('name2', event.target.value)}
+            readOnly={readOnly}
             placeholder="비워두면 품목명(출고의뢰서)와 동일하게 저장됩니다"
           />
         </FormField>
@@ -294,7 +307,9 @@ export function ProductItemModal({
         <FormField label="1B=EA">
           <input
             value={formatNullableNumber(productForm.ea_per_b)}
-            readOnly
+            onChange={(event) => onUpdateForm('ea_per_b', parseNullableNumber(event.target.value))}
+            inputMode="numeric"
+            readOnly={readOnly}
             placeholder="1Box 기준 EA 수량"
           />
         </FormField>
@@ -302,7 +317,9 @@ export function ProductItemModal({
         <FormField label="1P=BOX">
           <input
             value={formatNullableNumber(productForm.box_per_p)}
-            readOnly
+            onChange={(event) => onUpdateForm('box_per_p', parseNullableNumber(event.target.value))}
+            inputMode="numeric"
+            readOnly={readOnly}
             placeholder="1P 기준 BOX 수량"
           />
         </FormField>
@@ -314,7 +331,11 @@ export function ProductItemModal({
         <FormField label="1대당 파레트">
           <input
             value={formatNullableNumber(productForm.pallets_per_truck)}
-            readOnly
+            onChange={(event) =>
+              onUpdateForm('pallets_per_truck', parseNullableNumber(event.target.value))
+            }
+            inputMode="numeric"
+            readOnly={readOnly}
             placeholder="차량당 파레트 수량"
           />
         </FormField>
@@ -328,6 +349,7 @@ export function ProductItemModal({
                   onUpdateForm('cost_price', parseNullableNumber(event.target.value))
                 }
                 inputMode="decimal"
+                readOnly={readOnly}
                 placeholder="입고단가 입력"
               />
             </FormField>
@@ -339,6 +361,7 @@ export function ProductItemModal({
                   onUpdateForm('sell_price', parseNullableNumber(event.target.value))
                 }
                 inputMode="decimal"
+                readOnly={readOnly}
                 placeholder="판매단가 입력"
               />
             </FormField>

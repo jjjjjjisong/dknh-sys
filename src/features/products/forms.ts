@@ -99,6 +99,8 @@ export function applyMasterDefaultsToProductForm(
     ...productForm,
     productMasterId: master.id,
     gubun: master.gubun || productForm.gubun || DEFAULT_GUBUN,
+    name1: master.name1 || productForm.name1,
+    name2: master.name2 || master.name1 || productForm.name2,
     ea_per_b: master.ea_per_b,
     box_per_p: master.box_per_p,
     ea_per_p: master.ea_per_p,

@@ -10,6 +10,7 @@ type MasterProductsTableProps = {
   expandedMasterIds: string[];
   productsByMasterId: Map<string, Product[]>;
   onToggleMaster: (masterId: string) => void;
+  onViewChild: (product: Product) => void;
 };
 
 type ProductsTableProps = {
@@ -39,6 +40,7 @@ export function MasterProductsTable({
   expandedMasterIds,
   productsByMasterId,
   onToggleMaster,
+  onViewChild,
 }: MasterProductsTableProps) {
   if (filteredMasters.length === 0) {
     return <div className="empty-state">검색 결과가 없습니다.</div>;
@@ -130,7 +132,11 @@ export function MasterProductsTable({
                             </thead>
                             <tbody>
                               {children.map((child) => (
-                                <tr key={child.id}>
+                                <tr
+                                  key={child.id}
+                                  onClick={() => onViewChild(child)}
+                                  className="history-clickable-row"
+                                >
                                   <td>
                                     <div className="table-clamp-2" title={child.name1 || '-'}>
                                       {child.name1 || '-'}
