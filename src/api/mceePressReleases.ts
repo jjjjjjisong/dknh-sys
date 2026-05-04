@@ -14,6 +14,7 @@ type MceePressReleaseRow = {
   download_links: unknown;
   search_keyword: string | null;
   matched_keywords: string[] | null;
+  scraped_at: string | null;
 };
 
 type FetchMceePressReleaseParams = {
@@ -30,7 +31,7 @@ type MceePressReleasePageResult = {
 };
 
 const MCEE_PRESS_RELEASE_SELECT =
-  'id, title, body_text, department, author, published_date, effective_date, view_count, source_url, download_links, search_keyword, matched_keywords';
+  'id, title, body_text, department, author, published_date, effective_date, view_count, source_url, download_links, search_keyword, matched_keywords, scraped_at';
 
 export async function fetchMceePressReleasePage(
   params: FetchMceePressReleaseParams,
@@ -116,6 +117,7 @@ function mapMceePressReleaseRow(row: MceePressReleaseRow): MceePressRelease {
     downloadLinks: parseDownloadLinks(row.download_links),
     searchKeyword: row.search_keyword ?? '',
     matchedKeywords: row.matched_keywords ?? [],
+    scrapedAt: row.scraped_at ?? null,
   };
 }
 
