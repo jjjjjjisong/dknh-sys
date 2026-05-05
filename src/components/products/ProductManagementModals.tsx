@@ -1,4 +1,4 @@
-import { type RefObject, type FormEvent } from 'react';
+import { type RefObject, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { RECEIVER_OPTIONS } from '../../constants/receivers';
 import type { Client } from '../../types/client';
 import type { Product, ProductInput, ProductMaster, ProductMasterInput } from '../../types/product';
@@ -182,6 +182,46 @@ export function ProductItemModal({
   formatNullableNumber,
   parseNullableNumber,
 }: ProductModalProps) {
+  const masterSearchBoxRef = useRef<HTMLDivElement>(null);
+  const [masterDropdownOpen, setMasterDropdownOpen] = useState(false);
+  const [masterKeyword, setMasterKeyword] = useState('');
+
+  useEffect(() => {
+    const selectedMaster = productMasters.find((master) => master.id === productForm.productMasterId);
+    setMasterKeyword(selectedMaster?.name1 ?? '');
+  }, [productForm.productMasterId, productMasters]);
+
+  useEffect(() => {
+    if (!masterDropdownOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (!masterSearchBoxRef.current?.contains(event.target as Node)) {
+        setMasterDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [masterDropdownOpen]);
+
+  const filteredProductMasters = useMemo(() => {
+    const keyword = masterKeyword.trim().toLowerCase();
+    if (!keyword) return productMasters;
+
+    return productMasters.filter((master) =>
+      [master.name1, master.name2, master.gubun]
+        .filter(Boolean)
+        .some((value) => value.toLowerCase().includes(keyword)),
+    );
+  }, [masterKeyword, productMasters]);
+
+  function handleMasterSelect(master: ProductMaster) {
+    setMasterKeyword(master.name1);
+    onUpdateForm('productMasterId', master.id);
+    onApplyMasterDefaults(master.id);
+    setMasterDropdownOpen(false);
+  }
+
   return (
     <Modal
       open={open}
@@ -207,22 +247,39 @@ export function ProductItemModal({
     >
       <form id="product-form" className="form-grid" onSubmit={onSubmit}>
         <FormField label="공통 품목 *">
-          <select
-            value={productForm.productMasterId}
-            onChange={(event) => {
-              const nextId = event.target.value;
-              onUpdateForm('productMasterId', nextId);
-              onApplyMasterDefaults(nextId);
-            }}
-            disabled={readOnly}
-          >
-            <option value="">공통 품목 선택</option>
-            {productMasters.map((master) => (
-              <option key={master.id} value={master.id}>
-                {master.name1}
-              </option>
-            ))}
-          </select>
+          <div className="client-search-box" ref={masterSearchBoxRef}>
+            <input
+              className="search-input"
+              value={masterKeyword}
+              onChange={(event) => {
+                setMasterKeyword(event.target.value);
+                onUpdateForm('productMasterId', '');
+                setMasterDropdownOpen(true);
+              }}
+              onFocus={() => setMasterDropdownOpen(true)}
+              readOnly={readOnly}
+              placeholder="공통 품목 검색 또는 선택"
+            />
+            <span className="client-search-caret" aria-hidden="true" />
+            {masterDropdownOpen && !readOnly ? (
+              <div className="client-search-dropdown">
+                {filteredProductMasters.length > 0 ? (
+                  filteredProductMasters.map((master) => (
+                    <button
+                      key={master.id}
+                      type="button"
+                      className="client-search-option"
+                      onClick={() => handleMasterSelect(master)}
+                    >
+                      {master.name1}
+                    </button>
+                  ))
+                ) : (
+                  <div className="client-search-option disabled">검색 결과가 없습니다.</div>
+                )}
+              </div>
+            ) : null}
+          </div>
         </FormField>
 
         <FormField label="구분">
