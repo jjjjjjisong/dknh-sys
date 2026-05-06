@@ -446,16 +446,6 @@ export default function DocumentItemTable({
                       >
                         삭제
                       </button>
-                      {onToggleItemCancel ? (
-                        <button
-                          className={itemCancelled ? 'btn btn-secondary doc-delete-button' : 'btn btn-danger doc-delete-button'}
-                          type="button"
-                          onClick={() => onToggleItemCancel(item.id)}
-                          style={{ marginTop: 6 }}
-                        >
-                          {itemCancelled ? '취소해제' : '품목취소'}
-                        </button>
-                      ) : null}
                     </td>
                   </tr>
                   <tr className={itemCancelled ? 'doc-item-note-row doc-item-cancelled-row' : 'doc-item-note-row'}>
@@ -507,7 +497,17 @@ export default function DocumentItemTable({
                     <td className="doc-item-note-spacer" />
                     <td className="doc-item-note-spacer" />
                     <td className="doc-item-note-spacer" />
-                    <td className="doc-item-note-spacer" />
+                    <td className="doc-item-note-spacer doc-item-note-action-cell">
+                      {onToggleItemCancel ? (
+                        <button
+                          className={itemCancelled ? 'btn btn-secondary doc-delete-button' : 'btn btn-danger doc-delete-button'}
+                          type="button"
+                          onClick={() => onToggleItemCancel(item.id)}
+                        >
+                          {itemCancelled ? '취소해제' : '품목취소'}
+                        </button>
+                      ) : null}
+                    </td>
                   </tr>
                 </React.Fragment>
               );

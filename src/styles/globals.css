@@ -1794,6 +1794,11 @@ a {
   width: 100%;
 }
 
+.doc-item-note-action-cell {
+  text-align: center;
+  vertical-align: top;
+}
+
 .doc-gubun-col,
 .doc-gubun-cell {
   width: 84px;
