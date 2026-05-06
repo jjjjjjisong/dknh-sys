@@ -18,4 +18,5 @@ export type MceePressRelease = {
   downloadLinks: MceeDownloadLink[];
   searchKeyword: string;
   matchedKeywords: string[];
+  scrapedAt: string | null;
 };

@@ -1,4 +1,4 @@
-import { type RefObject, type FormEvent } from 'react';
+import { type RefObject, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { RECEIVER_OPTIONS } from '../../constants/receivers';
 import type { Client } from '../../types/client';
 import type { Product, ProductInput, ProductMaster, ProductMasterInput } from '../../types/product';
@@ -29,6 +29,7 @@ type ProductModalProps = {
   productFormError: string | null;
   saving: boolean;
   showPricingFields: boolean;
+  readOnly?: boolean;
   productMasters: ProductMaster[];
   clients: Client[];
   filteredFormClientOptions: Client[];
@@ -166,6 +167,7 @@ export function ProductItemModal({
   productFormError,
   saving,
   showPricingFields,
+  readOnly = false,
   productMasters,
   clients,
   filteredFormClientOptions,
@@ -180,40 +182,104 @@ export function ProductItemModal({
   formatNullableNumber,
   parseNullableNumber,
 }: ProductModalProps) {
+  const masterSearchBoxRef = useRef<HTMLDivElement>(null);
+  const [masterDropdownOpen, setMasterDropdownOpen] = useState(false);
+  const [masterKeyword, setMasterKeyword] = useState('');
+
+  useEffect(() => {
+    const selectedMaster = productMasters.find((master) => master.id === productForm.productMasterId);
+    setMasterKeyword(selectedMaster?.name1 ?? '');
+  }, [productForm.productMasterId, productMasters]);
+
+  useEffect(() => {
+    if (!masterDropdownOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (!masterSearchBoxRef.current?.contains(event.target as Node)) {
+        setMasterDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [masterDropdownOpen]);
+
+  const filteredProductMasters = useMemo(() => {
+    const keyword = masterKeyword.trim().toLowerCase();
+    if (!keyword) return productMasters;
+
+    return productMasters.filter((master) =>
+      [master.name1, master.name2, master.gubun]
+        .filter(Boolean)
+        .some((value) => value.toLowerCase().includes(keyword)),
+    );
+  }, [masterKeyword, productMasters]);
+
+  function handleMasterSelect(master: ProductMaster) {
+    setMasterKeyword(master.name1);
+    onUpdateForm('productMasterId', master.id);
+    onApplyMasterDefaults(master.id);
+    setMasterDropdownOpen(false);
+  }
+
   return (
     <Modal
       open={open}
-      title={editingProduct ? '납품처별 품목 수정' : '납품처별 품목 추가'}
+      title={readOnly ? '납품처별 품목 상세' : editingProduct ? '납품처별 품목 수정' : '납품처별 품목 추가'}
       onClose={onClose}
       closeOnOverlayClick={false}
       footer={
-        <>
+        readOnly ? (
           <Button type="button" variant="secondary" onClick={onClose}>
-            취소
+            닫기
           </Button>
-          <Button type="submit" variant="primary" form="product-form" disabled={saving}>
-            {saving ? '저장 중...' : '저장'}
-          </Button>
-        </>
+        ) : (
+          <>
+            <Button type="button" variant="secondary" onClick={onClose}>
+              취소
+            </Button>
+            <Button type="submit" variant="primary" form="product-form" disabled={saving}>
+              {saving ? '저장 중...' : '저장'}
+            </Button>
+          </>
+        )
       }
     >
       <form id="product-form" className="form-grid" onSubmit={onSubmit}>
         <FormField label="공통 품목 *">
-          <select
-            value={productForm.productMasterId}
-            onChange={(event) => {
-              const nextId = event.target.value;
-              onUpdateForm('productMasterId', nextId);
-              onApplyMasterDefaults(nextId);
-            }}
-          >
-            <option value="">공통 품목 선택</option>
-            {productMasters.map((master) => (
-              <option key={master.id} value={master.id}>
-                {master.name1}
-              </option>
-            ))}
-          </select>
+          <div className="client-search-box" ref={masterSearchBoxRef}>
+            <input
+              className="search-input"
+              value={masterKeyword}
+              onChange={(event) => {
+                setMasterKeyword(event.target.value);
+                onUpdateForm('productMasterId', '');
+                setMasterDropdownOpen(true);
+              }}
+              onFocus={() => setMasterDropdownOpen(true)}
+              readOnly={readOnly}
+              placeholder="공통 품목 검색 또는 선택"
+            />
+            <span className="client-search-caret" aria-hidden="true" />
+            {masterDropdownOpen && !readOnly ? (
+              <div className="client-search-dropdown">
+                {filteredProductMasters.length > 0 ? (
+                  filteredProductMasters.map((master) => (
+                    <button
+                      key={master.id}
+                      type="button"
+                      className="client-search-option"
+                      onClick={() => handleMasterSelect(master)}
+                    >
+                      {master.name1}
+                    </button>
+                  ))
+                ) : (
+                  <div className="client-search-option disabled">검색 결과가 없습니다.</div>
+                )}
+              </div>
+            ) : null}
+          </div>
         </FormField>
 
         <FormField label="구분">
@@ -233,10 +299,11 @@ export function ProductItemModal({
                 onSetClientDropdownOpen(true);
               }}
               onFocus={() => onSetClientDropdownOpen(true)}
+              readOnly={readOnly}
               placeholder="납품처를 선택하세요"
             />
             <span className="client-search-caret" aria-hidden="true" />
-            {clientDropdownOpen ? (
+            {clientDropdownOpen && !readOnly ? (
               <div className="client-search-dropdown">
                 {filteredFormClientOptions.length > 0 ? (
                   filteredFormClientOptions.map((client) => (
@@ -261,6 +328,7 @@ export function ProductItemModal({
           <select
             value={productForm.receiver}
             onChange={(event) => onUpdateForm('receiver', event.target.value)}
+            disabled={readOnly}
           >
             <option value="">수신처를 선택하세요</option>
             {RECEIVER_OPTIONS.map((receiver) => (
@@ -279,6 +347,7 @@ export function ProductItemModal({
           <input
             value={productForm.name1}
             onChange={(event) => onUpdateForm('name1', event.target.value)}
+            readOnly={readOnly}
             placeholder="품목명(출고의뢰서)를 입력하세요"
           />
         </FormField>
@@ -287,6 +356,7 @@ export function ProductItemModal({
           <input
             value={productForm.name2}
             onChange={(event) => onUpdateForm('name2', event.target.value)}
+            readOnly={readOnly}
             placeholder="비워두면 품목명(출고의뢰서)와 동일하게 저장됩니다"
           />
         </FormField>
@@ -294,7 +364,7 @@ export function ProductItemModal({
         <FormField label="1B=EA">
           <input
             value={formatNullableNumber(productForm.ea_per_b)}
-            readOnly
+            disabled
             placeholder="1Box 기준 EA 수량"
           />
         </FormField>
@@ -302,19 +372,19 @@ export function ProductItemModal({
         <FormField label="1P=BOX">
           <input
             value={formatNullableNumber(productForm.box_per_p)}
-            readOnly
+            disabled
             placeholder="1P 기준 BOX 수량"
           />
         </FormField>
 
         <FormField label="1P=EA">
-          <input value={formatNullableNumber(productForm.ea_per_p)} readOnly placeholder="자동 계산" />
+          <input value={formatNullableNumber(productForm.ea_per_p)} disabled placeholder="자동 계산" />
         </FormField>
 
         <FormField label="1대당 파레트">
           <input
             value={formatNullableNumber(productForm.pallets_per_truck)}
-            readOnly
+            disabled
             placeholder="차량당 파레트 수량"
           />
         </FormField>
@@ -328,6 +398,7 @@ export function ProductItemModal({
                   onUpdateForm('cost_price', parseNullableNumber(event.target.value))
                 }
                 inputMode="decimal"
+                readOnly={readOnly}
                 placeholder="입고단가 입력"
               />
             </FormField>
@@ -339,6 +410,7 @@ export function ProductItemModal({
                   onUpdateForm('sell_price', parseNullableNumber(event.target.value))
                 }
                 inputMode="decimal"
+                readOnly={readOnly}
                 placeholder="판매단가 입력"
               />
             </FormField>

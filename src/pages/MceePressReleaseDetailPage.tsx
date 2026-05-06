@@ -5,6 +5,8 @@ import PageHeader from '../components/PageHeader';
 import Alert from '../components/ui/Alert';
 import type { MceePressRelease } from '../types/mceePressRelease';
 
+const NEW_BADGE_SCRAPED_FROM = Date.parse('2026-05-01T00:00:00+09:00');
+
 export default function MceePressReleaseDetailPage() {
   const { pressReleaseId } = useParams();
   const navigate = useNavigate();
@@ -60,7 +62,10 @@ export default function MceePressReleaseDetailPage() {
           <>
             <div className="mcee-detail-head">
               <div>
-                <h2 className="mcee-detail-title">{item.title || '-'}</h2>
+                <h2 className="mcee-detail-title">
+                  {item.title || '-'}
+                  {isNewPressRelease(item) ? <span className="mcee-new-badge">N</span> : null}
+                </h2>
                 <div className="mcee-detail-meta">
                   <span>등록일자 {item.publishedDate || '-'}</span>
                   <span>시행일 {item.effectiveDate || '-'}</span>
@@ -115,4 +120,11 @@ export default function MceePressReleaseDetailPage() {
       </section>
     </div>
   );
+}
+
+function isNewPressRelease(item: MceePressRelease) {
+  if (!item.scrapedAt) return false;
+  const scrapedTime = Date.parse(item.scrapedAt);
+  if (!Number.isFinite(scrapedTime)) return false;
+  return scrapedTime >= NEW_BADGE_SCRAPED_FROM;
 }

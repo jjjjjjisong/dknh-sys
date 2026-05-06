@@ -7,6 +7,7 @@ import Alert from '../components/ui/Alert';
 import type { MceePressRelease } from '../types/mceePressRelease';
 
 const PAGE_SIZE = 20;
+const NEW_BADGE_SCRAPED_FROM = Date.parse('2026-05-01T00:00:00+09:00');
 
 export default function MceePressReleasePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -201,6 +202,7 @@ export default function MceePressReleasePage() {
                     <td>
                       <Link className="mcee-title-link table-primary table-clamp-2" to={`/mcee-press-releases/${item.id}`}>
                         {item.title || '-'}
+                        {isNewPressRelease(item) ? <span className="mcee-new-badge">N</span> : null}
                       </Link>
                     </td>
                     <td title={getKeywordTitle(item)}>
@@ -280,4 +282,11 @@ function getKeywordTitle(item: MceePressRelease) {
 function getDisplayKeywords(item: MceePressRelease) {
   const keywords = item.matchedKeywords.length > 0 ? item.matchedKeywords : [item.searchKeyword];
   return Array.from(new Set(keywords.map((keyword) => keyword.trim()).filter(Boolean)));
+}
+
+function isNewPressRelease(item: MceePressRelease) {
+  if (!item.scrapedAt) return false;
+  const scrapedTime = Date.parse(item.scrapedAt);
+  if (!Number.isFinite(scrapedTime)) return false;
+  return scrapedTime >= NEW_BADGE_SCRAPED_FROM;
 }

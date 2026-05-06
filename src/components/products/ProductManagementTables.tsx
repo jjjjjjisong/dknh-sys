@@ -10,11 +10,7 @@ type MasterProductsTableProps = {
   expandedMasterIds: string[];
   productsByMasterId: Map<string, Product[]>;
   onToggleMaster: (masterId: string) => void;
-  onCreateChild: (masterId: string) => void;
-  onEditMaster: (master: ProductMaster) => void;
-  onDeleteMaster: (master: ProductMaster) => void;
-  onEditChild: (product: Product) => void;
-  onDeleteChild: (product: Product) => void;
+  onViewChild: (product: Product) => void;
 };
 
 type ProductsTableProps = {
@@ -44,11 +40,7 @@ export function MasterProductsTable({
   expandedMasterIds,
   productsByMasterId,
   onToggleMaster,
-  onCreateChild,
-  onEditMaster,
-  onDeleteMaster,
-  onEditChild,
-  onDeleteChild,
+  onViewChild,
 }: MasterProductsTableProps) {
   if (filteredMasters.length === 0) {
     return <div className="empty-state">검색 결과가 없습니다.</div>;
@@ -68,7 +60,6 @@ export function MasterProductsTable({
             <th style={{ width: 120, textAlign: 'right' }}>1P=EA</th>
             <th style={{ width: 110, textAlign: 'right' }}>1대당 파레트</th>
             <th style={{ width: 90, textAlign: 'center' }}>하위 품목</th>
-            <th style={{ width: 150 }}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -110,21 +101,10 @@ export function MasterProductsTable({
                       {master.linkedProductCount.toLocaleString('ko-KR')}개
                     </span>
                   </td>
-                  <td onClick={(event) => event.stopPropagation()}>
-                    <div className="button-row">
-                      <TableActionButton variant="primary" onClick={() => onCreateChild(master.id)}>
-                        하위추가
-                      </TableActionButton>
-                      <TableActionButton onClick={() => onEditMaster(master)}>수정</TableActionButton>
-                      <TableActionButton variant="danger" onClick={() => onDeleteMaster(master)}>
-                        삭제
-                      </TableActionButton>
-                    </div>
-                  </td>
                 </tr>
                 {isExpanded ? (
                   <tr className="master-tree-child-row">
-                    <td colSpan={10} className="master-tree-child-cell">
+                    <td colSpan={9} className="master-tree-child-cell">
                       {children.length === 0 ? (
                         <div className="empty-state child-empty">
                           연결된 납품처별 품목이 없습니다.
@@ -139,7 +119,6 @@ export function MasterProductsTable({
                               <col style={{ width: 140 }} />
                               <col style={{ width: 90 }} />
                               <col style={{ width: 90 }} />
-                              <col style={{ width: 70 }} />
                             </colgroup>
                             <thead>
                               <tr>
@@ -149,14 +128,13 @@ export function MasterProductsTable({
                                 <th style={{ width: 140 }}>수신처</th>
                                 <th style={{ width: 90, textAlign: 'right' }}>입고단가</th>
                                 <th style={{ width: 90, textAlign: 'right' }}>판매단가</th>
-                                <th style={{ width: 70, textAlign: 'center' }}>관리</th>
                               </tr>
                             </thead>
                             <tbody>
                               {children.map((child) => (
                                 <tr
                                   key={child.id}
-                                  onClick={() => onEditChild(child)}
+                                  onClick={() => onViewChild(child)}
                                   className="history-clickable-row"
                                 >
                                   <td>
@@ -184,16 +162,6 @@ export function MasterProductsTable({
                                   </td>
                                   <td style={{ textAlign: 'right' }}>
                                     {formatDisplayNumber(child.sell_price)}
-                                  </td>
-                                  <td onClick={(event) => event.stopPropagation()}>
-                                    <div className="button-row" style={{ justifyContent: 'center' }}>
-                                      <TableActionButton
-                                        variant="danger"
-                                        onClick={() => onDeleteChild(child)}
-                                      >
-                                        삭제
-                                      </TableActionButton>
-                                    </div>
                                   </td>
                                 </tr>
                               ))}
