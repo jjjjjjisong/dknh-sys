@@ -23,7 +23,6 @@ export function buildDailySalesRows(params: {
   notes: Record<string, string>;
 }): DailySalesRow[] {
   const daysInMonth = getDaysInMonth(params.yearMonth);
-  const previousYearMonth = getPreviousYearMonth(params.yearMonth);
   const rows = new Map<string, DailySalesRow>();
 
   params.products
@@ -42,7 +41,7 @@ export function buildDailySalesRows(params: {
       if (!baseDate) return;
 
       const itemYearMonth = baseDate.slice(0, 7);
-      if (itemYearMonth !== params.yearMonth && itemYearMonth !== previousYearMonth) return;
+      if (itemYearMonth !== params.yearMonth) return;
 
       const seed = getDocumentItemSeed(document, item, params.products);
       const row =
@@ -54,11 +53,6 @@ export function buildDailySalesRows(params: {
       }
 
       const qty = Number(item.qty || 0);
-      if (itemYearMonth === previousYearMonth) {
-        if (qty < 0) row.carryoverQty += qty;
-        return;
-      }
-
       const dayIndex = Number(baseDate.slice(8, 10)) - 1;
       if (dayIndex >= 0 && dayIndex < row.dailyQty.length) {
         const costPrice = Number(item.costPrice ?? row.costPrice ?? 0);
@@ -216,12 +210,6 @@ function getRowKey(params: {
 
 function normalizeKeyPart(value: string) {
   return value.trim().toLowerCase() || '-';
-}
-
-function getPreviousYearMonth(yearMonth: string) {
-  const [year, month] = yearMonth.split('-').map(Number);
-  const date = new Date(year, month - 2, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function getItemBaseDate(document: DocumentHistory, item: DocumentHistoryItem) {
