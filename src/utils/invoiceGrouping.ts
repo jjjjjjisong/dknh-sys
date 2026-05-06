@@ -2,6 +2,7 @@ type InvoiceLikeItem = {
   qty: number;
   supply: number;
   vat: boolean;
+  status?: string;
   orderDate?: string | null;
   arriveDate?: string | null;
 };
@@ -31,8 +32,9 @@ export function splitInvoiceDataByArriveDate<TItem extends InvoiceLikeItem, TDat
   });
 
   return Array.from(groups.entries()).map(([arriveDate, items]) => {
-    const totalSupply = items.reduce((sum, item) => sum + Number(item.supply || 0), 0);
-    const totalVat = items.reduce(
+    const activeItems = items.filter((item) => item.status !== 'ST01');
+    const totalSupply = activeItems.reduce((sum, item) => sum + Number(item.supply || 0), 0);
+    const totalVat = activeItems.reduce(
       (sum, item) => sum + (item.vat ? Math.round(Number(item.supply || 0) * 0.1) : 0),
       0,
     );

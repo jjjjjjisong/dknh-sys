@@ -5,6 +5,7 @@ import {
   fetchDocumentById,
   fetchDocumentHistoryPage,
   toggleDocumentCancelled,
+  toggleDocumentItemCancelled,
   updateDocument,
 } from '../api/documents';
 import { fetchProductsByClientId } from '../api/products';
@@ -519,6 +520,54 @@ export default function DocHistoryPage() {
     }
   }
 
+  async function handleToggleItemCancel(itemId: string) {
+    if (!draft || saveLockRef.current || saving) return;
+    const targetItem = draft.items.find((item) => item.id === itemId);
+    if (!targetItem) return;
+    if (!isPersistedId(itemId)) {
+      window.alert('새로 추가한 품목은 먼저 저장한 뒤 취소 처리할 수 있습니다.');
+      return;
+    }
+
+    const nextStatus = targetItem.status === 'ST01' ? 'ST00' : 'ST01';
+
+    try {
+      saveLockRef.current = true;
+      setSaving(true);
+      setError(null);
+      await toggleDocumentItemCancelled(draft.id, itemId, nextStatus === 'ST01');
+      setItems((current) =>
+        current.map((item) => (item.id === itemId ? { ...item, status: nextStatus } : item)),
+      );
+      setDraft((current) =>
+        current
+          ? {
+              ...current,
+              items: current.items.map((item) =>
+                item.id === itemId ? { ...item, status: nextStatus } : item,
+              ),
+            }
+          : current,
+      );
+      setOriginalDocument((current) =>
+        current
+          ? {
+              ...current,
+              items: current.items.map((item) =>
+                item.id === itemId ? { ...item, status: nextStatus } : item,
+              ),
+            }
+          : current,
+      );
+      window.alert(nextStatus === 'ST01' ? '품목 거래취소 처리되었습니다.' : '품목 거래취소를 해제했습니다.');
+    } catch (err) {
+      setError(getErrorMessage(err, '품목 상태 변경에 실패했습니다.'));
+    } finally {
+      saveLockRef.current = false;
+      setSaving(false);
+    }
+  }
+
   async function exportToExcel() {
     if (!previewData) {
       window.alert('엑셀 다운로드 전에 품목을 먼저 확인해 주세요.');
@@ -765,6 +814,7 @@ export default function DocHistoryPage() {
               onUpdateItem={updateItem}
               onRemoveItem={removeItem}
               onAddItem={addDraftItem}
+              onToggleItemCancel={handleToggleItemCancel}
             />
           </section>
 
@@ -897,8 +947,16 @@ function mapDraftItemsToSharedRows(draft: DocumentHistory, products: Product[]):
       vat: typeof item.vat === 'boolean' ? item.vat : true,
       releaseNote: item.releaseNote || '',
       invoiceNote: item.invoiceNote || '',
+      status: item.status ?? 'ST00',
     };
   });
+}
+
+function isPersistedId(value: string | null | undefined) {
+  const normalized = String(value ?? '').trim();
+  if (!normalized) return false;
+  if (/^\d+$/.test(normalized)) return true;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalized);
 }
 
 function calculatePallet(item: DocumentHistoryItem) {

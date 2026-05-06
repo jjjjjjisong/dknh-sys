@@ -28,6 +28,7 @@ export type SharedItemRow = {
   vat: boolean;
   releaseNote: string;
   invoiceNote: string;
+  status?: 'ST00' | 'ST01';
 };
 
 export type ItemSummary = {
@@ -39,6 +40,7 @@ export type ItemSummary = {
   unitPrice: number;
   supply: number;
   vatAmount: number;
+  status?: 'ST00' | 'ST01';
   pallet: number | null;
   box: number | null;
   eaPerB: number | null;
@@ -55,6 +57,7 @@ interface DocumentItemTableProps {
   onUpdateItem: (id: string, updater: (item: SharedItemRow) => SharedItemRow) => void;
   onRemoveItem: (id: string) => void;
   onAddItem: () => void;
+  onToggleItemCancel?: (id: string) => void;
 }
 
 type IntegerFieldKey = 'qty' | 'customPallet' | 'customBox' | 'customSupply';
@@ -76,6 +79,7 @@ export default function DocumentItemTable({
   onUpdateItem,
   onRemoveItem,
   onAddItem,
+  onToggleItemCancel,
 }: DocumentItemTableProps) {
   const [integerEditingValues, setIntegerEditingValues] = useState<Record<string, string>>({});
   const [decimalEditingValues, setDecimalEditingValues] = useState<Record<string, string>>({});
@@ -248,10 +252,11 @@ export default function DocumentItemTable({
             {items.map((item, index) => {
               const summary = itemSummaries[index];
               const manualMode = item.productId === MANUAL_PRODUCT_ID;
+              const itemCancelled = item.status === 'ST01';
 
               return (
                 <React.Fragment key={item.id}>
-                  <tr className="doc-item-main-row">
+                  <tr className={itemCancelled ? 'doc-item-main-row doc-item-cancelled-row' : 'doc-item-main-row'}>
                     <td>{index + 1}</td>
                     <td className="doc-item-name-cell">
                       <select
@@ -441,9 +446,19 @@ export default function DocumentItemTable({
                       >
                         삭제
                       </button>
+                      {onToggleItemCancel ? (
+                        <button
+                          className={itemCancelled ? 'btn btn-secondary doc-delete-button' : 'btn btn-danger doc-delete-button'}
+                          type="button"
+                          onClick={() => onToggleItemCancel(item.id)}
+                          style={{ marginTop: 6 }}
+                        >
+                          {itemCancelled ? '취소해제' : '품목취소'}
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
-                  <tr className="doc-item-note-row">
+                  <tr className={itemCancelled ? 'doc-item-note-row doc-item-cancelled-row' : 'doc-item-note-row'}>
                     <td className="doc-item-note-spacer" />
                     <td>
                       {manualMode ? (

@@ -7,6 +7,7 @@ import { toNullableDbId } from '../utils/dbIds';
 let creatingDocument = false;
 const updatingDocumentIds = new Set<string>();
 const togglingDocumentIds = new Set<string>();
+const togglingDocumentItemIds = new Set<string>();
 
 type DocumentHistoryQueryParams = {
   page: number;
@@ -23,7 +24,7 @@ type DocumentHistoryPageResult = {
 };
 
 const documentHistorySelect =
-  'id, issue_no, client_id, client, manager, manager_tel, receiver, supplier_biz_no, supplier_name, supplier_owner, supplier_address, supplier_business_type, supplier_business_item, order_date, arrive_date, delivery_addr, issue_no_edit_history, remark, request_note, total_supply, total_vat, total_amount, author_id, author, status, approval_title, approval_status, approval_requested_at, approval_completed_at, approval_current_step, created_at, updated_at, updated_by, del_yn, document_items(id, product_id, seq, name1, name2, gubun, qty, cost_price, unit_price, supply, vat, order_date, arrive_date, item_note, release_note, invoice_note, monthly_closing_note, ea_per_b, box_per_p, custom_pallet, custom_box, updated_at, updated_by, del_yn)';
+  'id, issue_no, client_id, client, manager, manager_tel, receiver, supplier_biz_no, supplier_name, supplier_owner, supplier_address, supplier_business_type, supplier_business_item, order_date, arrive_date, delivery_addr, issue_no_edit_history, remark, request_note, total_supply, total_vat, total_amount, author_id, author, status, approval_title, approval_status, approval_requested_at, approval_completed_at, approval_current_step, created_at, updated_at, updated_by, del_yn, document_items(id, product_id, seq, name1, name2, gubun, qty, cost_price, unit_price, supply, vat, order_date, arrive_date, item_note, release_note, invoice_note, monthly_closing_note, status, ea_per_b, box_per_p, custom_pallet, custom_box, updated_at, updated_by, del_yn)';
 
 export async function saveDocument(payload: DocumentPayload) {
   if (creatingDocument) {
@@ -96,6 +97,7 @@ export async function saveDocument(payload: DocumentPayload) {
         release_note: item.releaseNote,
         invoice_note: item.invoiceNote,
         monthly_closing_note: item.monthlyClosingNote ?? '',
+        status: item.status ?? 'ST00',
         ea_per_b: item.eaPerB,
         box_per_p: item.boxPerP,
         custom_pallet: item.customPallet,
@@ -304,6 +306,7 @@ function mapDocumentHistoryRow(row: any): DocumentHistory {
         releaseNote: item.release_note ?? item.item_note ?? '',
         invoiceNote: item.invoice_note ?? '',
         monthlyClosingNote: item.monthly_closing_note ?? '',
+        status: mapDocumentStatus(item.status),
         eaPerB: item.ea_per_b ?? null,
         boxPerP: item.box_per_p ?? null,
         customPallet: item.custom_pallet ?? null,
@@ -426,6 +429,7 @@ export async function updateDocument(document: DocumentHistory) {
         release_note: item.releaseNote,
         invoice_note: item.invoiceNote,
         monthly_closing_note: item.monthlyClosingNote ?? '',
+        status: item.status ?? 'ST00',
         ea_per_b: item.eaPerB,
         box_per_p: item.boxPerP,
         custom_pallet: item.customPallet,
@@ -455,7 +459,7 @@ export async function updateDocument(document: DocumentHistory) {
 
     const { data: activeDocumentItemRows, error: activeDocumentItemsError } = await supabase
       .from('document_items')
-      .select('id, product_id, seq, name1, qty, arrive_date')
+      .select('id, product_id, seq, name1, qty, arrive_date, status')
       .eq('document_id', document.id)
       .eq('del_yn', 'N')
       .order('seq', { ascending: true })
@@ -499,6 +503,7 @@ export async function updateDocument(document: DocumentHistory) {
       name1: string | null;
       qty: number | null;
       arrive_date: string | null;
+      status: string | null;
     }>;
 
     const orderBookByDocumentItemId = new Map<string, (typeof currentOrderBookRows)[number]>();
@@ -527,7 +532,7 @@ export async function updateDocument(document: DocumentHistory) {
         qty: item.qty ?? 0,
         note: document.remark,
         receipt: existingOrderBook?.receipt ?? '',
-        status: document.status,
+        status: document.status === 'ST01' ? 'ST01' : mapDocumentStatus(item.status),
         shipped_status: normalizeShippedStatus(existingOrderBook?.shipped_status),
         from_doc: true,
         ...auditFields,
@@ -601,17 +606,67 @@ export async function toggleDocumentCancelled(id: string, cancelled: boolean) {
       throw new Error('문서 상태를 변경할 수 없습니다. 삭제되었거나 권한이 없는 상태일 수 있습니다.');
     }
 
+    if (cancelled) {
+      const { error: orderBookError } = await supabase
+        .from('order_book')
+        .update({ status, ...auditFields })
+        .eq('doc_id', id)
+        .eq('del_yn', 'N');
+
+      if (orderBookError) {
+        throw orderBookError;
+      }
+    } else {
+      await syncOrderBookStatusesFromDocumentItems(id, auditFields);
+    }
+  } finally {
+    togglingDocumentIds.delete(id);
+  }
+}
+
+export async function toggleDocumentItemCancelled(documentId: string, itemId: string, cancelled: boolean) {
+  if (togglingDocumentItemIds.has(itemId)) {
+    throw new Error('품목 상태 변경이 이미 진행 중입니다. 잠시 후 다시 시도해 주세요.');
+  }
+
+  togglingDocumentItemIds.add(itemId);
+  const supabase = getSupabaseClient();
+  const auditFields = getActiveAuditFields();
+  const status: DocumentStatus = cancelled ? 'ST01' : 'ST00';
+
+  try {
+    const { data: updatedItemRows, error: itemError } = await supabase
+      .from('document_items')
+      .update({ status, ...auditFields })
+      .eq('id', itemId)
+      .eq('document_id', documentId)
+      .eq('del_yn', 'N')
+      .select('id');
+
+    if (itemError) {
+      throw itemError;
+    }
+
+    if (!updatedItemRows || updatedItemRows.length === 0) {
+      throw new Error('품목 상태를 변경할 수 없습니다. 삭제되었거나 권한이 없는 상태일 수 있습니다.');
+    }
+
+    const documentStatus = await fetchDocumentStatus(documentId);
+    const orderBookStatus = documentStatus === 'ST01' ? 'ST01' : status;
     const { error: orderBookError } = await supabase
       .from('order_book')
-      .update({ status, ...auditFields })
-      .eq('doc_id', id)
+      .update({ status: orderBookStatus, ...auditFields })
+      .eq('doc_id', documentId)
+      .eq('document_item_id', itemId)
       .eq('del_yn', 'N');
 
     if (orderBookError) {
       throw orderBookError;
     }
+
+    await refreshDocumentTotals(documentId, auditFields);
   } finally {
-    togglingDocumentIds.delete(id);
+    togglingDocumentItemIds.delete(itemId);
   }
 }
 
@@ -634,6 +689,94 @@ export async function updateDocumentItemMonthlyClosingNote(itemId: string, month
 
   if (!data) {
     throw new Error('비고를 저장할 대상 품목을 찾지 못했습니다.');
+  }
+}
+
+async function fetchDocumentStatus(documentId: string): Promise<DocumentStatus> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('documents')
+    .select('status')
+    .eq('id', documentId)
+    .eq('del_yn', 'N')
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapDocumentStatus(data?.status);
+}
+
+async function syncOrderBookStatusesFromDocumentItems(
+  documentId: string,
+  auditFields: Record<string, unknown>,
+) {
+  const supabase = getSupabaseClient();
+  const { data: itemRows, error: itemError } = await supabase
+    .from('document_items')
+    .select('id, status')
+    .eq('document_id', documentId)
+    .eq('del_yn', 'N');
+
+  if (itemError) {
+    throw itemError;
+  }
+
+  for (const item of itemRows ?? []) {
+    const { error: orderBookError } = await supabase
+      .from('order_book')
+      .update({ status: mapDocumentStatus((item as any).status), ...auditFields })
+      .eq('doc_id', documentId)
+      .eq('document_item_id', String((item as any).id))
+      .eq('del_yn', 'N');
+
+    if (orderBookError) {
+      throw orderBookError;
+    }
+  }
+}
+
+async function refreshDocumentTotals(documentId: string, auditFields: Record<string, unknown>) {
+  const supabase = getSupabaseClient();
+  const { data: itemRows, error: itemError } = await supabase
+    .from('document_items')
+    .select('supply, vat, status')
+    .eq('document_id', documentId)
+    .eq('del_yn', 'N');
+
+  if (itemError) {
+    throw itemError;
+  }
+
+  const totals = (itemRows ?? [])
+    .filter((item: any) => mapDocumentStatus(item.status) !== 'ST01')
+    .reduce(
+      (acc: { supply: number; vat: number; total: number }, item: any) => {
+        const supply = Number(item.supply || 0);
+        const vat = item.vat ? Math.round(supply * 0.1) : 0;
+        return {
+          supply: acc.supply + supply,
+          vat: acc.vat + vat,
+          total: acc.total + supply + vat,
+        };
+      },
+      { supply: 0, vat: 0, total: 0 },
+    );
+
+  const { error: documentError } = await supabase
+    .from('documents')
+    .update({
+      total_supply: totals.supply,
+      total_vat: totals.vat,
+      total_amount: totals.total,
+      ...auditFields,
+    })
+    .eq('id', documentId)
+    .eq('del_yn', 'N');
+
+  if (documentError) {
+    throw documentError;
   }
 }
 

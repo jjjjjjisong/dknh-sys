@@ -48,6 +48,7 @@ create table if not exists public.document_items (
   item_note text not null default '',
   release_note text not null default '',
   invoice_note text not null default '',
+  status text not null default 'ST00',
   ea_per_b integer null,
   box_per_p integer null,
   custom_pallet numeric null,
@@ -75,6 +76,14 @@ begin
   end if;
 
   if not exists (
+    select 1 from pg_constraint where conname = 'document_items_status_check'
+  ) then
+    alter table public.document_items
+      add constraint document_items_status_check
+      check (status in ('ST00', 'ST01'));
+  end if;
+
+  if not exists (
     select 1 from pg_constraint where conname = 'document_items_del_yn_check'
   ) then
     alter table public.document_items
@@ -92,6 +101,7 @@ create index if not exists idx_documents_updated_at on public.documents (updated
 
 create index if not exists idx_document_items_document_id on public.document_items (document_id);
 create index if not exists idx_document_items_product_id on public.document_items (product_id);
+create index if not exists idx_document_items_status on public.document_items (status);
 create index if not exists idx_document_items_del_yn on public.document_items (del_yn);
 create index if not exists idx_document_items_updated_at on public.document_items (updated_at desc);
 

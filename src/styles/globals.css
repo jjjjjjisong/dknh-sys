@@ -1745,6 +1745,17 @@ a {
   border-bottom: 1px solid var(--border);
 }
 
+.doc-items-table tbody .doc-item-cancelled-row td {
+  background: #fef2f2;
+  color: var(--text-3);
+}
+
+.doc-items-table tbody .doc-item-cancelled-row input,
+.doc-items-table tbody .doc-item-cancelled-row select {
+  color: var(--text-3);
+  text-decoration: line-through;
+}
+
 .doc-items-table tbody .doc-item-main-row:hover td,
 .doc-items-table tbody .doc-item-main-row:hover + .doc-item-note-row td,
 .doc-items-table tbody .doc-item-note-row:hover td,

@@ -37,6 +37,7 @@ export function buildDailySalesRows(params: {
     if (document.status === 'ST01') return;
 
     document.items.forEach((item) => {
+      if (item.status === 'ST01') return;
       const baseDate = getItemBaseDate(document, item);
       if (!baseDate) return;
 
@@ -118,6 +119,7 @@ export function getYearMonthOptions(documents: DocumentHistory[]) {
     if (document.status === 'ST01') return;
 
     document.items.forEach((item) => {
+      if (item.status === 'ST01') return;
       const baseDate = getItemBaseDate(document, item);
       if (baseDate) values.add(baseDate.slice(0, 7));
     });

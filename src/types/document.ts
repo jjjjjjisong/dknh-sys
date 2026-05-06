@@ -16,6 +16,7 @@ export type DocumentItemPayload = {
   releaseNote: string;
   invoiceNote: string;
   monthlyClosingNote?: string;
+  status?: DocumentStatus;
   eaPerB: number | null;
   boxPerP: number | null;
   customPallet: number | null;
@@ -67,6 +68,7 @@ export type DocumentHistoryItem = {
   releaseNote: string;
   invoiceNote: string;
   monthlyClosingNote: string;
+  status: DocumentStatus;
   eaPerB: number | null;
   boxPerP: number | null;
   customPallet: number | null;

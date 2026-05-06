@@ -10,6 +10,7 @@ export interface InvoiceItem {
   supply: number;
   vat: boolean;
   invoiceNote: string;
+  status?: string;
   orderDate?: string | null;
   arriveDate?: string | null;
 }
@@ -286,6 +287,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
       if (item) {
         const vatAmount = item.vat ? Math.round((item.supply || 0) * 0.1) : 0;
+        const cancelled = item.status === 'ST01';
         ws.getCell(startRow, 1).value = formatMonthDay(item.arriveDate || invoiceData.arriveDate || invoiceData.orderDate || '');
         ws.mergeCells(startRow, 2, startRow, 4);
         ws.getCell(startRow, 2).value = item.name2 || item.name1;
@@ -294,7 +296,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
         ws.getCell(startRow, 6).value = hidePriceFields ? '' : item.unitPrice !== 0 ? Number(item.unitPrice) : '';
         ws.getCell(startRow, 8).value = hidePriceFields ? '' : item.supply !== 0 ? Number(item.supply) : '';
         ws.getCell(startRow, 9).value = hidePriceFields ? '' : vatAmount !== 0 ? vatAmount : '';
-        ws.getCell(startRow, 10).value = item.invoiceNote || '';
+        ws.getCell(startRow, 10).value = cancelled ? 'CANCEL' : item.invoiceNote || '';
       } else {
         ws.mergeCells(startRow, 2, startRow, 4);
         ws.mergeCells(startRow, 6, startRow, 7);
@@ -302,8 +304,11 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
       for (let c = 1; c <= 10; c += 1) {
         const cell = ws.getCell(startRow, c);
-        cell.font = font10;
+        cell.font = item?.status === 'ST01' ? { ...font10, strike: true, color: { argb: 'FF6B7280' } } : font10;
         cell.border = createThinBorder();
+      }
+      if (item?.status === 'ST01') {
+        ws.getCell(startRow, 10).font = { ...font10Bold, color: { argb: 'FF000000' } };
       }
 
       ws.getCell(startRow, 1).alignment = { horizontal: 'center', vertical: 'middle' };

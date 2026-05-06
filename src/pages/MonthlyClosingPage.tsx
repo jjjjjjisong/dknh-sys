@@ -164,6 +164,7 @@ export default function MonthlyClosingPage() {
       if (document.status === 'ST01') return;
 
       document.items.forEach((item) => {
+        if (item.status === 'ST01') return;
         const baseDate = getItemBaseDate(document, item);
         if (baseDate) values.add(baseDate.slice(0, 7));
       });
@@ -209,6 +210,7 @@ export default function MonthlyClosingPage() {
       if (document.clientId !== selectedClient.id) return;
 
       document.items.forEach((item) => {
+        if (item.status === 'ST01') return;
         const baseDate = getItemBaseDate(document, item);
         if (!baseDate || !baseDate.startsWith(selectedYearMonth)) return;
 
@@ -301,6 +303,7 @@ export default function MonthlyClosingPage() {
       let documentTotal = 0;
 
       document.items.forEach((item) => {
+        if (item.status === 'ST01') return;
         const baseDate = getItemBaseDate(document, item);
         if (!baseDate || !baseDate.startsWith(selectedYearMonth)) return;
 
@@ -330,6 +333,7 @@ export default function MonthlyClosingPage() {
           document.clientId === selectedClient.id &&
           document.status !== 'ST01' &&
           document.items.some((item) => {
+            if (item.status === 'ST01') return false;
             const baseDate = getItemBaseDate(document, item);
             return baseDate?.startsWith(selectedYearMonth);
           }),

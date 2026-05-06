@@ -13,6 +13,7 @@ export type SharedPreviewItem = {
   arriveDate: string | null;
   releaseNote: string;
   invoiceNote: string;
+  status: 'ST00' | 'ST01';
   eaPerB: number | null;
   boxPerP: number | null;
   pallet: number | null;

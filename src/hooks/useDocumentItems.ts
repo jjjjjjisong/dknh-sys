@@ -21,6 +21,7 @@ export function createEmptySharedItem(baseOrderDate: string, baseArriveDate: str
     vat: true,
     releaseNote: '',
     invoiceNote: '',
+    status: 'ST00',
   };
 }
 
@@ -54,6 +55,7 @@ export function useDocumentItems(initialItems: SharedItemRow[], clientProducts: 
           unitPrice,
           supply,
           vatAmount,
+          status: item.status ?? 'ST00',
           pallet:
             item.customPallet !== null
               ? item.customPallet
@@ -75,14 +77,16 @@ export function useDocumentItems(initialItems: SharedItemRow[], clientProducts: 
 
   const totals = useMemo(
     () =>
-      itemSummaries.reduce(
-        (acc, item) => ({
-          supply: acc.supply + item.supply,
-          vat: acc.vat + item.vatAmount,
-          total: acc.total + item.supply + item.vatAmount,
-        }),
-        { supply: 0, vat: 0, total: 0 },
-      ),
+      itemSummaries
+        .filter((item) => item.status !== 'ST01')
+        .reduce(
+          (acc, item) => ({
+            supply: acc.supply + item.supply,
+            vat: acc.vat + item.vatAmount,
+            total: acc.total + item.supply + item.vatAmount,
+          }),
+          { supply: 0, vat: 0, total: 0 },
+        ),
     [itemSummaries],
   );
 

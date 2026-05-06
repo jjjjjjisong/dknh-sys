@@ -915,6 +915,7 @@ function mapImportedDocumentItems(document: DocumentHistory, products: Product[]
       vat: item.vat,
       releaseNote: item.releaseNote ?? '',
       invoiceNote: item.invoiceNote ?? '',
+      status: 'ST00',
     };
   });
 }
