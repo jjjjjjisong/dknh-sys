@@ -54,6 +54,7 @@ type DocumentItemLookupRow = {
   box_per_p: number | null;
   custom_pallet: number | null;
   custom_box: number | null;
+  status: string | null;
   del_yn: 'Y' | 'N' | null;
 };
 
@@ -307,7 +308,7 @@ async function fetchDocumentItemsByDocIds(ids: string[]) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('document_items')
-    .select('id, document_id, product_id, seq, name1, name2, arrive_date, qty, ea_per_b, box_per_p, custom_pallet, custom_box, del_yn')
+    .select('id, document_id, product_id, seq, name1, name2, arrive_date, qty, ea_per_b, box_per_p, custom_pallet, custom_box, status, del_yn')
     .in('document_id', ids)
     .eq('del_yn', 'N');
 
@@ -354,7 +355,7 @@ function mapOrderBookRow(
     box: getBoxValue(matchedItem, resolvedQty),
     note: row.note ?? '',
     receipt: row.receipt ?? '',
-    status: mapOrderBookStatus(row.status),
+    status: mapOrderBookStatus(matchedItem?.status ?? row.status),
     shippedStatus: mapOrderBookShippingStatus(row.shipped_status),
     fromDoc: row.from_doc ?? false,
     author: document?.author ?? row.updated_by ?? '',
