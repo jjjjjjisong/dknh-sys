@@ -10,6 +10,7 @@ type MasterProductsTableProps = {
   expandedMasterIds: string[];
   productsByMasterId: Map<string, Product[]>;
   onToggleMaster: (masterId: string) => void;
+  onEditMaster: (master: ProductMaster) => void;
   onViewChild: (product: Product) => void;
 };
 
@@ -40,6 +41,7 @@ export function MasterProductsTable({
   expandedMasterIds,
   productsByMasterId,
   onToggleMaster,
+  onEditMaster,
   onViewChild,
 }: MasterProductsTableProps) {
   if (filteredMasters.length === 0) {
@@ -60,6 +62,7 @@ export function MasterProductsTable({
             <th style={{ width: 120, textAlign: 'right' }}>1P=EA</th>
             <th style={{ width: 110, textAlign: 'right' }}>1대당 파레트</th>
             <th style={{ width: 90, textAlign: 'center' }}>하위 품목</th>
+            <th style={{ width: 90 }}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -101,10 +104,17 @@ export function MasterProductsTable({
                       {master.linkedProductCount.toLocaleString('ko-KR')}개
                     </span>
                   </td>
+                  <td onClick={(event) => event.stopPropagation()}>
+                    <div className="button-row">
+                      <TableActionButton variant="primary" onClick={() => onEditMaster(master)}>
+                        수정
+                      </TableActionButton>
+                    </div>
+                  </td>
                 </tr>
                 {isExpanded ? (
                   <tr className="master-tree-child-row">
-                    <td colSpan={9} className="master-tree-child-cell">
+                    <td colSpan={10} className="master-tree-child-cell">
                       {children.length === 0 ? (
                         <div className="empty-state child-empty">
                           연결된 납품처별 품목이 없습니다.

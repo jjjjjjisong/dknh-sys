@@ -79,6 +79,7 @@ export default function MasterProductPage() {
     closeProductModal,
     openCreateMasterModal,
     openCreateProductModal,
+    openEditMasterModal,
     openEditProductModal,
     toggleMasterAccordion,
     updateMasterForm,
@@ -191,6 +192,7 @@ export default function MasterProductPage() {
             expandedMasterIds={expandedMasterIds}
             productsByMasterId={productsByMasterId}
             onToggleMaster={toggleMasterAccordion}
+            onEditMaster={openEditMasterModal}
             onViewChild={(product) => {
               setProductModalReadOnly(true);
               openEditProductModal(product);

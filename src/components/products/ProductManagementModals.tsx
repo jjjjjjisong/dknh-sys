@@ -185,11 +185,19 @@ export function ProductItemModal({
   const masterSearchBoxRef = useRef<HTMLDivElement>(null);
   const [masterDropdownOpen, setMasterDropdownOpen] = useState(false);
   const [masterKeyword, setMasterKeyword] = useState('');
+  const [costPriceDraft, setCostPriceDraft] = useState('');
+  const [sellPriceDraft, setSellPriceDraft] = useState('');
 
   useEffect(() => {
     const selectedMaster = productMasters.find((master) => master.id === productForm.productMasterId);
     setMasterKeyword(selectedMaster?.name1 ?? '');
   }, [productForm.productMasterId, productMasters]);
+
+  useEffect(() => {
+    if (!open) return;
+    setCostPriceDraft(formatNullableNumber(productForm.cost_price));
+    setSellPriceDraft(formatNullableNumber(productForm.sell_price));
+  }, [editingProduct?.id, open]);
 
   useEffect(() => {
     if (!masterDropdownOpen) return;
@@ -220,6 +228,27 @@ export function ProductItemModal({
     onUpdateForm('productMasterId', master.id);
     onApplyMasterDefaults(master.id);
     setMasterDropdownOpen(false);
+  }
+
+  function handlePriceDraftChange(field: 'cost_price' | 'sell_price', value: string) {
+    if (!isDecimalNumberDraft(value)) return;
+
+    if (field === 'cost_price') {
+      setCostPriceDraft(value);
+    } else {
+      setSellPriceDraft(value);
+    }
+
+    onUpdateForm(field, parseNullableNumber(value));
+  }
+
+  function handlePriceDraftBlur(field: 'cost_price' | 'sell_price', value: string) {
+    const formatted = formatNullableNumber(parseNullableNumber(value));
+    if (field === 'cost_price') {
+      setCostPriceDraft(formatted);
+    } else {
+      setSellPriceDraft(formatted);
+    }
   }
 
   return (
@@ -393,10 +422,11 @@ export function ProductItemModal({
           <>
             <FormField label="입고단가">
               <input
-                value={formatNullableNumber(productForm.cost_price)}
+                value={costPriceDraft}
                 onChange={(event) =>
-                  onUpdateForm('cost_price', parseNullableNumber(event.target.value))
+                  handlePriceDraftChange('cost_price', event.target.value)
                 }
+                onBlur={(event) => handlePriceDraftBlur('cost_price', event.target.value)}
                 inputMode="decimal"
                 readOnly={readOnly}
                 placeholder="입고단가 입력"
@@ -405,10 +435,11 @@ export function ProductItemModal({
 
             <FormField label="판매단가">
               <input
-                value={formatNullableNumber(productForm.sell_price)}
+                value={sellPriceDraft}
                 onChange={(event) =>
-                  onUpdateForm('sell_price', parseNullableNumber(event.target.value))
+                  handlePriceDraftChange('sell_price', event.target.value)
                 }
+                onBlur={(event) => handlePriceDraftBlur('sell_price', event.target.value)}
                 inputMode="decimal"
                 readOnly={readOnly}
                 placeholder="판매단가 입력"
@@ -421,4 +452,8 @@ export function ProductItemModal({
       </form>
     </Modal>
   );
+}
+
+function isDecimalNumberDraft(value: string) {
+  return /^[0-9,]*(?:\.[0-9]*)?$/.test(value.trim());
 }
