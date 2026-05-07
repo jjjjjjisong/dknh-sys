@@ -141,18 +141,22 @@ export default function DashboardPage() {
   }, [data.delayedDocuments, data.todayIncomingDocuments, data.todayLabel, panelType, selectedTrend]);
 
   const showShipmentActions = panelType === 'today' || panelType === 'delayed';
-  const showStatusColumn = panelType !== 'trend';
+  const showStatusColumn = true;
 
   const canBatchShip =
     showShipmentActions &&
     selectedOrderBookIds.length > 0 &&
-    (panelConfig?.items ?? []).some((item) => selectedOrderBookIds.includes(item.orderBookId ?? ''));
+    (panelConfig?.items ?? []).some(
+      (item) => item.status !== 'ST01' && selectedOrderBookIds.includes(item.orderBookId ?? ''),
+    );
 
   const allChecked =
     showShipmentActions &&
     Boolean(panelConfig) &&
-    (panelConfig?.items.length ?? 0) > 0 &&
-    panelConfig?.items.every((item) => item.orderBookId && selectedOrderBookIds.includes(item.orderBookId));
+    (panelConfig?.items.some((item) => item.status !== 'ST01') ?? false) &&
+    panelConfig?.items
+      .filter((item) => item.status !== 'ST01')
+      .every((item) => item.orderBookId && selectedOrderBookIds.includes(item.orderBookId));
 
   function closePanel() {
     setPanelType(null);
@@ -171,6 +175,7 @@ export default function DashboardPage() {
   function toggleSelectAll(checked: boolean) {
     if (!showShipmentActions || !panelConfig) return;
     const ids = panelConfig.items
+      .filter((item) => item.status !== 'ST01')
       .map((item) => item.orderBookId)
       .filter((value): value is string => Boolean(value));
     setSelectedOrderBookIds(checked ? ids : []);
@@ -590,6 +595,7 @@ function DashboardIncomingRow({
   ]
     .filter(Boolean)
     .join(' ');
+  const cancelled = document.status === 'ST01';
 
   return (
     <tr className={rowClassName} onClick={() => onOpen(document.documentId)}>
@@ -598,6 +604,7 @@ function DashboardIncomingRow({
           <input
             type="checkbox"
             checked={checked}
+            disabled={cancelled}
             onChange={(event) => onToggleSelect?.(event.target.checked)}
           />
         </td>
@@ -621,7 +628,9 @@ function DashboardIncomingRow({
           style={{ textAlign: 'center' }}
           onClick={(event) => showShippedStatus && event.stopPropagation()}
         >
-          {showShippedStatus ? (
+          {cancelled ? (
+            <Badge variant="cancel">{'\uAC70\uB798\uCDE8\uC18C'}</Badge>
+          ) : showShippedStatus ? (
             <select
               className="history-filter-select"
               value={document.shippedStatus}
@@ -632,8 +641,6 @@ function DashboardIncomingRow({
               <option value={SHIPPED_STATUS_UNSHIPPED}>{'\uBBF8\uCD9C\uACE0'}</option>
               <option value={SHIPPED_STATUS_SHIPPED}>{'\uCD9C\uACE0'}</option>
             </select>
-          ) : document.status === 'ST01' ? (
-            <Badge variant="cancel">{'\uAC70\uB798\uCDE8\uC18C'}</Badge>
           ) : (
             <Badge>진행중</Badge>
           )}
@@ -669,6 +676,7 @@ function DashboardIncomingCard({
   ]
     .filter(Boolean)
     .join(' ');
+  const cancelled = document.status === 'ST01';
 
   return (
     <button type="button" className={cardClassName} onClick={() => onOpen(document.documentId)}>
@@ -679,7 +687,9 @@ function DashboardIncomingCard({
         </div>
         {showStatusColumn ? (
           <div className="dashboard-panel-mobile-status" onClick={(event) => event.stopPropagation()}>
-            {showShippedStatus ? (
+            {cancelled ? (
+              <Badge variant="cancel">{'\uAC70\uB798\uCDE8\uC18C'}</Badge>
+            ) : showShippedStatus ? (
               <select
                 className="history-filter-select"
                 value={document.shippedStatus}
@@ -690,8 +700,6 @@ function DashboardIncomingCard({
                 <option value={SHIPPED_STATUS_UNSHIPPED}>{'\uBBF8\uCD9C\uACE0'}</option>
                 <option value={SHIPPED_STATUS_SHIPPED}>{'\uCD9C\uACE0'}</option>
               </select>
-            ) : document.status === 'ST01' ? (
-              <Badge variant="cancel">{'\uAC70\uB798\uCDE8\uC18C'}</Badge>
             ) : (
               <Badge>진행중</Badge>
             )}
@@ -705,6 +713,7 @@ function DashboardIncomingCard({
             <input
               type="checkbox"
               checked={checked}
+              disabled={cancelled}
               onChange={(event) => onToggleSelect?.(event.target.checked)}
             />
             <span>선택</span>

@@ -37,6 +37,7 @@ type DocumentLookupRow = {
   arrive_date: string | null;
   receiver: string | null;
   author: string | null;
+  status: string | null;
   updated_at: string | null;
   created_at: string | null;
 };
@@ -275,7 +276,7 @@ async function fetchDocumentsByIds(ids: string[]) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('documents')
-    .select('id, issue_no, order_date, arrive_date, receiver, author, updated_at, created_at')
+    .select('id, issue_no, order_date, arrive_date, receiver, author, status, updated_at, created_at')
     .in('id', ids)
     .eq('del_yn', 'N');
 
@@ -355,7 +356,7 @@ function mapOrderBookRow(
     box: getBoxValue(matchedItem, resolvedQty),
     note: row.note ?? '',
     receipt: row.receipt ?? '',
-    status: mapOrderBookStatus(matchedItem?.status ?? row.status),
+    status: mapOrderBookStatus(document?.status === 'ST01' ? document.status : matchedItem?.status ?? row.status),
     shippedStatus: mapOrderBookShippingStatus(row.shipped_status),
     fromDoc: row.from_doc ?? false,
     author: document?.author ?? row.updated_by ?? '',

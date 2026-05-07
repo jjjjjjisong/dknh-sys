@@ -48,6 +48,7 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
   const incomingItems = buildIncomingItems(orderBookEntries);
 
   const todayAllDocuments = incomingItems.filter((item) => item.arriveDate === todayKey);
+  const todayActiveDocuments = todayAllDocuments.filter((item) => item.status !== 'ST01');
   const todayCancelledDocuments = todayAllDocuments.filter((item) => item.status === 'ST01');
   const todayIncompleteDocuments = todayAllDocuments.filter(
     (item) => item.shippedStatus === UNSHIPPED_STATUS && item.status !== 'ST01',
@@ -61,7 +62,7 @@ export async function fetchDashboardSummary(baseDate: Date = new Date()): Promis
   );
 
   return {
-    todayIncomingCount: todayAllDocuments.length,
+    todayIncomingCount: todayActiveDocuments.length,
     todayIncompleteCount: todayIncompleteDocuments.length,
     todayCancelledCount,
     delayedCount: delayedDocuments.length,
@@ -155,7 +156,7 @@ function buildWeeklyArrivals(
     return {
       date,
       label: formatTrendLabel(date),
-      count: items.length,
+      count: items.filter((document) => document.status !== 'ST01').length,
       documents: items,
     };
   });
