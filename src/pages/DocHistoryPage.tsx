@@ -73,6 +73,7 @@ export default function DocHistoryPage() {
   const [receiverDropdownOpen, setReceiverDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const saveLockRef = useRef(false);
+  const listRequestSeqRef = useRef(0);
   const prevBaseOrderDateRef = useRef('');
   const prevBaseArriveDateRef = useRef('');
 
@@ -156,6 +157,8 @@ export default function DocHistoryPage() {
   }
 
   async function loadListPage() {
+    const requestSeq = ++listRequestSeqRef.current;
+
     try {
       setLoading(true);
       setError(null);
@@ -167,13 +170,37 @@ export default function DocHistoryPage() {
         filterType,
         keyword,
       });
+      if (requestSeq !== listRequestSeqRef.current) return;
       setDocuments(result.items);
       setTotalItems(result.totalCount);
     } catch (err) {
+      if (requestSeq !== listRequestSeqRef.current) return;
       setError(getErrorMessage(err, '諛쒗뻾 ?대젰??遺덈윭?ㅼ? 紐삵뻽?듬땲??'));
     } finally {
-      setLoading(false);
+      if (requestSeq === listRequestSeqRef.current) {
+        setLoading(false);
+      }
     }
+  }
+
+  function handleDateFromChange(value: string) {
+    setCurrentPage(1);
+    setDateFrom(value);
+  }
+
+  function handleDateToChange(value: string) {
+    setCurrentPage(1);
+    setDateTo(value);
+  }
+
+  function handleFilterTypeChange(value: HistoryFilterType) {
+    setCurrentPage(1);
+    setFilterType(value);
+  }
+
+  function handleKeywordChange(value: string) {
+    setCurrentPage(1);
+    setKeyword(value);
   }
 
   useEffect(() => {
@@ -592,15 +619,15 @@ export default function DocHistoryPage() {
             <div className="history-filter-grid">
               <label className="field history-date-field">
                 <span>입고일(시작)</span>
-                <input className="history-date-input" type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} />
+                <input className="history-date-input" type="date" value={dateFrom} onChange={(event) => handleDateFromChange(event.target.value)} />
               </label>
               <label className="field history-date-field">
                 <span>입고일(종료)</span>
-                <input className="history-date-input" type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} />
+                <input className="history-date-input" type="date" value={dateTo} onChange={(event) => handleDateToChange(event.target.value)} />
               </label>
               <label className="field">
                 <span>검색 필터</span>
-                <select className="history-filter-select" value={filterType} onChange={(event) => setFilterType(event.target.value as HistoryFilterType)}>
+                <select className="history-filter-select" value={filterType} onChange={(event) => handleFilterTypeChange(event.target.value as HistoryFilterType)}>
                   <option value="all">전체</option>
                   <option value="client">거래처</option>
                   <option value="receiver">수신처</option>
@@ -609,7 +636,7 @@ export default function DocHistoryPage() {
               </label>
               <label className="field">
                 <span>키워드</span>
-                <input value={keyword} onChange={(event) => setKeyword(event.target.value)} placeholder="검색어를 입력해주세요." />
+                <input value={keyword} onChange={(event) => handleKeywordChange(event.target.value)} placeholder="검색어를 입력해주세요." />
               </label>
             </div>
           </section>
