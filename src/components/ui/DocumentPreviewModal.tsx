@@ -42,7 +42,7 @@ export default function DocumentPreviewModal({ type, data, onClose, description 
         ? groupedInvoices.length > 1
           ? `${safeClient || '납품처'}_거래명세서_${data.issueNo || 'multi'}`
           : `${safeClient || '납품처'}_거래명세서_${safeDate}`
-        : `출고의뢰서_${safeDate}`;
+        : `DKH출고의뢰서_${safeClient || '납품처'}_${safeDate}`;
     const originalTitle = document.title;
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
