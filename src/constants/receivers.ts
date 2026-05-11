@@ -16,4 +16,5 @@ export const RECEIVER_OPTIONS = [
   '(주)우아디자인',
   '(주)이룸페이퍼',
   '(주)아이제제',
+  '(주)아이팩',
 ] as const;
