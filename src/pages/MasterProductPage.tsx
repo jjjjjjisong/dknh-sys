@@ -36,6 +36,7 @@ export default function MasterProductPage() {
     filteredMasters,
     filteredProducts,
     handleClientSelect,
+    handleDeleteMaster,
     handleDeleteProduct,
     handleDownloadExcel,
     handleMasterSubmit,
@@ -193,6 +194,7 @@ export default function MasterProductPage() {
             productsByMasterId={productsByMasterId}
             onToggleMaster={toggleMasterAccordion}
             onEditMaster={openEditMasterModal}
+            onDeleteMaster={(master) => void handleDeleteMaster(master)}
             onViewChild={(product) => {
               setProductModalReadOnly(true);
               openEditProductModal(product);

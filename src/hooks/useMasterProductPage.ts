@@ -316,12 +316,19 @@ export function useMasterProductPage() {
   }
 
   async function handleDeleteMaster(master: ProductMaster) {
-    const confirmed = window.confirm(`"${master.name1}" 공통 품목을 삭제하시겠습니까?`);
+    const linkedCount = products.filter((product) => product.productMasterId === master.id).length;
+    const confirmed = window.confirm(
+      linkedCount > 0
+        ? `"${master.name1}" 공통 품목을 삭제하시겠습니까?\n하위 납품처별 품목 ${linkedCount.toLocaleString('ko-KR')}개도 함께 삭제됩니다.`
+        : `"${master.name1}" 공통 품목을 삭제하시겠습니까?`,
+    );
     if (!confirmed) return;
 
     try {
       await removeProductMaster(master.id);
       setProductMasters((current) => current.filter((item) => item.id !== master.id));
+      setProducts((current) => current.filter((item) => item.productMasterId !== master.id));
+      setExpandedMasterIds((current) => current.filter((id) => id !== master.id));
     } catch (err) {
       setError(err instanceof Error ? err.message : '공통 품목 삭제에 실패했습니다.');
     }

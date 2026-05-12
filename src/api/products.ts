@@ -139,27 +139,48 @@ export async function updateProductMaster(id: string, input: ProductMasterInput)
 
 export async function removeProductMaster(id: string) {
   const supabase = getSupabaseClient();
-  const { count, error: countError } = await supabase
+  const deletedAuditFields = getDeletedAuditFields();
+  const { data: linkedProducts, error: linkedProductsError } = await supabase
     .from('products')
-    .select('id', { count: 'exact', head: true })
+    .select('id')
     .eq('product_master_id', id)
     .eq('del_yn', 'N');
 
-  if (countError) {
-    throw toReadableError(countError);
+  if (linkedProductsError) {
+    throw toReadableError(linkedProductsError);
   }
 
-  if ((count ?? 0) > 0) {
-    throw new Error('연결된 거래처별 품목이 있어 공통 품목을 삭제할 수 없습니다.');
+  const linkedProductIds = (linkedProducts ?? []).map((product: { id: number | string }) =>
+    String(product.id),
+  );
+
+  if (linkedProductIds.length > 0) {
+    const { error: productError } = await supabase
+      .from('products')
+      .update(deletedAuditFields)
+      .in('id', linkedProductIds)
+      .eq('del_yn', 'N');
+
+    if (productError) {
+      throw toReadableError(productError);
+    }
   }
 
   const { error } = await supabase
     .from('product_masters')
-    .update(getDeletedAuditFields())
+    .update(deletedAuditFields)
     .eq('id', id)
     .eq('del_yn', 'N');
 
   if (error) {
+    if (linkedProductIds.length > 0) {
+      await supabase
+        .from('products')
+        .update(getActiveAuditFields())
+        .in('id', linkedProductIds)
+        .eq('del_yn', 'Y');
+    }
+
     throw toReadableError(error);
   }
 }

@@ -11,6 +11,7 @@ type MasterProductsTableProps = {
   productsByMasterId: Map<string, Product[]>;
   onToggleMaster: (masterId: string) => void;
   onEditMaster: (master: ProductMaster) => void;
+  onDeleteMaster: (master: ProductMaster) => void;
   onViewChild: (product: Product) => void;
 };
 
@@ -42,6 +43,7 @@ export function MasterProductsTable({
   productsByMasterId,
   onToggleMaster,
   onEditMaster,
+  onDeleteMaster,
   onViewChild,
 }: MasterProductsTableProps) {
   if (filteredMasters.length === 0) {
@@ -62,7 +64,7 @@ export function MasterProductsTable({
             <th style={{ width: 120, textAlign: 'right' }}>1P=EA</th>
             <th style={{ width: 110, textAlign: 'right' }}>1대당 파레트</th>
             <th style={{ width: 90, textAlign: 'center' }}>하위 품목</th>
-            <th style={{ width: 90 }}>관리</th>
+            <th style={{ width: 130 }}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -108,6 +110,9 @@ export function MasterProductsTable({
                     <div className="button-row">
                       <TableActionButton variant="primary" onClick={() => onEditMaster(master)}>
                         수정
+                      </TableActionButton>
+                      <TableActionButton variant="danger" onClick={() => onDeleteMaster(master)}>
+                        삭제
                       </TableActionButton>
                     </div>
                   </td>
@@ -199,6 +204,7 @@ export function ProductsTable({
   onUpdateProductPriceDraft,
   onSaveProductPrices,
   onEditProduct,
+  onDeleteProduct,
 }: ProductsTableProps) {
   return (
     <div className="table-wrap">
@@ -217,7 +223,7 @@ export function ProductsTable({
             <th style={{ width: 90, textAlign: 'right' }}>1P=BOX</th>
             <th style={{ width: 90, textAlign: 'right' }}>1P=EA</th>
             <th style={{ width: 110, textAlign: 'right' }}>1대당 파레트</th>
-            <th style={{ width: 120 }}>관리</th>
+            <th style={{ width: 140 }}>관리</th>
           </tr>
         </thead>
         <tbody>
@@ -308,6 +314,9 @@ export function ProductsTable({
                       disabled={savingPriceProductId === product.id}
                     >
                       {savingPriceProductId === product.id ? '저장중...' : '저장'}
+                    </TableActionButton>
+                    <TableActionButton variant="danger" onClick={() => onDeleteProduct(product)}>
+                      삭제
                     </TableActionButton>
                   </div>
                 </td>
