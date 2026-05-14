@@ -63,6 +63,12 @@ create index if not exists idx_mcee_press_releases_updated_at
 
 alter table public.mcee_press_releases enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete
+  on table public.mcee_press_releases
+  to anon, authenticated, service_role;
+
 do $$
 begin
   if not exists (

@@ -81,6 +81,12 @@ on conflict do nothing;
 
 alter table public.mcee_crawl_keywords enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete
+  on table public.mcee_crawl_keywords
+  to anon, authenticated, service_role;
+
 do $$
 begin
   if not exists (

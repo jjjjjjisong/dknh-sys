@@ -9,6 +9,12 @@ create table if not exists public.daily_sales_notes (
 
 alter table public.daily_sales_notes enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete
+  on table public.daily_sales_notes
+  to anon, authenticated, service_role;
+
 do $$
 begin
   if not exists (

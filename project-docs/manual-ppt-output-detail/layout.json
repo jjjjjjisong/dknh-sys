@@ -1,0 +1,1103 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/psq3a6",
+    "id": "psq3a6",
+    "slide": 1,
+    "layoutId": "d706c64b-0d7b-42e6-a454-5d34eb354d34",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "7e63a15f-98c6-4433-89f3-fbd075979549",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "d706c64b-0d7b-42e6-a454-5d34eb354d34",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "7e63a15f-98c6-4433-89f3-fbd075979549",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "7e63a15f-98c6-4433-89f3-fbd075979549",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kb6xkf6d",
+      "id": "1",
+      "name": "cover-title",
+      "bbox": [
+        86,
+        74,
+        778,
+        92
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.0"
+      },
+      "geometry": "rect",
+      "text": "DKH 업무관리시스템",
+      "textPreview": "DKH 업무관리시스템",
+      "resolvedFontSize": 76,
+      "resolvedTextStyle": {
+        "fontSize": 76,
+        "typeface": "+mn-lt",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "DKH 업무관리시스템"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "DKH 업무관리시스템",
+          "runs": [
+            {
+              "index": 1,
+              "text": "DKH 업무관리시스템",
+              "fontSize": 76,
+              "color": "#17202A",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/rqd4vmtw",
+      "id": "2",
+      "name": "cover-subtitle",
+      "bbox": [
+        86,
+        188,
+        778,
+        60
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.1"
+      },
+      "geometry": "rect",
+      "text": "상세 운영 매뉴얼",
+      "textPreview": "상세 운영 매뉴얼",
+      "resolvedFontSize": 50,
+      "resolvedTextStyle": {
+        "fontSize": 50,
+        "typeface": "+mn-lt",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "상세 운영 매뉴얼"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "상세 운영 매뉴얼",
+          "runs": [
+            {
+              "index": 1,
+              "text": "상세 운영 매뉴얼",
+              "fontSize": 50,
+              "color": "#246FA8",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/25kb6xkf",
+      "id": "3",
+      "name": "cover-rule",
+      "bbox": [
+        86,
+        270,
+        260,
+        7
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.2"
+      },
+      "geometry": "rect",
+      "fillColor": "#24A6A6",
+      "lineColor": "#24A6A6",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9knih4by",
+      "id": "4",
+      "name": "cover-desc",
+      "bbox": [
+        86,
+        298,
+        690,
+        66
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.3"
+      },
+      "geometry": "rect",
+      "text": "업무 흐름, 저장 로직, 집계 기준, 예외상황까지 화면 캡쳐와 함께 정리한 교육용 PPT",
+      "textPreview": "업무 흐름, 저장 로직, 집계 기준, 예외상황까지 화면 캡쳐와 함께 정리한 교육용 PPT",
+      "resolvedFontSize": 27,
+      "resolvedTextStyle": {
+        "fontSize": 27,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "업무 흐름, 저장 로직, 집계 기준, 예외상황까지 화면"
+          },
+          {
+            "index": 2,
+            "text": "캡쳐와 함께 정리한 교육용 PPT"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "업무 흐름, 저장 로직, 집계 기준, 예외상황까지 화면 캡쳐와 함께 정리한 교육용 PPT",
+          "runs": [
+            {
+              "index": 1,
+              "text": "업무 흐름, 저장 로직, 집계 기준, 예외상황까지 화면 캡쳐와 함께 정리한 교육용 PPT",
+              "fontSize": 27,
+              "color": "#66768A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kzupwb2h",
+      "id": "5",
+      "name": "label-운영자 교육용",
+      "bbox": [
+        86,
+        937.6,
+        135.84,
+        34.4
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.1.0"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#17466F"
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/re1w7mp0",
+      "id": "6",
+      "name": "label-text-운영자 교육용",
+      "bbox": [
+        102,
+        944,
+        106,
+        22
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.1.0.0"
+      },
+      "geometry": "rect",
+      "text": "운영자 교육용",
+      "textPreview": "운영자 교육용",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "+mn-lt",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "운영자 교육용"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "운영자 교육용",
+          "runs": [
+            {
+              "index": 1,
+              "text": "운영자 교육용",
+              "fontSize": 17,
+              "color": "#FFFFFF",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2t83itgf",
+      "id": "7",
+      "name": "cover-date",
+      "bbox": [
+        86,
+        982,
+        778,
+        24
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.1.1"
+      },
+      "geometry": "rect",
+      "text": "작성일 2026-05-14",
+      "textPreview": "작성일 2026-05-14",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "fontSize": 20,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "작성일 2026-05-14"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "작성일 2026-05-14",
+          "runs": [
+            {
+              "index": 1,
+              "text": "작성일 2026-05-14",
+              "fontSize": 20,
+              "color": "#66768A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9gr2p8nq",
+      "id": "8",
+      "name": "screen-01-dashboard.png",
+      "bbox": [
+        920.32,
+        74,
+        920,
+        517
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#CED9E4",
+      "lineWidth": 2
+    },
+    {
+      "order": 9,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/pkzupwb2",
+      "id": "9",
+      "name": "image-01-dashboard.png",
+      "bbox": [
+        928.32,
+        82,
+        904,
+        501
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1.0"
+      },
+      "alt": "대시보드 화면 캡쳐",
+      "contentType": "image/png",
+      "asset": {
+        "assetId": "ceae5118-1c81-4bc6-8245-bc10167dc678",
+        "contentType": "image/png",
+        "byteLength": 85289
+      }
+    }
+  ],
+  "composeRuns": [
+    {
+      "index": 1,
+      "frame": {
+        "left": 0,
+        "top": 0,
+        "width": 1920,
+        "height": 1080
+      },
+      "baseUnit": 8,
+      "root": {
+        "path": "0",
+        "kind": "grid",
+        "name": "cover-root",
+        "requestedSize": {
+          "width": {
+            "mode": "fill",
+            "value": 1
+          },
+          "height": {
+            "mode": "fill",
+            "value": 1
+          }
+        },
+        "intrinsicSize": {
+          "width": 228,
+          "height": 148
+        },
+        "frame": {
+          "left": 0,
+          "top": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "children": [
+          {
+            "path": "0.0",
+            "kind": "column",
+            "name": "cover-copy",
+            "requestedSize": {
+              "width": {
+                "mode": "fill",
+                "value": 1
+              },
+              "height": {
+                "mode": "fill",
+                "value": 1
+              }
+            },
+            "intrinsicSize": {
+              "width": 0,
+              "height": 357.4
+            },
+            "frame": {
+              "left": 86,
+              "top": 74,
+              "width": 778.32,
+              "height": 932
+            },
+            "children": [
+              {
+                "path": "0.0.0",
+                "kind": "column",
+                "requestedSize": {
+                  "width": {
+                    "mode": "fill",
+                    "value": 1
+                  },
+                  "height": {
+                    "mode": "hug"
+                  }
+                },
+                "intrinsicSize": {
+                  "width": 690.02,
+                  "height": 289
+                },
+                "frame": {
+                  "left": 86,
+                  "top": 74,
+                  "width": 778.32,
+                  "height": 289
+                },
+                "children": [
+                  {
+                    "path": "0.0.0.0",
+                    "kind": "text",
+                    "name": "cover-title",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fill",
+                        "value": 1
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 0,
+                      "height": 91.2
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 74,
+                      "width": 778.32,
+                      "height": 91.2
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 74,
+                      "width": 778,
+                      "height": 92
+                    },
+                    "children": [],
+                    "text": "DKH 업무관리시스템",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/kb6xkf6d",
+                      "id": "1",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.0.1",
+                    "kind": "text",
+                    "name": "cover-subtitle",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fill",
+                        "value": 1
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 0,
+                      "height": 60
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 187.2,
+                      "width": 778.32,
+                      "height": 60
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 188,
+                      "width": 778,
+                      "height": 60
+                    },
+                    "children": [],
+                    "text": "상세 운영 매뉴얼",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/rqd4vmtw",
+                      "id": "2",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.0.2",
+                    "kind": "rule",
+                    "name": "cover-rule",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fixed",
+                        "value": 260
+                      },
+                      "height": {
+                        "mode": "fixed",
+                        "value": 7
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 260,
+                      "height": 7
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 269.2,
+                      "width": 260,
+                      "height": 7
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 270,
+                      "width": 260,
+                      "height": 7
+                    },
+                    "children": [],
+                    "weight": 7,
+                    "element": {
+                      "aid": "sh/25kb6xkf",
+                      "id": "3",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.0.3",
+                    "kind": "text",
+                    "name": "cover-desc",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "wrap",
+                        "max": 720
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 690.02,
+                      "height": 64.8
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 298.2,
+                      "width": 690.02,
+                      "height": 64.8
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 298,
+                      "width": 690,
+                      "height": 66
+                    },
+                    "children": [],
+                    "text": "업무 흐름, 저장 로직, 집계 기준, 예외상황까지 화면 캡쳐와 함께 정리한 교육용 PPT",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/9knih4by",
+                      "id": "4",
+                      "kind": "shape"
+                    }
+                  }
+                ],
+                "padding": {
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "gap": 22,
+                "effectiveGap": 22,
+                "justifyOffset": 0,
+                "align": "start",
+                "justify": "start",
+                "contentFrame": {
+                  "left": 86,
+                  "top": 74,
+                  "width": 778.32,
+                  "height": 289
+                },
+                "items": [
+                  {
+                    "path": "0.0.0.0",
+                    "frame": {
+                      "left": 86,
+                      "top": 74,
+                      "width": 778.32,
+                      "height": 91.2
+                    }
+                  },
+                  {
+                    "path": "0.0.0.1",
+                    "frame": {
+                      "left": 86,
+                      "top": 187.2,
+                      "width": 778.32,
+                      "height": 60
+                    }
+                  },
+                  {
+                    "path": "0.0.0.2",
+                    "frame": {
+                      "left": 86,
+                      "top": 269.2,
+                      "width": 260,
+                      "height": 7
+                    }
+                  },
+                  {
+                    "path": "0.0.0.3",
+                    "frame": {
+                      "left": 86,
+                      "top": 298.2,
+                      "width": 690.02,
+                      "height": 64.8
+                    }
+                  }
+                ]
+              },
+              {
+                "path": "0.0.1",
+                "kind": "column",
+                "requestedSize": {
+                  "width": {
+                    "mode": "fill",
+                    "value": 1
+                  },
+                  "height": {
+                    "mode": "hug"
+                  }
+                },
+                "intrinsicSize": {
+                  "width": 135.84,
+                  "height": 68.4
+                },
+                "frame": {
+                  "left": 86,
+                  "top": 937.6,
+                  "width": 778.32,
+                  "height": 68.4
+                },
+                "children": [
+                  {
+                    "path": "0.0.1.0",
+                    "kind": "panel",
+                    "name": "label-운영자 교육용",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "hug"
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 135.84,
+                      "height": 34.4
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 937.6,
+                      "width": 135.84,
+                      "height": 34.4
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 937.6,
+                      "width": 135.84,
+                      "height": 34.4
+                    },
+                    "children": [
+                      {
+                        "path": "0.0.1.0.0",
+                        "kind": "text",
+                        "name": "label-text-운영자 교육용",
+                        "requestedSize": {
+                          "width": {
+                            "mode": "hug"
+                          },
+                          "height": {
+                            "mode": "hug"
+                          }
+                        },
+                        "intrinsicSize": {
+                          "width": 105.84,
+                          "height": 20.4
+                        },
+                        "frame": {
+                          "left": 101,
+                          "top": 944.6,
+                          "width": 105.84,
+                          "height": 20.4
+                        },
+                        "snappedFrame": {
+                          "left": 102,
+                          "top": 944,
+                          "width": 106,
+                          "height": 22
+                        },
+                        "children": [],
+                        "text": "운영자 교육용",
+                        "transform": "none",
+                        "element": {
+                          "aid": "sh/re1w7mp0",
+                          "id": "6",
+                          "kind": "shape"
+                        }
+                      }
+                    ],
+                    "padding": {
+                      "top": 7,
+                      "right": 15,
+                      "bottom": 7,
+                      "left": 15
+                    },
+                    "align": "start",
+                    "justify": "start",
+                    "contentFrame": {
+                      "left": 101,
+                      "top": 944.6,
+                      "width": 105.84,
+                      "height": 20.4
+                    },
+                    "element": {
+                      "aid": "sh/kzupwb2h",
+                      "id": "5",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.1.1",
+                    "kind": "text",
+                    "name": "cover-date",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fill",
+                        "value": 1
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 0,
+                      "height": 24
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 982,
+                      "width": 778.32,
+                      "height": 24
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 982,
+                      "width": 778,
+                      "height": 24
+                    },
+                    "children": [],
+                    "text": "작성일 2026-05-14",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/2t83itgf",
+                      "id": "7",
+                      "kind": "shape"
+                    }
+                  }
+                ],
+                "padding": {
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "gap": 10,
+                "effectiveGap": 10,
+                "justifyOffset": 0,
+                "align": "start",
+                "justify": "start",
+                "contentFrame": {
+                  "left": 86,
+                  "top": 937.6,
+                  "width": 778.32,
+                  "height": 68.4
+                },
+                "items": [
+                  {
+                    "path": "0.0.1.0",
+                    "frame": {
+                      "left": 86,
+                      "top": 937.6,
+                      "width": 135.84,
+                      "height": 34.4
+                    }
+                  },
+                  {
+                    "path": "0.0.1.1",
+                    "frame": {
+                      "left": 86,
+                      "top": 982,
+                      "width": 778.32,
+                      "height": 24
+                    }
+                  }
+                ]
+              }
+            ],
+            "padding": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "gap": 0,
+            "effectiveGap": 574.6,
+            "justifyOffset": 0,
+            "align": "start",
+            "justify": "between",
+            "contentFrame": {
+              "left": 86,
+              "top": 74,
+              "width": 778.32,
+              "height": 932
+            },
+            "items": [
+              {
+                "path": "0.0.0",
+                "frame": {
+                  "left": 86,
+                  "top": 74,
+                  "width": 778.32,
+                  "height": 289
+                }
+              },
+              {
+                "path": "0.0.1",
+                "frame": {
+                  "left": 86,
+                  "top": 937.6,
+                  "width": 778.32,
+                  "height": 68.4
+                }
+              }
+            ]
+          },
+          {
+            "path": "0.1",
+            "kind": "panel",
+            "name": "screen-01-dashboard.png",
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 920
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 517
+              }
+            },
+            "intrinsicSize": {
+              "width": 16,
+              "height": 16
+            },
+            "frame": {
+              "left": 920.32,
+              "top": 74,
+              "width": 920,
+              "height": 517
+            },
+            "snappedFrame": {
+              "left": 920.32,
+              "top": 74,
+              "width": 920,
+              "height": 517
+            },
+            "children": [
+              {
+                "path": "0.1.0",
+                "kind": "image",
+                "name": "image-01-dashboard.png",
+                "requestedSize": {
+                  "width": {
+                    "mode": "fill",
+                    "value": 1
+                  },
+                  "height": {
+                    "mode": "fill",
+                    "value": 1
+                  }
+                },
+                "intrinsicSize": {
+                  "width": 0,
+                  "height": 0
+                },
+                "frame": {
+                  "left": 928.32,
+                  "top": 82,
+                  "width": 904,
+                  "height": 501
+                },
+                "snappedFrame": {
+                  "left": 928.32,
+                  "top": 82,
+                  "width": 904,
+                  "height": 501
+                },
+                "children": [],
+                "source": {
+                  "kind": "dataUrl"
+                },
+                "contentType": "image/png",
+                "fit": "contain",
+                "alt": "대시보드 화면 캡쳐",
+                "element": {
+                  "aid": "im/pkzupwb2",
+                  "id": "9",
+                  "kind": "image"
+                }
+              }
+            ],
+            "padding": {
+              "top": 8,
+              "right": 8,
+              "bottom": 8,
+              "left": 8
+            },
+            "align": "start",
+            "justify": "start",
+            "contentFrame": {
+              "left": 928.32,
+              "top": 82,
+              "width": 904,
+              "height": 501
+            },
+            "element": {
+              "aid": "sh/9gr2p8nq",
+              "id": "8",
+              "kind": "shape"
+            }
+          }
+        ],
+        "padding": {
+          "top": 74,
+          "right": 86,
+          "bottom": 74,
+          "left": 86
+        },
+        "columnGap": 56,
+        "rowGap": 0,
+        "alignItems": "stretch",
+        "justifyItems": "stretch",
+        "contentFrame": {
+          "left": 86,
+          "top": 74,
+          "width": 1748,
+          "height": 932
+        },
+        "columns": [
+          {
+            "mode": "fr",
+            "value": 0.92
+          },
+          {
+            "mode": "fr",
+            "value": 1.08
+          }
+        ],
+        "rows": [
+          {
+            "mode": "fr",
+            "value": 1
+          }
+        ],
+        "autoRows": "auto",
+        "resolvedRows": [
+          {
+            "mode": "fr",
+            "value": 1
+          }
+        ],
+        "columnSizes": [
+          778.32,
+          913.68
+        ],
+        "rowSizes": [
+          932
+        ],
+        "cells": [
+          {
+            "path": "0.0",
+            "column": 0,
+            "row": 0,
+            "columnSpan": 1,
+            "rowSpan": 1,
+            "cellFrame": {
+              "left": 86,
+              "top": 74,
+              "width": 778.32,
+              "height": 932
+            }
+          },
+          {
+            "path": "0.1",
+            "column": 1,
+            "row": 0,
+            "columnSpan": 1,
+            "rowSpan": 1,
+            "cellFrame": {
+              "left": 920.32,
+              "top": 74,
+              "width": 913.68,
+              "height": 932
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

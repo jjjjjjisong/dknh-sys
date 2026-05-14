@@ -58,6 +58,16 @@ create index if not exists idx_products_product_master_id on public.products (pr
 
 alter table public.product_masters enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete
+  on table public.product_masters
+  to anon, authenticated, service_role;
+
+grant usage, select
+  on all sequences in schema public
+  to anon, authenticated, service_role;
+
 do $$
 begin
   if not exists (

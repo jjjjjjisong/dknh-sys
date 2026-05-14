@@ -38,6 +38,16 @@ create index if not exists idx_price_change_logs_document_item_id
 
 alter table public.price_change_logs enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete
+  on table public.price_change_logs
+  to anon, authenticated, service_role;
+
+grant usage, select
+  on all sequences in schema public
+  to anon, authenticated, service_role;
+
 do $$
 begin
   if not exists (

@@ -1,0 +1,880 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/wtbnwb",
+    "id": "wtbnwb",
+    "slide": 1,
+    "layoutId": "ac79ab9a-78c2-40c1-9940-6ce2ab7ab978",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "80ce42d4-0b5f-4994-9717-626f7c791008",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "ac79ab9a-78c2-40c1-9940-6ce2ab7ab978",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "80ce42d4-0b5f-4994-9717-626f7c791008",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "80ce42d4-0b5f-4994-9717-626f7c791008",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/o7qpg3ex",
+      "id": "1",
+      "name": "cover-title",
+      "bbox": [
+        86,
+        78,
+        728,
+        92
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.0"
+      },
+      "geometry": "rect",
+      "text": "DKH 업무관리시스템",
+      "textPreview": "DKH 업무관리시스템",
+      "resolvedFontSize": 76,
+      "resolvedTextStyle": {
+        "fontSize": 76,
+        "typeface": "+mn-lt",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "DKH 업무관리시스템"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "DKH 업무관리시스템",
+          "runs": [
+            {
+              "index": 1,
+              "text": "DKH 업무관리시스템",
+              "fontSize": 76,
+              "color": "#1B2430",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vmtwra5g",
+      "id": "2",
+      "name": "cover-subtitle",
+      "bbox": [
+        86,
+        194,
+        728,
+        44
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.1"
+      },
+      "geometry": "rect",
+      "text": "화면 캡쳐 기반 사용자 매뉴얼",
+      "textPreview": "화면 캡쳐 기반 사용자 매뉴얼",
+      "resolvedFontSize": 36,
+      "resolvedTextStyle": {
+        "fontSize": 36,
+        "typeface": "+mn-lt",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "화면 캡쳐 기반 사용자 매뉴얼"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "화면 캡쳐 기반 사용자 매뉴얼",
+          "runs": [
+            {
+              "index": 1,
+              "text": "화면 캡쳐 기반 사용자 매뉴얼",
+              "fontSize": 36,
+              "color": "#1D5D9B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/61032lsz",
+      "id": "3",
+      "bbox": [
+        86,
+        260,
+        240,
+        6
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.2"
+      },
+      "geometry": "rect",
+      "fillColor": "#2FB7A1",
+      "lineColor": "#2FB7A1",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d4vmtwra",
+      "id": "4",
+      "name": "cover-copyline",
+      "bbox": [
+        86,
+        290,
+        618,
+        68
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.0.3"
+      },
+      "geometry": "rect",
+      "text": "문서 작성부터 발행 이력, 수주대장, 월마감, 마스터 관리까지 실제 화면 흐름으로 안내합니다.",
+      "textPreview": "문서 작성부터 발행 이력, 수주대장, 월마감, 마스터 관리까지 실제 화면 흐름으로 안내합니다.",
+      "resolvedFontSize": 28,
+      "resolvedTextStyle": {
+        "fontSize": 28,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "문서 작성부터 발행 이력, 수주대장, 월마감,"
+          },
+          {
+            "index": 2,
+            "text": "마스터 관리까지 실제 화면 흐름으로 안내합니다."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "문서 작성부터 발행 이력, 수주대장, 월마감, 마스터 관리까지 실제 화면 흐름으로 안내합니다.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "문서 작성부터 발행 이력, 수주대장, 월마감, 마스터 관리까지 실제 화면 흐름으로 안내합니다.",
+              "fontSize": 28,
+              "color": "#64748B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/oj2t83it",
+      "id": "5",
+      "name": "cover-date",
+      "bbox": [
+        86,
+        976,
+        728,
+        28
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0.1"
+      },
+      "geometry": "rect",
+      "text": "작성일 2026-05-14",
+      "textPreview": "작성일 2026-05-14",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "작성일 2026-05-14"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "작성일 2026-05-14",
+          "runs": [
+            {
+              "index": 1,
+              "text": "작성일 2026-05-14",
+              "fontSize": 22,
+              "color": "#64748B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vy90je9c",
+      "id": "6",
+      "name": "screen-frame-01-dashboard.png",
+      "bbox": [
+        868.42,
+        78,
+        930,
+        523
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DDE5EE",
+      "lineWidth": 2
+    },
+    {
+      "order": 7,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/fyxobm58",
+      "id": "7",
+      "name": "screenshot-01-dashboard.png",
+      "bbox": [
+        878.42,
+        88,
+        910,
+        503
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1.0"
+      },
+      "alt": "대시보드 화면 캡쳐",
+      "contentType": "image/png",
+      "asset": {
+        "assetId": "327f8fd0-47fb-482d-9fad-a6d9684ba9bd",
+        "contentType": "image/png",
+        "byteLength": 85289
+      }
+    }
+  ],
+  "composeRuns": [
+    {
+      "index": 1,
+      "frame": {
+        "left": 0,
+        "top": 0,
+        "width": 1920,
+        "height": 1080
+      },
+      "baseUnit": 8,
+      "root": {
+        "path": "0",
+        "kind": "grid",
+        "name": "cover-root",
+        "requestedSize": {
+          "width": {
+            "mode": "fill",
+            "value": 1
+          },
+          "height": {
+            "mode": "fill",
+            "value": 1
+          }
+        },
+        "intrinsicSize": {
+          "width": 226,
+          "height": 156
+        },
+        "frame": {
+          "left": 0,
+          "top": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "children": [
+          {
+            "path": "0.0",
+            "kind": "column",
+            "name": "cover-copy",
+            "requestedSize": {
+              "width": {
+                "mode": "fill",
+                "value": 1
+              },
+              "height": {
+                "mode": "fill",
+                "value": 1
+              }
+            },
+            "intrinsicSize": {
+              "width": 0,
+              "height": 306
+            },
+            "frame": {
+              "left": 86,
+              "top": 78,
+              "width": 728.42,
+              "height": 924
+            },
+            "children": [
+              {
+                "path": "0.0.0",
+                "kind": "column",
+                "requestedSize": {
+                  "width": {
+                    "mode": "fill",
+                    "value": 1
+                  },
+                  "height": {
+                    "mode": "hug"
+                  }
+                },
+                "intrinsicSize": {
+                  "width": 618.95,
+                  "height": 279.6
+                },
+                "frame": {
+                  "left": 86,
+                  "top": 78,
+                  "width": 728.42,
+                  "height": 279.6
+                },
+                "children": [
+                  {
+                    "path": "0.0.0.0",
+                    "kind": "text",
+                    "name": "cover-title",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fill",
+                        "value": 1
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 0,
+                      "height": 91.2
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 78,
+                      "width": 728.42,
+                      "height": 91.2
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 78,
+                      "width": 728,
+                      "height": 92
+                    },
+                    "children": [],
+                    "text": "DKH 업무관리시스템",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/o7qpg3ex",
+                      "id": "1",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.0.1",
+                    "kind": "text",
+                    "name": "cover-subtitle",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fill",
+                        "value": 1
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 0,
+                      "height": 43.2
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 193.2,
+                      "width": 728.42,
+                      "height": 43.2
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 194,
+                      "width": 728,
+                      "height": 44
+                    },
+                    "children": [],
+                    "text": "화면 캡쳐 기반 사용자 매뉴얼",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/vmtwra5g",
+                      "id": "2",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.0.2",
+                    "kind": "rule",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "fixed",
+                        "value": 240
+                      },
+                      "height": {
+                        "mode": "fixed",
+                        "value": 6
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 240,
+                      "height": 6
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 260.4,
+                      "width": 240,
+                      "height": 6
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 260,
+                      "width": 240,
+                      "height": 6
+                    },
+                    "children": [],
+                    "weight": 6,
+                    "element": {
+                      "aid": "sh/61032lsz",
+                      "id": "3",
+                      "kind": "shape"
+                    }
+                  },
+                  {
+                    "path": "0.0.0.3",
+                    "kind": "text",
+                    "name": "cover-copyline",
+                    "requestedSize": {
+                      "width": {
+                        "mode": "wrap",
+                        "max": 680
+                      },
+                      "height": {
+                        "mode": "hug"
+                      }
+                    },
+                    "intrinsicSize": {
+                      "width": 618.95,
+                      "height": 67.2
+                    },
+                    "frame": {
+                      "left": 86,
+                      "top": 290.4,
+                      "width": 618.95,
+                      "height": 67.2
+                    },
+                    "snappedFrame": {
+                      "left": 86,
+                      "top": 290,
+                      "width": 618,
+                      "height": 68
+                    },
+                    "children": [],
+                    "text": "문서 작성부터 발행 이력, 수주대장, 월마감, 마스터 관리까지 실제 화면 흐름으로 안내합니다.",
+                    "transform": "none",
+                    "element": {
+                      "aid": "sh/d4vmtwra",
+                      "id": "4",
+                      "kind": "shape"
+                    }
+                  }
+                ],
+                "padding": {
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "gap": 24,
+                "effectiveGap": 24,
+                "justifyOffset": 0,
+                "align": "start",
+                "justify": "start",
+                "contentFrame": {
+                  "left": 86,
+                  "top": 78,
+                  "width": 728.42,
+                  "height": 279.6
+                },
+                "items": [
+                  {
+                    "path": "0.0.0.0",
+                    "frame": {
+                      "left": 86,
+                      "top": 78,
+                      "width": 728.42,
+                      "height": 91.2
+                    }
+                  },
+                  {
+                    "path": "0.0.0.1",
+                    "frame": {
+                      "left": 86,
+                      "top": 193.2,
+                      "width": 728.42,
+                      "height": 43.2
+                    }
+                  },
+                  {
+                    "path": "0.0.0.2",
+                    "frame": {
+                      "left": 86,
+                      "top": 260.4,
+                      "width": 240,
+                      "height": 6
+                    }
+                  },
+                  {
+                    "path": "0.0.0.3",
+                    "frame": {
+                      "left": 86,
+                      "top": 290.4,
+                      "width": 618.95,
+                      "height": 67.2
+                    }
+                  }
+                ]
+              },
+              {
+                "path": "0.0.1",
+                "kind": "text",
+                "name": "cover-date",
+                "requestedSize": {
+                  "width": {
+                    "mode": "fill",
+                    "value": 1
+                  },
+                  "height": {
+                    "mode": "hug"
+                  }
+                },
+                "intrinsicSize": {
+                  "width": 0,
+                  "height": 26.4
+                },
+                "frame": {
+                  "left": 86,
+                  "top": 975.6,
+                  "width": 728.42,
+                  "height": 26.4
+                },
+                "snappedFrame": {
+                  "left": 86,
+                  "top": 976,
+                  "width": 728,
+                  "height": 28
+                },
+                "children": [],
+                "text": "작성일 2026-05-14",
+                "transform": "none",
+                "element": {
+                  "aid": "sh/oj2t83it",
+                  "id": "5",
+                  "kind": "shape"
+                }
+              }
+            ],
+            "padding": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "gap": 0,
+            "effectiveGap": 618,
+            "justifyOffset": 0,
+            "align": "start",
+            "justify": "between",
+            "contentFrame": {
+              "left": 86,
+              "top": 78,
+              "width": 728.42,
+              "height": 924
+            },
+            "items": [
+              {
+                "path": "0.0.0",
+                "frame": {
+                  "left": 86,
+                  "top": 78,
+                  "width": 728.42,
+                  "height": 279.6
+                }
+              },
+              {
+                "path": "0.0.1",
+                "frame": {
+                  "left": 86,
+                  "top": 975.6,
+                  "width": 728.42,
+                  "height": 26.4
+                }
+              }
+            ]
+          },
+          {
+            "path": "0.1",
+            "kind": "panel",
+            "name": "screen-frame-01-dashboard.png",
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 930
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 523
+              }
+            },
+            "intrinsicSize": {
+              "width": 20,
+              "height": 20
+            },
+            "frame": {
+              "left": 868.42,
+              "top": 78,
+              "width": 930,
+              "height": 523
+            },
+            "snappedFrame": {
+              "left": 868.42,
+              "top": 78,
+              "width": 930,
+              "height": 523
+            },
+            "children": [
+              {
+                "path": "0.1.0",
+                "kind": "image",
+                "name": "screenshot-01-dashboard.png",
+                "requestedSize": {
+                  "width": {
+                    "mode": "fill",
+                    "value": 1
+                  },
+                  "height": {
+                    "mode": "fill",
+                    "value": 1
+                  }
+                },
+                "intrinsicSize": {
+                  "width": 0,
+                  "height": 0
+                },
+                "frame": {
+                  "left": 878.42,
+                  "top": 88,
+                  "width": 910,
+                  "height": 503
+                },
+                "snappedFrame": {
+                  "left": 878.42,
+                  "top": 88,
+                  "width": 910,
+                  "height": 503
+                },
+                "children": [],
+                "source": {
+                  "kind": "dataUrl"
+                },
+                "contentType": "image/png",
+                "fit": "contain",
+                "alt": "대시보드 화면 캡쳐",
+                "element": {
+                  "aid": "im/fyxobm58",
+                  "id": "7",
+                  "kind": "image"
+                }
+              }
+            ],
+            "padding": {
+              "top": 10,
+              "right": 10,
+              "bottom": 10,
+              "left": 10
+            },
+            "align": "start",
+            "justify": "start",
+            "contentFrame": {
+              "left": 878.42,
+              "top": 88,
+              "width": 910,
+              "height": 503
+            },
+            "element": {
+              "aid": "sh/vy90je9c",
+              "id": "6",
+              "kind": "shape"
+            }
+          }
+        ],
+        "padding": {
+          "top": 78,
+          "right": 86,
+          "bottom": 78,
+          "left": 86
+        },
+        "columnGap": 54,
+        "rowGap": 0,
+        "alignItems": "stretch",
+        "justifyItems": "stretch",
+        "contentFrame": {
+          "left": 86,
+          "top": 78,
+          "width": 1748,
+          "height": 924
+        },
+        "columns": [
+          {
+            "mode": "fr",
+            "value": 0.86
+          },
+          {
+            "mode": "fr",
+            "value": 1.14
+          }
+        ],
+        "rows": [
+          {
+            "mode": "fr",
+            "value": 1
+          }
+        ],
+        "autoRows": "auto",
+        "resolvedRows": [
+          {
+            "mode": "fr",
+            "value": 1
+          }
+        ],
+        "columnSizes": [
+          728.42,
+          965.58
+        ],
+        "rowSizes": [
+          924
+        ],
+        "cells": [
+          {
+            "path": "0.0",
+            "column": 0,
+            "row": 0,
+            "columnSpan": 1,
+            "rowSpan": 1,
+            "cellFrame": {
+              "left": 86,
+              "top": 78,
+              "width": 728.42,
+              "height": 924
+            }
+          },
+          {
+            "path": "0.1",
+            "column": 1,
+            "row": 0,
+            "columnSpan": 1,
+            "rowSpan": 1,
+            "cellFrame": {
+              "left": 868.42,
+              "top": 78,
+              "width": 965.58,
+              "height": 924
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -312,6 +312,23 @@ alter table public.documents enable row level security;
 alter table public.document_items enable row level security;
 alter table public.order_book enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete
+  on table
+    public.accounts,
+    public.clients,
+    public.suppliers,
+    public.products,
+    public.documents,
+    public.document_items,
+    public.order_book
+  to anon, authenticated, service_role;
+
+grant usage, select
+  on all sequences in schema public
+  to anon, authenticated, service_role;
+
 do $$
 begin
   if not exists (

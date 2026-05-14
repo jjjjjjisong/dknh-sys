@@ -13,6 +13,7 @@ Fresh production setup order:
 9. `11_mcee_crawl_keywords.sql`
 10. `15_mcee_press_releases_effective_date.sql`
 11. `90_policies.sql`
+12. `92_data_api_grants.sql`
 
 Or run this single file in Supabase SQL Editor:
 
@@ -57,6 +58,9 @@ Notes:
 - `15_mcee_press_releases_effective_date.sql` adds the user-managed `시행일`
   field and update policy for the press release menu. Run it after
   `10_mcee_press_releases.sql`.
+- `92_data_api_grants.sql` explicitly grants Data API access for Supabase roles.
+  Run it after table and policy creation, and rerun it after adding new public
+  tables that should be available through supabase-js or `/rest/v1/`.
 - For production deployment, follow
   `../mcee-press-release-production-deploy.md`. Run the cron SQL only after a
   manual production Edge Function test succeeds.

@@ -2,21 +2,21 @@ import type { UserSession } from '../types/user';
 
 const STORAGE_KEY = 'dkh_user';
 const SESSION_EVENT = 'dkh-session-change';
-const TAB_COUNT_KEY = 'dkh_open_tab_count';
-const TAB_REGISTERED_KEY = 'dkh_tab_registered';
-const PENDING_CLEAR_KEY = 'dkh_pending_session_clear_at';
-const SESSION_CLEAR_GRACE_MS = 3000;
+const TAB_ID_KEY = 'dkh_tab_id';
+const TAB_HEARTBEAT_PREFIX = 'dkh_tab_heartbeat:';
+const LEGACY_TAB_COUNT_KEY = 'dkh_open_tab_count';
+const LEGACY_PENDING_CLEAR_KEY = 'dkh_pending_session_clear_at';
+const HEARTBEAT_INTERVAL_MS = 5000;
+const HEARTBEAT_STALE_MS = 15000;
 
 let tabLifecycleBound = false;
+let heartbeatTimer: number | null = null;
 
 export function getStoredUser(): UserSession | null {
+  clearStoredUserIfBrowserSessionEnded();
   ensureTabLifecycle();
-  reconcilePendingSessionClear();
 
-  const raw =
-    window.localStorage.getItem(STORAGE_KEY) ??
-    migrateLegacySessionStorage() ??
-    clearLegacyLocalStorageSession();
+  const raw = window.localStorage.getItem(STORAGE_KEY) ?? migrateLegacySessionStorage();
 
   if (!raw) {
     return null;
@@ -38,7 +38,6 @@ export function saveStoredUser(user: UserSession) {
 
 export function clearStoredUser() {
   window.localStorage.removeItem(STORAGE_KEY);
-  window.localStorage.removeItem(PENDING_CLEAR_KEY);
   window.sessionStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new CustomEvent(SESSION_EVENT));
 }
@@ -49,51 +48,63 @@ export function isAdminUser(user: UserSession | null) {
 
 export function subscribeSessionChange(listener: () => void) {
   ensureTabLifecycle();
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY) {
+      listener();
+    }
+  };
+
   window.addEventListener(SESSION_EVENT, listener);
-  window.addEventListener('storage', listener);
+  window.addEventListener('storage', handleStorage);
 
   return () => {
     window.removeEventListener(SESSION_EVENT, listener);
-    window.removeEventListener('storage', listener);
+    window.removeEventListener('storage', handleStorage);
   };
 }
 
 function ensureTabLifecycle() {
   if (typeof window === 'undefined') return;
 
-  reconcilePendingSessionClear();
+  removeLegacyTabState();
+  pruneStaleTabHeartbeats();
 
-  if (!window.sessionStorage.getItem(TAB_REGISTERED_KEY)) {
-    const nextCount = getOpenTabCount() + 1;
-    window.localStorage.setItem(TAB_COUNT_KEY, String(nextCount));
-    window.sessionStorage.setItem(TAB_REGISTERED_KEY, 'Y');
-    window.localStorage.removeItem(PENDING_CLEAR_KEY);
+  if (!window.sessionStorage.getItem(TAB_ID_KEY)) {
+    window.sessionStorage.setItem(TAB_ID_KEY, createTabId());
   }
+
+  writeTabHeartbeat();
 
   if (tabLifecycleBound) return;
   tabLifecycleBound = true;
 
+  heartbeatTimer = window.setInterval(writeTabHeartbeat, HEARTBEAT_INTERVAL_MS);
   window.addEventListener('beforeunload', handleBeforeUnload);
 }
 
 function handleBeforeUnload() {
-  const currentCount = getOpenTabCount();
-  const nextCount = Math.max(currentCount - 1, 0);
-
-  if (nextCount === 0) {
-    window.localStorage.removeItem(TAB_COUNT_KEY);
-    window.localStorage.setItem(PENDING_CLEAR_KEY, String(Date.now()));
-  } else {
-    window.localStorage.setItem(TAB_COUNT_KEY, String(nextCount));
+  const tabId = window.sessionStorage.getItem(TAB_ID_KEY);
+  if (tabId) {
+    window.localStorage.removeItem(getTabHeartbeatKey(tabId));
   }
 
-  window.sessionStorage.removeItem(TAB_REGISTERED_KEY);
+  if (heartbeatTimer !== null) {
+    window.clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+  }
 }
 
-function getOpenTabCount() {
-  const raw = window.localStorage.getItem(TAB_COUNT_KEY);
-  const parsed = Number.parseInt(raw ?? '0', 10);
-  return Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
+function clearStoredUserIfBrowserSessionEnded() {
+  const hasCurrentTabSession = Boolean(window.sessionStorage.getItem(TAB_ID_KEY));
+  if (hasCurrentTabSession) {
+    return;
+  }
+
+  pruneStaleTabHeartbeats();
+
+  if (getActiveTabHeartbeatCount() === 0) {
+    window.localStorage.removeItem(STORAGE_KEY);
+  }
 }
 
 function migrateLegacySessionStorage() {
@@ -102,34 +113,62 @@ function migrateLegacySessionStorage() {
     return null;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, legacy);
   window.sessionStorage.removeItem(STORAGE_KEY);
+  window.localStorage.setItem(STORAGE_KEY, legacy);
   return legacy;
 }
 
-function clearLegacyLocalStorageSession() {
-  return null;
+function writeTabHeartbeat() {
+  const tabId = window.sessionStorage.getItem(TAB_ID_KEY);
+  if (!tabId) {
+    return;
+  }
+
+  window.localStorage.setItem(getTabHeartbeatKey(tabId), String(Date.now()));
 }
 
-function reconcilePendingSessionClear() {
-  const pendingAtRaw = window.localStorage.getItem(PENDING_CLEAR_KEY);
-  if (!pendingAtRaw) {
-    return;
+function pruneStaleTabHeartbeats() {
+  const now = Date.now();
+
+  for (let index = window.localStorage.length - 1; index >= 0; index -= 1) {
+    const key = window.localStorage.key(index);
+    if (!key?.startsWith(TAB_HEARTBEAT_PREFIX)) {
+      continue;
+    }
+
+    const heartbeatAt = Number.parseInt(window.localStorage.getItem(key) ?? '', 10);
+    if (Number.isNaN(heartbeatAt) || now - heartbeatAt > HEARTBEAT_STALE_MS) {
+      window.localStorage.removeItem(key);
+    }
+  }
+}
+
+function getActiveTabHeartbeatCount() {
+  let count = 0;
+
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (key?.startsWith(TAB_HEARTBEAT_PREFIX)) {
+      count += 1;
+    }
   }
 
-  const pendingAt = Number.parseInt(pendingAtRaw, 10);
-  if (Number.isNaN(pendingAt)) {
-    window.localStorage.removeItem(PENDING_CLEAR_KEY);
-    return;
+  return count;
+}
+
+function getTabHeartbeatKey(tabId: string) {
+  return `${TAB_HEARTBEAT_PREFIX}${tabId}`;
+}
+
+function createTabId() {
+  if (window.crypto?.randomUUID) {
+    return window.crypto.randomUUID();
   }
 
-  const activeTabs = getOpenTabCount();
-  if (activeTabs > 0 || Date.now() - pendingAt <= SESSION_CLEAR_GRACE_MS) {
-    window.localStorage.removeItem(PENDING_CLEAR_KEY);
-    return;
-  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
 
-  window.localStorage.removeItem(PENDING_CLEAR_KEY);
-  window.localStorage.removeItem(TAB_COUNT_KEY);
-  window.localStorage.removeItem(STORAGE_KEY);
+function removeLegacyTabState() {
+  window.localStorage.removeItem(LEGACY_TAB_COUNT_KEY);
+  window.localStorage.removeItem(LEGACY_PENDING_CLEAR_KEY);
 }
