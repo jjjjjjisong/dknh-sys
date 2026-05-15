@@ -17,5 +17,4 @@ export const RECEIVER_OPTIONS = [
   '(주)이룸페이퍼',
   '(주)아이제제',
   '(주)아이팩',
-  '(주)테스트',
 ] as const;
