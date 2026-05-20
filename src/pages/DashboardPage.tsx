@@ -188,9 +188,19 @@ export default function DashboardPage() {
     });
   }
 
-  async function refreshSummary() {
-    const result = await fetchDashboardSummary();
-    setData(result);
+  async function refreshDashboardData() {
+    const [summary, trendResult] = await Promise.all([
+      fetchDashboardSummary(),
+      fetchDashboardWeeklyArrivals(getShiftedWeekDate(weekOffset)),
+    ]);
+
+    setData(summary);
+    setTrendWeekLabel(trendResult.weekLabel);
+    setTrendWeeklyArrivals(trendResult.weeklyArrivals);
+    setSelectedTrend((current) => {
+      if (!current) return current;
+      return trendResult.weeklyArrivals.find((item) => item.date === current.date) ?? current;
+    });
   }
 
   async function handleShippedStatusChange(
@@ -201,7 +211,7 @@ export default function DashboardPage() {
 
     try {
       await updateOrderBookShippedStatus(document.orderBookId, shippedStatus);
-      await refreshSummary();
+      await refreshDashboardData();
       window.alert(
         shippedStatus === SHIPPED_STATUS_SHIPPED
           ? '출고상태로 변경되었습니다.'
@@ -218,7 +228,7 @@ export default function DashboardPage() {
     try {
       setBatchUpdating(true);
       await updateManyOrderBookShippedStatus(selectedOrderBookIds, SHIPPED_STATUS_SHIPPED);
-      await refreshSummary();
+      await refreshDashboardData();
       setSelectedOrderBookIds([]);
       window.alert('선택한 항목이 출고상태로 변경되었습니다.');
     } catch (err) {
@@ -642,7 +652,7 @@ function DashboardIncomingRow({
               <option value={SHIPPED_STATUS_SHIPPED}>{'\uCD9C\uACE0'}</option>
             </select>
           ) : (
-            <Badge>진행중</Badge>
+            <DashboardShippingStatusBadge document={document} />
           )}
         </td>
       ) : null}
@@ -701,7 +711,7 @@ function DashboardIncomingCard({
                 <option value={SHIPPED_STATUS_SHIPPED}>{'\uCD9C\uACE0'}</option>
               </select>
             ) : (
-              <Badge>진행중</Badge>
+              <DashboardShippingStatusBadge document={document} />
             )}
           </div>
         ) : null}
@@ -734,6 +744,18 @@ function DashboardIncomingCard({
       </div>
     </button>
   );
+}
+
+function DashboardShippingStatusBadge({ document }: { document: DashboardIncomingDocument }) {
+  if (document.status === 'ST01') {
+    return <Badge variant="cancel">{'\uAC70\uB798\uCDE8\uC18C'}</Badge>;
+  }
+
+  if (document.shippedStatus === SHIPPED_STATUS_SHIPPED) {
+    return <Badge variant="muted-blue">{'\uCD9C\uACE0'}</Badge>;
+  }
+
+  return <Badge variant="muted">{'\uBBF8\uCD9C\uACE0'}</Badge>;
 }
 
 function DashboardRecentDocumentRow({
