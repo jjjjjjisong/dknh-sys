@@ -186,6 +186,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
     ws.mergeCells(startRow + 1, 1, startRow + 1, 3);
     ws.getCell(startRow + 1, 1).value = issueDate;
+    ws.getCell(startRow + 1, 1).font = font11Bold;
     ws.getCell(startRow + 1, 1).alignment = { horizontal: 'center', vertical: 'middle' };
 
     ws.mergeCells(startRow + 2, 1, startRow + 2, 2);
@@ -304,7 +305,11 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
       for (let c = 1; c <= 10; c += 1) {
         const cell = ws.getCell(startRow, c);
-        cell.font = item?.status === 'ST01' ? { ...font10, strike: true, color: { argb: 'FF6B7280' } } : font10;
+        cell.font = item
+          ? item.status === 'ST01'
+            ? { ...font10Bold, strike: true, color: { argb: 'FF6B7280' } }
+            : font10Bold
+          : font10;
         cell.border = createThinBorder();
       }
       if (item?.status === 'ST01') {
