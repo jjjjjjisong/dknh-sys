@@ -42,9 +42,7 @@ type InvoiceExcelExportOptions = {
   hidePriceFields?: boolean;
 };
 
-const FOLD_LINE_ROW = 24;
-const SECOND_COPY_START_ROW = 26;
-const SECOND_COPY_SPACER_ROW_HEIGHT = 18;
+const CUT_LINE_ROW_HEIGHT = 8;
 
 function formatNumber(value: number) {
   return value.toLocaleString('ko-KR');
@@ -134,8 +132,8 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
       paperSize: 9,
       orientation: 'portrait',
       margins: {
-        left: 0.3,
-        right: 0.3,
+        left: 0.15,
+        right: 0.15,
         top: 0.25,
         bottom: 0.25,
         header: 0,
@@ -144,39 +142,46 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
       fitToPage: true,
       fitToWidth: 1,
       fitToHeight: 1,
+      printArea: 'A1:J999',
     },
   });
 
   ws.columns = [
     { width: 10 },
-    { width: 24 },
+    { width: 29 },
     { width: 6 },
     { width: 4 },
     { width: 11 },
-    { width: 18 },
+    { width: 19 },
     { width: 5 },
-    { width: 11 },
+    { width: 12 },
     { width: 7 },
-    { width: 15 },
+    { width: 16 },
   ];
 
   const font10 = { name: '맑은 고딕', size: 10 as const };
   const font10Bold = { name: '맑은 고딕', size: 10 as const, bold: true };
+  const font11 = { name: '맑은 고딕', size: 11 as const };
   const font11Bold = { name: '맑은 고딕', size: 11 as const, bold: true };
 
   const drawInvoicePart = (invoiceData: InvoiceData, startRow: number, suffix: string) => {
-    ws.mergeCells(startRow, 1, startRow, 10);
+    ws.mergeCells(startRow, 1, startRow, 8);
     const titleCell = ws.getCell(startRow, 1);
     titleCell.value = `거 래 명 세 서 ${suffix}`;
     titleCell.font = { name: '맑은 고딕', size: 18, bold: true };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    ws.mergeCells(startRow, 9, startRow, 10);
+    const issueTitleCell = ws.getCell(startRow, 9);
+    issueTitleCell.value = `발급 No. ${invoiceData.issueNo}`;
+    issueTitleCell.font = { name: '맑은 고딕', size: 10 };
+    issueTitleCell.alignment = { horizontal: 'right', vertical: 'middle' };
     ws.getRow(startRow).height = 40;
 
     for (let r = startRow + 1; r <= startRow + 4; r += 1) {
       for (let c = 1; c <= 10; c += 1) {
         const cell = ws.getCell(r, c);
         cell.border = createThinBorder();
-        cell.font = font10;
+        cell.font = font11;
         cell.alignment = { vertical: 'middle' };
       }
       ws.getRow(r).height = 35;
@@ -186,6 +191,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
     ws.mergeCells(startRow + 1, 1, startRow + 1, 3);
     ws.getCell(startRow + 1, 1).value = issueDate;
+    ws.getCell(startRow + 1, 1).font = font11Bold;
     ws.getCell(startRow + 1, 1).alignment = { horizontal: 'center', vertical: 'middle' };
 
     ws.mergeCells(startRow + 2, 1, startRow + 2, 2);
@@ -304,7 +310,11 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
       for (let c = 1; c <= 10; c += 1) {
         const cell = ws.getCell(startRow, c);
-        cell.font = item?.status === 'ST01' ? { ...font10, strike: true, color: { argb: 'FF6B7280' } } : font10;
+        cell.font = item
+          ? item.status === 'ST01'
+            ? { ...font10Bold, strike: true, color: { argb: 'FF6B7280' } }
+            : font10Bold
+          : font10;
         cell.border = createThinBorder();
       }
       if (item?.status === 'ST01') {
@@ -387,8 +397,8 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
     }
     if (invoiceData.requestNote) noteText += `요청사항 : ${invoiceData.requestNote || ''}`;
 
-    const boldFont = { name: '맑은 고딕', size: 11, bold: true } as const;
-    const normalFont = { name: '맑은 고딕', size: 11 } as const;
+    const boldFont = { name: '맑은 고딕', size: 12, bold: true } as const;
+    const normalFont = { name: '맑은 고딕', size: 12 } as const;
 
     const richTexts: ExcelJS.RichText[] = [];
     if (invoiceData.remark) {
@@ -415,42 +425,23 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
     const noteCell = ws.getCell(startRow, 1);
     noteCell.value = { richText: richTexts };
     noteCell.alignment = { vertical: 'top', wrapText: true };
-    ws.getRow(startRow).height = Math.max(22, estimateWrappedLineCount(noteText) * 20 + 10);
-    startRow += 1;
+    ws.getRow(startRow).height = Math.max(26, estimateWrappedLineCount(noteText, 80) * 22 + 10);
 
-    ws.mergeCells(startRow, 1, startRow, 10);
-    const issueCell = ws.getCell(startRow, 1);
-    issueCell.value = `발급 No. ${invoiceData.issueNo}`;
-    issueCell.font = { name: '맑은 고딕', size: 11 };
-    issueCell.alignment = { vertical: 'middle' };
-    ws.getRow(startRow).height = 22;
-
-    return startRow + 2;
+    return startRow + 1;
   };
 
   let nextRow = 1;
-  const padRowsUntil = (targetRow: number) => {
-    while (nextRow < targetRow) {
-      ws.getRow(nextRow).height = SECOND_COPY_SPACER_ROW_HEIGHT;
-      nextRow += 1;
-    }
-  };
-
   const groupedDocs = splitInvoiceDataByArriveDate(data);
 
   groupedDocs.forEach((group, index) => {
     nextRow = drawInvoicePart(group, nextRow, '(공급자용)');
 
-    padRowsUntil(FOLD_LINE_ROW);
-
     ws.mergeCells(nextRow, 1, nextRow, 10);
     ws.getCell(nextRow, 1).border = {
       bottom: { style: 'dashed', color: { argb: 'FFAAAAAA' } },
     };
-    ws.getRow(nextRow).height = 10;
-    nextRow += 2;
-
-    padRowsUntil(SECOND_COPY_START_ROW);
+    ws.getRow(nextRow).height = CUT_LINE_ROW_HEIGHT;
+    nextRow += 1;
 
     nextRow = drawInvoicePart(group, nextRow, '(공급받는자용)');
 
@@ -460,6 +451,8 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
       nextRow += 1;
     }
   });
+
+  ws.pageSetup.printArea = `A1:J${nextRow - 1}`;
 
   return wb;
 }
