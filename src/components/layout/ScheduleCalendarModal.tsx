@@ -32,7 +32,7 @@ export default function ScheduleCalendarModal({ open, onClose }: Props) {
         setError(null);
         const rows = await fetchOrderBook();
         if (!mounted) return;
-        setEntries(rows.filter((row) => Boolean(row.deadline)));
+        setEntries(rows.filter((row) => Boolean(row.deadline) && row.status !== 'ST01'));
       } catch (err) {
         if (!mounted) return;
         setError(err instanceof Error ? err.message : '일정 데이터를 불러오지 못했습니다.');
