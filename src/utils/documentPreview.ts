@@ -36,16 +36,20 @@ export function buildReleasePreviewHtml(data: SharedPreviewData) {
 
   return `<div class="doc release-doc">
     <div class="release-approval-row">
-      <div class="approval-grid">
-        <div class="approval-group">
-          <div class="approval-cell"><div class="approval-hd">과장</div><div class="approval-body"></div></div>
-          <div class="approval-cell"><div class="approval-hd">부장</div><div class="approval-body"></div></div>
-        </div>
-        <div class="approval-group">
-          <div class="approval-cell"><div class="approval-hd">상무</div><div class="approval-body"></div></div>
-          <div class="approval-cell"><div class="approval-hd">대표</div><div class="approval-body"></div></div>
-        </div>
-      </div>
+      <table class="approval-table">
+        <tr>
+          <th>과장</th>
+          <th>부장</th>
+          <th>상무</th>
+          <th>대표</th>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
     </div>
     <div class="doc-title">출고의뢰서</div>
     <div class="doc-subtitle">수신 <strong>${escapeHtml(data.receiver || '수신처 미입력')}</strong> 귀하 &emsp;|&emsp;담당자 ${escapeHtml(data.manager || '-')}&emsp;|&emsp;발급 No. <strong>${escapeHtml(data.issueNo || '-')}</strong></div>
@@ -189,7 +193,7 @@ export function buildInvoicePreviewHtml(
 }
 
 export function getReleasePreviewStyles(printMode: boolean) {
-  return `body{margin:0;background:${printMode ? '#fff' : '#f3f4f6'};font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#111}.release-doc{width:${printMode ? '100%' : '297mm'};margin:${printMode ? '0' : '0 auto'};background:#fff;padding:${printMode ? '8mm 12mm 10mm' : '10mm 12mm'};box-sizing:border-box}.release-approval-row{display:flex;justify-content:flex-end;margin-bottom:6px}.approval-grid{display:flex;width:360px}.approval-group{display:flex;flex:1;border:1px solid #999}.approval-group+.approval-group{margin-left:-1px;border-left:2px solid #333}.approval-cell{flex:1;text-align:center;border-right:1px solid #999}.approval-cell:last-child{border-right:none}.approval-hd{background:#f0f0f0;font-weight:600;font-size:9.5pt;padding:4px;border-bottom:1px solid #999}.approval-body{height:34px}.doc-title{font-size:22pt;font-weight:900;letter-spacing:.2em;margin-bottom:16px;text-align:left}.doc-subtitle{font-size:12pt;margin-bottom:8px;text-align:left}.doc-tbl,.doc-info-tbl{width:100%;border-collapse:collapse;table-layout:fixed}.doc-tbl{font-size:12pt;margin-bottom:8px}.doc-tbl tbody td{font-size:11pt}.doc-tbl th,.doc-tbl td{border:1px solid #000;padding:5px 7px;vertical-align:middle}.doc-tbl th{background:#f7f7f7;font-weight:700}.doc-tbl .c{text-align:center}.doc-tbl .l{text-align:left}.doc-tbl .sum-row{background:#f0f0f0;font-weight:700}.doc-tbl .sum-row td{font-size:12pt}.doc-tbl .cancelled-item-row td{text-decoration:line-through;color:#6b7280}.doc-tbl .cancelled-item-row .note-col{text-decoration:none;font-weight:700;color:#111}.doc-tbl .no-col{width:44px}.doc-tbl .date-col{width:76px}.doc-tbl .client-col{width:170px}.doc-tbl .name-col{width:auto}.doc-tbl .pallet-col,.doc-tbl .box-col{width:64px}.doc-tbl .qty-col{width:72px}.doc-tbl .note-col{width:130px}.doc-info-tbl{font-size:12pt;margin-bottom:6px}.doc-info-tbl td{border:1px solid #bdbdbd;padding:3px 6px}.doc-info-tbl .lbl{width:140px;background:#f7f7f7;font-weight:700}.request-box{border:1px solid #ccc;border-radius:4px;padding:6px 10px;margin-top:6px;font-size:10pt;line-height:1.5}.request-box strong{display:block;margin-bottom:2px;font-size:8.5pt}.release-signoff{text-align:right;margin-top:24px;font-size:10pt;line-height:2}.release-signoff strong{font-size:13pt;letter-spacing:.1em}@media print{@page{size:A4 landscape;margin:0}body{background:#fff}.release-doc{width:100%;margin:0;padding:8mm 12mm 10mm}}`;
+  return `body{margin:0;background:${printMode ? '#fff' : '#f3f4f6'};font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#111}.release-doc{width:${printMode ? '100%' : '297mm'};margin:${printMode ? '0' : '0 auto'};background:#fff;padding:${printMode ? '8mm 12mm 10mm' : '10mm 12mm'};box-sizing:border-box}.release-approval-row{display:flex;justify-content:flex-end;margin-bottom:6px}.approval-table{width:360px;border-collapse:collapse;table-layout:fixed}.approval-table th,.approval-table td{border:1px solid #999;text-align:center}.approval-table th{background:#f0f0f0;font-weight:600;font-size:9.5pt;padding:4px}.approval-table td{height:34px}.doc-title{font-size:22pt;font-weight:900;letter-spacing:.2em;margin-bottom:16px;text-align:left}.doc-subtitle{font-size:12pt;margin-bottom:8px;text-align:left}.doc-tbl,.doc-info-tbl{width:100%;border-collapse:collapse;table-layout:fixed}.doc-tbl{font-size:12pt;margin-bottom:8px}.doc-tbl tbody td{font-size:11pt}.doc-tbl th,.doc-tbl td{border:1px solid #000;padding:5px 7px;vertical-align:middle}.doc-tbl th{background:#f7f7f7;font-weight:700}.doc-tbl .c{text-align:center}.doc-tbl .l{text-align:left}.doc-tbl .sum-row{background:#f0f0f0;font-weight:700}.doc-tbl .sum-row td{font-size:12pt}.doc-tbl .cancelled-item-row td{text-decoration:line-through;color:#6b7280}.doc-tbl .cancelled-item-row .note-col{text-decoration:none;font-weight:700;color:#111}.doc-tbl .no-col{width:44px}.doc-tbl .date-col{width:76px}.doc-tbl .client-col{width:170px}.doc-tbl .name-col{width:auto}.doc-tbl .pallet-col,.doc-tbl .box-col{width:64px}.doc-tbl .qty-col{width:72px}.doc-tbl .note-col{width:130px}.doc-info-tbl{font-size:12pt;margin-bottom:6px}.doc-info-tbl td{border:1px solid #bdbdbd;padding:3px 6px}.doc-info-tbl .lbl{width:140px;background:#f7f7f7;font-weight:700}.request-box{border:1px solid #ccc;border-radius:4px;padding:6px 10px;margin-top:6px;font-size:10pt;line-height:1.5}.request-box strong{display:block;margin-bottom:2px;font-size:8.5pt}.release-signoff{text-align:right;margin-top:24px;font-size:10pt;line-height:2}.release-signoff strong{font-size:13pt;letter-spacing:.1em}@media print{@page{size:A4 landscape;margin:0}body{background:#fff}.release-doc{width:100%;margin:0;padding:8mm 12mm 10mm}}`;
 }
 
 export function getInvoicePreviewStyles(printMode: boolean) {
