@@ -147,9 +147,9 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
   });
 
   ws.columns = [
-    { width: 10 },
-    { width: 29 },
-    { width: 6 },
+    { width: 11 },
+    { width: 36 },
+    { width: 7 },
     { width: 4 },
     { width: 11 },
     { width: 19 },
@@ -425,7 +425,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
     const noteCell = ws.getCell(startRow, 1);
     noteCell.value = { richText: richTexts };
     noteCell.alignment = { vertical: 'top', wrapText: true };
-    ws.getRow(startRow).height = Math.max(26, estimateWrappedLineCount(noteText, 80) * 22 + 10);
+    ws.getRow(startRow).height = Math.max(32, estimateWrappedLineCount(noteText, 95) * 18 + 12);
 
     return startRow + 1;
   };
