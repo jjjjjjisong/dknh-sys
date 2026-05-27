@@ -43,6 +43,9 @@ type InvoiceExcelExportOptions = {
 };
 
 const CUT_LINE_ROW_HEIGHT = 8;
+const INVOICE_HALF_TARGET_HEIGHT = 520;
+const MIN_CENTERING_EXTRA_HEIGHT = 24;
+const MAX_NOTE_LINE_COUNT_FOR_CENTERING = 8;
 
 function formatNumber(value: number) {
   return value.toLocaleString('ko-KR');
@@ -72,6 +75,45 @@ function estimateWrappedLineCount(value: string, charsPerLine = 90) {
   return value
     .split('\n')
     .reduce((count, line) => count + Math.max(1, Math.ceil((getVisualLength(line) || 1) / charsPerLine)), 0);
+}
+
+function getInvoiceNoteRowHeight(noteText: string) {
+  return Math.max(32, estimateWrappedLineCount(noteText, 95) * 18 + 12);
+}
+
+function estimateInvoicePartHeight(invoiceData: InvoiceData) {
+  const itemRowsCount = Math.max(invoiceData.items.length, 1);
+  const noteText = buildInvoiceNoteText(invoiceData);
+
+  return 40 + 35 * 4 + 25 + 23 + itemRowsCount * 23 + 27 + 25 + 15 + getInvoiceNoteRowHeight(noteText);
+}
+
+function getCenteringSpacers(invoiceData: InvoiceData) {
+  const noteText = buildInvoiceNoteText(invoiceData);
+  if (estimateWrappedLineCount(noteText, 70) > MAX_NOTE_LINE_COUNT_FOR_CENTERING) {
+    return { top: 0, bottom: 0 };
+  }
+
+  const extraHeight = INVOICE_HALF_TARGET_HEIGHT - estimateInvoicePartHeight(invoiceData);
+  if (extraHeight < MIN_CENTERING_EXTRA_HEIGHT) {
+    return { top: 0, bottom: 0 };
+  }
+
+  return {
+    top: extraHeight / 2,
+    bottom: extraHeight / 2,
+  };
+}
+
+function buildInvoiceNoteText(invoiceData: InvoiceData) {
+  let noteText = '';
+  if (invoiceData.remark) noteText += `참고사항 : ${invoiceData.remark}\n`;
+  noteText += `납품처 : ${invoiceData.client || ''}${invoiceData.deliveryAddr ? ` / ${invoiceData.deliveryAddr}` : ''}\n`;
+  if (invoiceData.manager || invoiceData.managerTel) {
+    noteText += `담당자 : ${invoiceData.manager || ''}${invoiceData.managerTel ? ` / ${invoiceData.managerTel}` : ''}\n`;
+  }
+  if (invoiceData.requestNote) noteText += `요청사항 : ${invoiceData.requestNote || ''}`;
+  return noteText;
 }
 
 function createThinBorder(): Partial<ExcelJS.Borders> {
@@ -389,13 +431,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
 
     startRow += 2;
 
-    let noteText = '';
-    if (invoiceData.remark) noteText += `참고사항 : ${invoiceData.remark}\n`;
-    noteText += `납품처 : ${invoiceData.client || ''}${invoiceData.deliveryAddr ? ` / ${invoiceData.deliveryAddr}` : ''}\n`;
-    if (invoiceData.manager || invoiceData.managerTel) {
-      noteText += `담당자 : ${invoiceData.manager || ''}${invoiceData.managerTel ? ` / ${invoiceData.managerTel}` : ''}\n`;
-    }
-    if (invoiceData.requestNote) noteText += `요청사항 : ${invoiceData.requestNote || ''}`;
+    const noteText = buildInvoiceNoteText(invoiceData);
 
     const boldFont = { name: '맑은 고딕', size: 12, bold: true } as const;
     const normalFont = { name: '맑은 고딕', size: 12 } as const;
@@ -425,16 +461,28 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
     const noteCell = ws.getCell(startRow, 1);
     noteCell.value = { richText: richTexts };
     noteCell.alignment = { vertical: 'top', wrapText: true };
-    ws.getRow(startRow).height = Math.max(32, estimateWrappedLineCount(noteText, 95) * 18 + 12);
+    ws.getRow(startRow).height = getInvoiceNoteRowHeight(noteText);
 
     return startRow + 1;
   };
 
   let nextRow = 1;
   const groupedDocs = splitInvoiceDataByArriveDate(data);
+  const addSpacerRow = (height: number) => {
+    if (height <= 0) return;
+    ws.getRow(nextRow).height = height;
+    nextRow += 1;
+  };
+
+  const drawCenteredInvoicePart = (group: InvoiceData, suffix: string) => {
+    const spacers = getCenteringSpacers(group);
+    addSpacerRow(spacers.top);
+    nextRow = drawInvoicePart(group, nextRow, suffix);
+    addSpacerRow(spacers.bottom);
+  };
 
   groupedDocs.forEach((group, index) => {
-    nextRow = drawInvoicePart(group, nextRow, '(공급자용)');
+    drawCenteredInvoicePart(group, '(공급자용)');
 
     ws.mergeCells(nextRow, 1, nextRow, 10);
     ws.getCell(nextRow, 1).border = {
@@ -443,7 +491,7 @@ function createInvoiceWorkbook(data: InvoiceData, options: InvoiceExcelExportOpt
     ws.getRow(nextRow).height = CUT_LINE_ROW_HEIGHT;
     nextRow += 1;
 
-    nextRow = drawInvoicePart(group, nextRow, '(공급받는자용)');
+    drawCenteredInvoicePart(group, '(공급받는자용)');
 
     if (index < groupedDocs.length - 1) {
       nextRow += 2;
