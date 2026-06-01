@@ -1,6 +1,6 @@
 import { type RefObject, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { RECEIVER_OPTIONS } from '../../constants/receivers';
 import type { Client } from '../../types/client';
+import type { CommonCode } from '../../types/commonCode';
 import type { Product, ProductInput, ProductMaster, ProductMasterInput } from '../../types/product';
 import Alert from '../ui/Alert';
 import Button from '../ui/Button';
@@ -31,6 +31,7 @@ type ProductModalProps = {
   showPricingFields: boolean;
   readOnly?: boolean;
   productMasters: ProductMaster[];
+  receiverCodes: CommonCode[];
   clients: Client[];
   filteredFormClientOptions: Client[];
   clientDropdownOpen: boolean;
@@ -169,6 +170,7 @@ export function ProductItemModal({
   showPricingFields,
   readOnly = false,
   productMasters,
+  receiverCodes,
   clients,
   filteredFormClientOptions,
   clientDropdownOpen,
@@ -228,6 +230,12 @@ export function ProductItemModal({
     onUpdateForm('productMasterId', master.id);
     onApplyMasterDefaults(master.id);
     setMasterDropdownOpen(false);
+  }
+
+  function handleReceiverSelect(receiverCode: string) {
+    const selectedReceiver = receiverCodes.find((receiver) => receiver.code === receiverCode);
+    onUpdateForm('receiverCode', receiverCode || null);
+    onUpdateForm('receiver', selectedReceiver?.label ?? '');
   }
 
   function handlePriceDraftChange(field: 'cost_price' | 'sell_price', value: string) {
@@ -355,14 +363,14 @@ export function ProductItemModal({
 
         <FormField label="수신처">
           <select
-            value={productForm.receiver}
-            onChange={(event) => onUpdateForm('receiver', event.target.value)}
+            value={productForm.receiverCode ?? ''}
+            onChange={(event) => handleReceiverSelect(event.target.value)}
             disabled={readOnly}
           >
             <option value="">수신처를 선택하세요</option>
-            {RECEIVER_OPTIONS.map((receiver) => (
-              <option key={receiver} value={receiver}>
-                {receiver}
+            {receiverCodes.map((receiver) => (
+              <option key={receiver.code} value={receiver.code}>
+                {receiver.label}
               </option>
             ))}
           </select>

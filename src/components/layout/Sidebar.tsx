@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { group: '문서', label: '발행 이력', to: '/doc-history', icon: <SidebarIconHistory /> },
   { group: '문서', label: '수주대장', to: '/order-book', icon: <SidebarIconList /> },
   { group: '관리', label: '납품처 관리', to: '/master-client', icon: <SidebarIconUsers /> },
+  { group: '관리', label: '수신처 관리', to: '/master-receiver', icon: <SidebarIconList /> },
   { group: '관리', label: '품목 관리', to: '/master-product', icon: <SidebarIconBox /> },
   { group: '관리', label: '공급자 관리', to: '/master-supplier', icon: <SidebarIconStore /> },
   { group: '정산', label: '월마감', to: '/monthly-closing', icon: <SidebarIconTrend /> },

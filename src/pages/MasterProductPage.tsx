@@ -57,6 +57,7 @@ export default function MasterProductPage() {
     productFormError,
     productMasters,
     productModalOpen,
+    receiverCodes,
     productPriceDrafts,
     priceChangeApplying,
     priceChangeForm,
@@ -270,6 +271,7 @@ export default function MasterProductPage() {
         showPricingFields
         readOnly={productModalReadOnly}
         productMasters={productMasters}
+        receiverCodes={receiverCodes}
         clients={clients}
         filteredFormClientOptions={filteredFormClientOptions}
         clientDropdownOpen={clientDropdownOpen}

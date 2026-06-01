@@ -19,6 +19,7 @@ export function createEmptyProductForm(): ProductInput {
   return {
     productMasterId: '',
     clientId: '',
+    receiverCode: null,
     receiver: '',
     gubun: DEFAULT_GUBUN,
     client: '',
@@ -77,6 +78,7 @@ export function createProductFormFromRow(product: Product): ProductInput {
   return {
     productMasterId: product.productMasterId ?? '',
     clientId: product.clientId ?? '',
+    receiverCode: product.receiverCode,
     receiver: product.receiver,
     gubun: product.gubun || product.masterGubun || DEFAULT_GUBUN,
     client: product.client,

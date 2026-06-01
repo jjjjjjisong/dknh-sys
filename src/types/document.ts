@@ -29,6 +29,7 @@ export type DocumentPayload = {
   client: string;
   manager: string;
   managerTel: string;
+  receiverCode?: string | null;
   receiver: string;
   supplierBizNo: string;
   supplierName: string;
@@ -85,6 +86,7 @@ export type DocumentHistory = {
   client: string;
   manager: string;
   managerTel: string;
+  receiverCode: string | null;
   receiver: string;
   supplierBizNo: string;
   supplierName: string;

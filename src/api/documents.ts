@@ -24,7 +24,7 @@ type DocumentHistoryPageResult = {
 };
 
 const documentHistorySelect =
-  'id, issue_no, client_id, client, manager, manager_tel, receiver, supplier_biz_no, supplier_name, supplier_owner, supplier_address, supplier_business_type, supplier_business_item, order_date, arrive_date, delivery_addr, issue_no_edit_history, remark, request_note, total_supply, total_vat, total_amount, author_id, author, status, approval_title, approval_status, approval_requested_at, approval_completed_at, approval_current_step, created_at, updated_at, updated_by, del_yn, document_items(id, product_id, seq, name1, name2, gubun, qty, cost_price, unit_price, supply, vat, order_date, arrive_date, item_note, release_note, invoice_note, monthly_closing_note, status, ea_per_b, box_per_p, custom_pallet, custom_box, updated_at, updated_by, del_yn)';
+  'id, issue_no, client_id, client, manager, manager_tel, receiver_code, receiver, supplier_biz_no, supplier_name, supplier_owner, supplier_address, supplier_business_type, supplier_business_item, order_date, arrive_date, delivery_addr, issue_no_edit_history, remark, request_note, total_supply, total_vat, total_amount, author_id, author, status, approval_title, approval_status, approval_requested_at, approval_completed_at, approval_current_step, created_at, updated_at, updated_by, del_yn, document_items(id, product_id, seq, name1, name2, gubun, qty, cost_price, unit_price, supply, vat, order_date, arrive_date, item_note, release_note, invoice_note, monthly_closing_note, status, ea_per_b, box_per_p, custom_pallet, custom_box, updated_at, updated_by, del_yn)';
 
 export async function saveDocument(payload: DocumentPayload) {
   if (creatingDocument) {
@@ -48,6 +48,7 @@ export async function saveDocument(payload: DocumentPayload) {
         client: payload.client,
         manager: payload.manager,
         manager_tel: payload.managerTel,
+        receiver_code: payload.receiverCode?.trim() || null,
         receiver: payload.receiver,
         supplier_biz_no: payload.supplierBizNo,
         supplier_name: payload.supplierName,
@@ -257,6 +258,7 @@ function mapDocumentHistoryRow(row: any): DocumentHistory {
     client: row.client ?? '',
     manager: row.manager ?? '',
     managerTel: row.manager_tel ?? '',
+    receiverCode: row.receiver_code ?? null,
     receiver: row.receiver ?? '',
     supplierBizNo: row.supplier_biz_no ?? '',
     supplierName: row.supplier_name ?? '',
@@ -343,6 +345,7 @@ export async function updateDocument(document: DocumentHistory) {
         client: document.client,
         manager: document.manager,
         manager_tel: document.managerTel,
+        receiver_code: document.receiverCode?.trim() || null,
         receiver: document.receiver,
         supplier_biz_no: document.supplierBizNo,
         supplier_name: document.supplierName,

@@ -6,6 +6,7 @@ export type Product = {
   masterName2: string;
   masterGubun: string;
   clientId: string | null;
+  receiverCode: string | null;
   receiver: string;
   gubun: string;
   client: string;
@@ -40,6 +41,7 @@ export type ProductMaster = {
 export type ProductInput = {
   productMasterId: string;
   clientId: string;
+  receiverCode?: string | null;
   receiver: string;
   gubun: string;
   client: string;

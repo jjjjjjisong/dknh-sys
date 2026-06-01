@@ -10,6 +10,7 @@ type PreviewBaseFields = {
   client: string;
   manager: string;
   managerTel: string;
+  receiverCode?: string | null;
   receiver: string;
   supplierBizNo: string;
   supplierName: string;
@@ -74,6 +75,7 @@ export function buildSharedPreviewData(
     client: base.client.trim(),
     manager: base.manager.trim(),
     managerTel: base.managerTel.trim(),
+    receiverCode: base.receiverCode?.trim() || null,
     receiver: base.receiver.trim(),
     supplierBizNo: base.supplierBizNo.trim(),
     supplierName: base.supplierName.trim(),
@@ -104,6 +106,7 @@ export function buildDocumentPayload(
     client: previewData.client,
     manager: previewData.manager,
     managerTel: previewData.managerTel,
+    receiverCode: previewData.receiverCode ?? null,
     receiver: previewData.receiver,
     supplierBizNo: previewData.supplierBizNo,
     supplierName: previewData.supplierName,

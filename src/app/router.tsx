@@ -10,6 +10,7 @@ import MceePressReleaseDetailPage from '../pages/MceePressReleaseDetailPage';
 import MceePressReleasePage from '../pages/MceePressReleasePage';
 import MasterClientPage from '../pages/MasterClientPage';
 import MasterProductPage from '../pages/MasterProductPage';
+import MasterReceiverPage from '../pages/MasterReceiverPage';
 import MasterSupplierPage from '../pages/MasterSupplierPage';
 import AccountPage from '../pages/AccountPage';
 import LoginPage from '../pages/LoginPage';
@@ -61,6 +62,7 @@ export const router = createHashRouter([
       { path: 'mcee-press-releases', element: <MceePressReleasePage /> },
       { path: 'mcee-press-releases/:pressReleaseId', element: <MceePressReleaseDetailPage /> },
       { path: 'master-client', element: <MasterClientPage /> },
+      { path: 'master-receiver', element: <MasterReceiverPage /> },
       { path: 'master-supplier', element: <MasterSupplierPage /> },
       { path: 'master-product', element: <MasterProductPage /> },
       {
