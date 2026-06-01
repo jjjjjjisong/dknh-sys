@@ -92,7 +92,7 @@ select
   label,
   sort_order,
   true,
-  'Seeded from legacy receiver options',
+  '',
   'migration'
 from canonical_receivers
 on conflict (group_code, code) do update
