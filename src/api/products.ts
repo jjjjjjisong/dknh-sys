@@ -28,6 +28,7 @@ type ProductRow = {
   no: number | null;
   product_master_id: number | string | null;
   client_id: number | string | null;
+  receiver_code: string | null;
   receiver: string | null;
   gubun: string | null;
   client: string | null;
@@ -47,7 +48,7 @@ type ProductRow = {
 };
 
 const productSelectColumns =
-  'id, no, product_master_id, client_id, receiver, gubun, client, name1, name2, supplier, cost_price, sell_price, ea_per_b, box_per_p, ea_per_p, pallets_per_truck, del_yn, updated_at, updated_by, product_master:product_masters(id, name1, name2, gubun, ea_per_b, box_per_p, ea_per_p, pallets_per_truck, del_yn, updated_at, updated_by)';
+  'id, no, product_master_id, client_id, receiver_code, receiver, gubun, client, name1, name2, supplier, cost_price, sell_price, ea_per_b, box_per_p, ea_per_p, pallets_per_truck, del_yn, updated_at, updated_by, product_master:product_masters(id, name1, name2, gubun, ea_per_b, box_per_p, ea_per_p, pallets_per_truck, del_yn, updated_at, updated_by)';
 
 const productMasterSelectColumns =
   'id, name1, name2, gubun, ea_per_b, box_per_p, ea_per_p, pallets_per_truck, del_yn, updated_at, updated_by';
@@ -383,6 +384,7 @@ function buildProductPayload(input: ProductInput, no: number | null) {
     no,
     product_master_id: productMasterId,
     client_id: toNullableDbId(input.clientId),
+    receiver_code: input.receiverCode?.trim() || null,
     receiver,
     client,
     gubun: input.gubun.trim() || DEFAULT_GUBUN,
@@ -450,6 +452,7 @@ function mapProductRow(product: ProductRow): Product {
       product.client_id === null || product.client_id === undefined
         ? null
         : String(product.client_id),
+    receiverCode: product.receiver_code ? String(product.receiver_code) : null,
     receiver,
     gubun: product.gubun ?? productMaster?.gubun ?? '',
     client: product.client ?? '',

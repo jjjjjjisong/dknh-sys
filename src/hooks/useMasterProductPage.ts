@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import * as XLSX from 'xlsx';
+import { fetchActiveReceiverCodes } from '../api/commonCodes';
 import { fetchProductManagementData } from '../api/productManagement';
 import {
   applyPriceChange,
@@ -12,6 +13,7 @@ import {
 import { removeProduct, removeProductMaster, saveProduct, saveProductMaster } from '../api/products';
 import type { PriceChangeForm } from '../components/products/PriceChangePanel';
 import type { Client } from '../types/client';
+import type { CommonCode } from '../types/commonCode';
 import type { Product, ProductInput, ProductMaster, ProductMasterInput } from '../types/product';
 import {
   applyMasterDefaultsToProductForm,
@@ -57,6 +59,7 @@ export function useMasterProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [productMasters, setProductMasters] = useState<ProductMaster[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [receiverCodes, setReceiverCodes] = useState<CommonCode[]>([]);
   const [query, setQuery] = useState('');
   const [clientFilter, setClientFilter] = useState('');
   const [loading, setLoading] = useState(true);
@@ -92,10 +95,14 @@ export function useMasterProductPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchProductManagementData();
+      const [data, receiverRows] = await Promise.all([
+        fetchProductManagementData(),
+        fetchActiveReceiverCodes(),
+      ]);
       setProducts(data.products);
       setProductMasters(data.productMasters);
       setClients(data.clients);
+      setReceiverCodes(receiverRows);
       setProductPriceDrafts(createProductPriceDraftMap(data.products));
     } catch (err) {
       setError(err instanceof Error ? err.message : '품목 목록 조회에 실패했습니다.');
@@ -542,6 +549,7 @@ export function useMasterProductPage() {
         {
           productMasterId: product.productMasterId ?? '',
           clientId: product.clientId ?? '',
+          receiverCode: product.receiverCode,
           receiver: product.receiver,
           gubun: product.gubun,
           client: product.client,
@@ -633,6 +641,7 @@ export function useMasterProductPage() {
     productFormError,
     productMasters,
     productModalOpen,
+    receiverCodes,
     productPriceDrafts,
     priceChangeApplying,
     priceChangeForm,

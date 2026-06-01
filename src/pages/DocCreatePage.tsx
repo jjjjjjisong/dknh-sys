@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchClients } from '../api/clients';
+import { fetchActiveReceiverCodes } from '../api/commonCodes';
 import { fetchDocuments, fetchNextIssueNo, saveDocument } from '../api/documents';
 import { fetchProductsByClientId } from '../api/products';
 import { fetchSuppliers } from '../api/suppliers';
@@ -16,11 +17,11 @@ import type { SharedItemRow as DocItem } from '../components/ui/DocumentItemTabl
 import { buildDocumentPayload, buildSharedPreviewData } from '../features/documents/documentPreview';
 import { useDocumentItems, createEmptySharedItem } from '../hooks/useDocumentItems';
 import type { Client } from '../types/client';
+import type { CommonCode } from '../types/commonCode';
 import type { DocumentHistory, DocumentPayload } from '../types/document';
 import type { Product } from '../types/product';
 import type { Supplier } from '../types/supplier';
 import type { SharedPreviewData as PreviewData } from '../types/documentPreview';
-import { RECEIVER_OPTIONS } from '../constants/receivers';
 import { emptyToNull, formatIntegerInput, parseNullableInteger, stripNonNumeric, formatNumber, getLocalDateInputValue } from '../utils/formatters';
 
 const today = getLocalDateInputValue();
@@ -34,6 +35,7 @@ type DocForm = {
   client: string;
   manager: string;
   managerTel: string;
+  receiverCode: string | null;
   receiver: string;
   deliveryAddr: string;
   issueNoEditHistory: string;
@@ -58,6 +60,7 @@ function createInitialForm(): DocForm {
     client: '',
     manager: '',
     managerTel: '',
+    receiverCode: null,
     receiver: '',
     deliveryAddr: '',
     issueNoEditHistory: '',
@@ -99,6 +102,7 @@ export default function DocCreatePage() {
   const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [receiverCodes, setReceiverCodes] = useState<CommonCode[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [form, setForm] = useState<DocForm>(createInitialForm);
   const { items, setItems, itemSummaries, totals, addItem: _addItem, removeItem, updateItem } = useDocumentItems([createEmptySharedItem(today, '')], products);
@@ -128,9 +132,10 @@ export default function DocCreatePage() {
       try {
         setLoading(true);
         setError(null);
-        const [rows, supplierRows, nextIssueNo] = await Promise.all([
+        const [rows, supplierRows, receiverRows, nextIssueNo] = await Promise.all([
           fetchClients(),
           fetchSuppliers(),
+          fetchActiveReceiverCodes(),
           fetchNextIssueNo(),
         ]);
         if (!mounted) return;
@@ -140,6 +145,7 @@ export default function DocCreatePage() {
 
         setClients(activeClients);
         setSuppliers(activeSuppliers);
+        setReceiverCodes(receiverRows);
         setForm((current) => {
           if (!defaultSupplier || hasSupplierValues(current)) {
             return { ...current, issueNo: nextIssueNo };
@@ -233,9 +239,9 @@ export default function DocCreatePage() {
 
   const filteredReceivers = useMemo(() => {
     const keyword = form.receiver.trim().toLowerCase();
-    if (!keyword) return RECEIVER_OPTIONS;
-    return RECEIVER_OPTIONS.filter((receiver) => receiver.toLowerCase().includes(keyword));
-  }, [form.receiver]);
+    if (!keyword) return receiverCodes;
+    return receiverCodes.filter((receiver) => receiver.label.toLowerCase().includes(keyword));
+  }, [form.receiver, receiverCodes]);
 
   const previewData = useMemo<PreviewData | null>(() => {
     return buildSharedPreviewData(form, itemSummaries, items, totals);
@@ -249,8 +255,11 @@ export default function DocCreatePage() {
   const filteredClientProducts = useMemo(() => {
     if (!canSelectProducts) return [];
     const receiver = form.receiver.trim();
-    return products.filter((product) => product.receiver.trim() === receiver);
-  }, [canSelectProducts, form.receiver, products]);
+    const receiverCode = form.receiverCode?.trim() ?? '';
+    return products.filter((product) =>
+      receiverCode ? product.receiverCode === receiverCode : product.receiver.trim() === receiver,
+    );
+  }, [canSelectProducts, form.receiver, form.receiverCode, products]);
 
 
 
@@ -294,8 +303,22 @@ export default function DocCreatePage() {
     resetClientItems();
   }
 
-  function handleReceiverChange(receiver: string) {
-    updateForm('receiver', receiver);
+  function handleReceiverInputChange(receiver: string) {
+    const matchedReceiver = receiverCodes.find((item) => item.label === receiver);
+    setForm((current) => ({
+      ...current,
+      receiver,
+      receiverCode: matchedReceiver?.code ?? null,
+    }));
+    resetClientItems();
+  }
+
+  function handleReceiverSelect(receiver: CommonCode) {
+    setForm((current) => ({
+      ...current,
+      receiver: receiver.label,
+      receiverCode: receiver.code,
+    }));
     resetClientItems();
   }
 
@@ -325,6 +348,7 @@ export default function DocCreatePage() {
     if (!form.client.trim()) return '납품처를 선택해 주세요.';
     if (!form.clientId) return '납품처를 목록에서 선택해 주세요.';
     if (!form.receiver.trim()) return '수신처를 입력해 주세요.';
+    if (!form.receiverCode) return '수신처를 목록에서 선택해 주세요.';
     if (!form.deliveryAddr.trim()) return '납품주소를 입력해 주세요.';
     if (!previewData) return '저장할 품목을 1개 이상 입력해 주세요.';
     return null;
@@ -452,6 +476,7 @@ export default function DocCreatePage() {
         manager: document.manager,
         managerTel: document.managerTel,
         receiver: document.receiver,
+        receiverCode: document.receiverCode,
         deliveryAddr: document.deliveryAddr,
         issueNoEditHistory: document.issueNoEditHistory,
         remark: document.remark,
@@ -601,7 +626,7 @@ export default function DocCreatePage() {
                     required
                     value={form.receiver}
                     onChange={(event) => {
-                      handleReceiverChange(event.target.value);
+                      handleReceiverInputChange(event.target.value);
                       setReceiverDropdownOpen(true);
                     }}
                     onFocus={() => setReceiverDropdownOpen(true)}
@@ -613,16 +638,16 @@ export default function DocCreatePage() {
                     <div className="client-search-dropdown">
                       {filteredReceivers.map((receiver) => (
                         <button
-                          key={receiver}
+                          key={receiver.code}
                           type="button"
                           className="client-search-option"
                           onMouseDown={(event) => {
                             event.preventDefault();
-                            handleReceiverChange(receiver);
+                            handleReceiverSelect(receiver);
                             setReceiverDropdownOpen(false);
                           }}
                         >
-                          {receiver}
+                          {receiver.label}
                         </button>
                       ))}
                     </div>

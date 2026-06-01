@@ -26,6 +26,7 @@ export type SharedPreviewData = {
   client: string;
   manager: string;
   managerTel: string;
+  receiverCode?: string | null;
   receiver: string;
   supplierBizNo: string;
   supplierName: string;

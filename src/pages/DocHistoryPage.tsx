@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchClients } from '../api/clients';
+import { fetchActiveReceiverCodes } from '../api/commonCodes';
 import {
   fetchDocumentById,
   fetchDocumentHistoryPage,
@@ -20,9 +21,9 @@ import type { SharedItemRow } from '../components/ui/DocumentItemTable';
 import { buildHistoryDraftItems, buildSharedPreviewData } from '../features/documents/documentPreview';
 import { useDocumentItems } from '../hooks/useDocumentItems';
 import type { Client } from '../types/client';
+import type { CommonCode } from '../types/commonCode';
 import type { DocumentHistory, DocumentHistoryItem } from '../types/document';
 import type { SharedPreviewData as PreviewData } from '../types/documentPreview';
-import { RECEIVER_OPTIONS } from '../constants/receivers';
 import type { Product } from '../types/product';
 import type { Supplier } from '../types/supplier';
 import { emptyToNull, formatNumber, getErrorMessage, getLocalDateInputValue } from '../utils/formatters';
@@ -50,6 +51,7 @@ export default function DocHistoryPage() {
   const navigate = useNavigate();
   const { documentId } = useParams();
   const [clients, setClients] = useState<Client[]>([]);
+  const [receiverCodes, setReceiverCodes] = useState<CommonCode[]>([]);
   const [documents, setDocuments] = useState<DocumentHistory[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [draft, setDraft] = useState<DocumentHistory | null>(null);
@@ -88,9 +90,13 @@ export default function DocHistoryPage() {
 
     async function loadClients() {
       try {
-        const rows = await fetchClients();
+        const [rows, receiverRows] = await Promise.all([
+          fetchClients(),
+          fetchActiveReceiverCodes(),
+        ]);
         if (!mounted) return;
         setClients(rows.filter((client) => client.active !== false));
+        setReceiverCodes(receiverRows);
       } catch (err) {
         if (!mounted) return;
         setError(getErrorMessage(err, '납품처 목록을 불러오지 못했습니다.'));
@@ -342,9 +348,9 @@ export default function DocHistoryPage() {
 
   const filteredReceivers = useMemo(() => {
     const keyword = draft?.receiver.trim().toLowerCase() ?? '';
-    if (!keyword) return RECEIVER_OPTIONS;
-    return RECEIVER_OPTIONS.filter((receiver) => receiver.toLowerCase().includes(keyword));
-  }, [draft?.receiver]);
+    if (!keyword) return receiverCodes;
+    return receiverCodes.filter((receiver) => receiver.label.toLowerCase().includes(keyword));
+  }, [draft?.receiver, receiverCodes]);
 
   const previewData = useMemo<PreviewData | null>(() => {
     if (!draft) return null;
@@ -355,6 +361,7 @@ export default function DocHistoryPage() {
         client: draft.client,
         manager: draft.manager || '',
         managerTel: draft.managerTel || '',
+        receiverCode: draft.receiverCode,
         receiver: draft.receiver || '',
         supplierBizNo: draft.supplierBizNo,
         supplierName: draft.supplierName,
@@ -378,6 +385,7 @@ export default function DocHistoryPage() {
     if (!draft || !originalDocument) return false;
     return (
       (draft.clientId ?? null) !== (originalDocument.clientId ?? null) ||
+      (draft.receiverCode ?? '') !== (originalDocument.receiverCode ?? '') ||
       (draft.receiver ?? '') !== (originalDocument.receiver ?? '')
     );
   }, [draft, originalDocument]);
@@ -393,7 +401,10 @@ export default function DocHistoryPage() {
     if (!draftSelectionChanged) return products;
     if (!canSelectDraftProducts) return [];
     const receiver = draft.receiver.trim();
-    return products.filter((product) => product.receiver.trim() === receiver);
+    const receiverCode = draft.receiverCode?.trim() ?? '';
+    return products.filter((product) =>
+      receiverCode ? product.receiverCode === receiverCode : product.receiver.trim() === receiver,
+    );
   }, [draft, draftSelectionChanged, canSelectDraftProducts, products]);
 
   function openDocument(document: DocumentHistory) {
@@ -439,8 +450,18 @@ export default function DocHistoryPage() {
     applyDraftClient(client);
   }
 
-  function handleDraftReceiverChange(receiver: string) {
-    updateDraft('receiver', receiver);
+  function handleDraftReceiverInputChange(receiver: string) {
+    const matchedReceiver = receiverCodes.find((item) => item.label === receiver);
+    setDraft((current) =>
+      current ? { ...current, receiver, receiverCode: matchedReceiver?.code ?? null } : current,
+    );
+    resetDraftProducts();
+  }
+
+  function handleDraftReceiverSelect(receiver: CommonCode) {
+    setDraft((current) =>
+      current ? { ...current, receiver: receiver.label, receiverCode: receiver.code } : current,
+    );
     resetDraftProducts();
   }
 
@@ -761,7 +782,7 @@ export default function DocHistoryPage() {
                       className="search-input"
                       value={draft.receiver}
                       onChange={(event) => {
-                        handleDraftReceiverChange(event.target.value);
+                        handleDraftReceiverInputChange(event.target.value);
                         setReceiverDropdownOpen(true);
                       }}
                       onFocus={() => setReceiverDropdownOpen(true)}
@@ -773,16 +794,16 @@ export default function DocHistoryPage() {
                       <div className="client-search-dropdown">
                         {filteredReceivers.map((receiver) => (
                           <button
-                            key={receiver}
+                            key={receiver.code}
                             type="button"
                             className="client-search-option"
                             onMouseDown={(event) => {
                               event.preventDefault();
-                              handleDraftReceiverChange(receiver);
+                              handleDraftReceiverSelect(receiver);
                               setReceiverDropdownOpen(false);
                             }}
                           >
-                            {receiver}
+                            {receiver.label}
                           </button>
                         ))}
                       </div>
